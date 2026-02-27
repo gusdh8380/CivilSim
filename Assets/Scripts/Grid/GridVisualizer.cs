@@ -21,7 +21,7 @@ namespace CivilSim.Grid
         // ── 내부 ─────────────────────────────────────────────
         private GridSystem _grid;
         private Material   _lineMaterial;
-        private Camera     _cam;
+        private UnityEngine.Camera _cam;
 
         // ── Unity ─────────────────────────────────────────────
 

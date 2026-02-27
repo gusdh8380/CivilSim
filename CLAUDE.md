@@ -138,7 +138,7 @@ namespace CivilSim.Infrastructure
 namespace CivilSim.Economy
 namespace CivilSim.Population
 namespace CivilSim.UI
-namespace CivilSim.Camera
+namespace CivilSim.CameraSystem // ⚠️ CivilSim.Camera는 UnityEngine.Camera와 충돌 — CameraSystem 사용
 namespace CivilSim.Data        // ScriptableObject 데이터 클래스
 ```
 

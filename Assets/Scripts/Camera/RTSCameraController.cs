@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace CivilSim.Camera
+namespace CivilSim.CameraSystem
 {
     /// <summary>
     /// 심시티 스타일 RTS 카메라 컨트롤러 (New Input System).
