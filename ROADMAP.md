@@ -14,64 +14,59 @@
 - [x] GitHub Actions WebGL 자동 빌드 워크플로우
 - [x] CLAUDE.md 아키텍처 가이드
 - [ ] 브랜치 전략 적용 (`main` / `develop`)
-- [ ] GitHub 원격 레포지토리 연결
+- [x] GitHub 원격 레포지토리 연결
 
 ---
 
-## Phase 1 — 코어 기초 시스템
+## Phase 1 — 코어 기초 시스템 ✅
 > 목표: 게임이 돌아가는 뼈대 완성
-> 예상 기간: 2~3주
 
 ### 1-1. 그리드 시스템
-- [ ] `GridSystem.cs` — 100×100 타일 데이터 관리
-- [ ] `GridCell.cs` — 셀 상태 (Empty / Road / Building / Zone)
-- [ ] `GridVisualizer.cs` — 그리드 라인 오버레이 (Gizmos/LineRenderer)
-- [ ] 월드 좌표 ↔ 그리드 좌표 변환 (`WorldToGrid` / `GridToWorld`)
-- [ ] 멀티레이어 지원 (Ground, Road, Building, Utility)
+- [x] `GridSystem.cs` — 100×100 타일 데이터 관리
+- [x] `GridCell.cs` — 셀 상태 (Empty / Road / Building / Zone)
+- [x] `GridVisualizer.cs` — 그리드 라인 오버레이 (GL.Lines)
+- [x] 월드 좌표 ↔ 그리드 좌표 변환 (`WorldToGrid` / `GridToWorld`)
+- [x] 멀티레이어 지원 (CellState: Empty/Road/Building/Zone)
 
 ### 1-2. RTS 카메라
-- [ ] `RTSCameraController.cs`
-  - Pan: 마우스 가장자리 / 중클릭 드래그
-  - Zoom: 마우스 휠 (원근 줌)
-  - Rotate: Alt + 드래그 (선택사항)
-  - 카메라 경계 클램핑 (그리드 밖으로 못 나가게)
-- [ ] Cinemachine Virtual Camera 연동
-- [ ] WebGL 터치/모바일 제스처 기본 지원
+- [x] `RTSCameraController.cs`
+  - Pan: WASD / 방향키 / 화면 가장자리 / 중클릭 드래그
+  - Zoom: 마우스 휠
+  - Orbit: Alt + 드래그
+  - 카메라 경계 클램핑
+- [ ] Cinemachine Virtual Camera 연동 _(후순위)_
+- [ ] WebGL 터치/모바일 제스처 _(Phase 8에서 처리)_
 
 ### 1-3. 게임 매니저 & 이벤트 버스
-- [ ] `GameManager.cs` — 싱글턴, 서브시스템 초기화 순서 관리
-- [ ] `GameEventBus.cs` — 제네릭 이벤트 발행/구독 시스템
-- [ ] `GameClock.cs` — 게임 시간 (일/월/년), 배속 (일시정지/1x/2x/4x)
-- [ ] `TickSystem.cs` — 1게임일마다 시뮬레이션 업데이트 트리거
+- [x] `GameManager.cs` — 싱글턴, 서브시스템 참조 허브
+- [x] `GameEventBus.cs` — 제네릭 Pub/Sub 이벤트 버스
+- [x] `GameClock.cs` — 게임 시간, 배속 (Pause/1x/2x/4x)
+- [x] `TickSystem.cs` — DailyTick / MonthlyTick 분배
 
 ### 1-4. 씬 구조
-- [ ] `Boot.unity` — 시스템 초기화, 로딩
-- [ ] `MainMenu.unity` — 새 게임 / 불러오기
-- [ ] `GamePlay.unity` — 메인 게임
+- [ ] `Boot.unity` _(Phase 7에서 처리)_
+- [ ] `MainMenu.unity` _(Phase 7에서 처리)_
+- [x] `GamePlay.unity` — 씬 구성 완료
 
 ---
 
-## Phase 2 — 건물 배치 시스템
+## Phase 2 — 건물 배치 시스템 🔄
 > 목표: 플레이어가 건물을 놓고 지울 수 있다
-> 예상 기간: 2주
 
 ### 2-1. 건물 데이터 모델
-- [ ] `BuildingData.cs` (ScriptableObject)
-  - 이름, 카테고리 (주거/상업/공업/공공시설)
-  - 크기 (1×1, 2×2, 3×3 등)
-  - 건설 비용, 유지 비용/월
-  - 전기/수도 필요 여부
-  - 인구 수용/고용 인원
-  - 3D 프리팹 참조
-- [ ] 기본 건물 에셋 8종 이상 정의 (ProBuilder 기본 메시 사용)
+- [x] `BuildingData.cs` (ScriptableObject)
+  - 이름, 카테고리, 크기, 비용, 인구/고용, 유틸리티, 프리팹/아이콘
+- [x] `BuildingDatabase.cs` — 전체 건물 목록 ScriptableObject
+- [x] `BuildingInstance.cs` — 런타임 건물 상태
+- [x] 기본 BuildingData 에셋 생성 (씬 구성 시 완료)
 
 ### 2-2. 건물 배치/철거
-- [ ] `BuildingPlacer.cs` — 드래그 미리보기 (초록=배치가능 / 빨강=불가)
-- [ ] `BuildingManager.cs` — 배치 실행, 데이터 관리
-- [ ] 회전 지원 (R키)
-- [ ] 배치 불가 조건: 다른 건물 겹침, 그리드 범위 초과
-- [ ] 철거 모드
-- [ ] `BuildingPlacedEvent` / `BuildingRemovedEvent` 발행
+- [x] `BuildingPlacer.cs` — 고스트 미리보기 (초록/빨강), 연속 배치
+- [x] `BuildingManager.cs` — 배치 실행, 카테고리별 색상 큐브
+- [x] 회전 지원 (R키)
+- [x] 배치 불가 조건: 겹침, 그리드 범위 초과
+- [x] 철거 모드
+- [x] `BuildingPlacedEvent` / `BuildingRemovedEvent` 발행
 
 ### 2-3. 건물 UI 패널
 - [ ] 하단 건물 선택 패널 (카테고리 탭)
@@ -209,8 +204,8 @@
 | 단계 | 완료 기준 | 목표 시기 |
 |------|-----------|-----------|
 | Phase 0 | 환경 세팅 완료 | ✅ 완료 |
-| Phase 1 | 그리드 + 카메라 + 시계 동작 | Week 2~3 |
-| Phase 2 | 건물 배치/철거 동작 | Week 4~5 |
+| Phase 1 | 그리드 + 카메라 + 시계 동작 | ✅ 완료 |
+| Phase 2 | 건물 배치/철거 동작 | 🔄 UI 패널 미구현 |
 | Phase 3 | 도로+구역 자동 개발 동작 | Week 6~8 |
 | Phase 4 | 인구+경제+유틸 시뮬레이션 | Week 9~12 |
 | Phase 5 | 공공시설 서비스 동작 | Week 13~14 |
