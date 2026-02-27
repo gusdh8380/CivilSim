@@ -66,6 +66,7 @@ desktop.ini
 # IDE
 .idea/
 .vscode/
+.vs/
 *.code-workspace
 
 # WebGL build output (separate from project)
