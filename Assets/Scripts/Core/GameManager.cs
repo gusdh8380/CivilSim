@@ -1,5 +1,6 @@
 using UnityEngine;
 using CivilSim.Grid;
+using CivilSim.Buildings;
 
 namespace CivilSim.Core
 {
@@ -22,11 +23,19 @@ namespace CivilSim.Core
         [SerializeField] private GridSystem     _gridSystem;
         [SerializeField] private GridVisualizer _gridVisualizer;
 
+        [Header("Buildings")]
+        [SerializeField] private BuildingManager  _buildingManager;
+        [SerializeField] private BuildingPlacer   _buildingPlacer;
+        [SerializeField] private BuildingDatabase _buildingDatabase;
+
         // ── 공개 접근자 ──────────────────────────────────────
-        public GameClock     Clock      => _gameClock;
-        public TickSystem    Tick       => _tickSystem;
-        public GridSystem    Grid       => _gridSystem;
-        public GridVisualizer GridVisual => _gridVisualizer;
+        public GameClock        Clock      => _gameClock;
+        public TickSystem       Tick       => _tickSystem;
+        public GridSystem       Grid       => _gridSystem;
+        public GridVisualizer   GridVisual => _gridVisualizer;
+        public BuildingManager  Buildings  => _buildingManager;
+        public BuildingPlacer   Placer     => _buildingPlacer;
+        public BuildingDatabase BuildingDB => _buildingDatabase;
 
         // ── Unity ───────────────────────────────────────────
 
@@ -39,9 +48,6 @@ namespace CivilSim.Core
             }
 
             Instance = this;
-            // 씬 전환 시에도 유지 (필요 없으면 제거)
-            // DontDestroyOnLoad(gameObject);
-
             ValidateSystems();
             GameEventBus.Publish(new GameStartedEvent());
 
@@ -61,14 +67,22 @@ namespace CivilSim.Core
 
         private void ValidateSystems()
         {
-            if (_gameClock    == null) Debug.LogError("[GameManager] GameClock이 할당되지 않았습니다.");
-            if (_tickSystem   == null) Debug.LogError("[GameManager] TickSystem이 할당되지 않았습니다.");
-            if (_gridSystem   == null) Debug.LogError("[GameManager] GridSystem이 할당되지 않았습니다.");
+            if (_gameClock        == null) Debug.LogError("[GameManager] GameClock이 할당되지 않았습니다.");
+            if (_tickSystem       == null) Debug.LogError("[GameManager] TickSystem이 할당되지 않았습니다.");
+            if (_gridSystem       == null) Debug.LogError("[GameManager] GridSystem이 할당되지 않았습니다.");
+            if (_buildingManager  == null) Debug.LogError("[GameManager] BuildingManager가 할당되지 않았습니다.");
+            if (_buildingPlacer   == null) Debug.LogError("[GameManager] BuildingPlacer가 할당되지 않았습니다.");
+            if (_buildingDatabase == null) Debug.LogWarning("[GameManager] BuildingDatabase가 할당되지 않았습니다.");
         }
 
         // ── 편의 메서드 ──────────────────────────────────────
 
         public void SetTimeSpeed(TimeSpeed speed) => _gameClock?.SetSpeed(speed);
         public void TogglePause()                 => _gameClock?.TogglePause();
+
+        /// 건물 배치 모드 시작 (UI에서 호출)
+        public void StartPlacing(BuildingData data) => _buildingPlacer?.StartPlacing(data);
+        public void StartRemoving()                 => _buildingPlacer?.StartRemoving();
+        public void CancelPlacing()                 => _buildingPlacer?.Cancel();
     }
 }
