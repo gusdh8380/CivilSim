@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 using TMPro;
 using CivilSim.Buildings;
 
@@ -9,16 +8,24 @@ namespace CivilSim.UI
     /// 건물 버튼 호버 시 표시되는 툴팁 패널.
     /// 싱글턴 패턴으로 BuildingButtonUI에서 정적 메서드로 호출한다.
     ///
-    /// 씬 구성:
+    /// 씬 구성 (왼쪽 고정 레이아웃):
     ///   Canvas
-    ///   └── Tooltip (이 컴포넌트, RectTransform)
-    ///       ├── Name         (TMP_Text)
-    ///       ├── Category     (TMP_Text)
-    ///       ├── Size         (TMP_Text)
-    ///       ├── Cost         (TMP_Text)
-    ///       ├── Maintenance  (TMP_Text)
-    ///       ├── Population   (TMP_Text)
-    ///       └── Description  (TMP_Text)
+    ///   └── Tooltip (이 컴포넌트)
+    ///       └── Panel (Image) ← _panel
+    ///           ├── Name         (TMP_Text) ← _nameText
+    ///           ├── Category     (TMP_Text) ← _categoryText
+    ///           ├── Size         (TMP_Text) ← _sizeText
+    ///           ├── Cost         (TMP_Text) ← _costText
+    ///           ├── Maintenance  (TMP_Text) ← _maintenanceText
+    ///           ├── Population   (TMP_Text) ← _populationText
+    ///           └── Description  (TMP_Text) ← _descriptionText
+    ///
+    /// RectTransform 설정 (화면 왼쪽 중앙 고정):
+    ///   - Anchor : Left-Middle  (anchorMin: 0,0.5 / anchorMax: 0,0.5)
+    ///   - Pivot  : 0, 0.5
+    ///   - Pos X  : 10  (화면 왼쪽 끝에서 10px)
+    ///   - Pos Y  : 0   (수직 중앙)
+    ///   - Width  : 220 / Height : Auto (Content Size Fitter 권장)
     /// </summary>
     public class BuildingTooltipUI : MonoBehaviour
     {
@@ -33,28 +40,15 @@ namespace CivilSim.UI
         [SerializeField] private TextMeshProUGUI    _populationText;
         [SerializeField] private TextMeshProUGUI    _descriptionText;
 
-        [Header("마우스 오프셋")]
-        [SerializeField] private Vector2 _offset = new Vector2(12f, -12f);
-
         // ── 내부 ─────────────────────────────────────────────
         private static BuildingTooltipUI _instance;
-        private RectTransform _rect;
-        private RectTransform _canvasRect;
 
         // ── Unity ────────────────────────────────────────────
 
         private void Awake()
         {
-            _instance  = this;
-            _rect      = GetComponent<RectTransform>();
-            _canvasRect = GetComponentInParent<Canvas>()?.GetComponent<RectTransform>();
-            _panel?.SetActive(false);
-        }
-
-        private void Update()
-        {
-            if (_panel != null && _panel.activeSelf)
-                FollowMouse();
+            _instance = this;
+            _panel?.SetActive(false); // 시작 시 숨김
         }
 
         private void OnDestroy()
@@ -64,6 +58,7 @@ namespace CivilSim.UI
 
         // ── 정적 API (BuildingButtonUI에서 호출) ──────────────
 
+        /// <summary>건물 버튼 호버 시 호출 — 왼쪽 고정 위치에 정보 표시</summary>
         public static void Show(BuildingData data)
         {
             if (_instance == null || data == null) return;
@@ -71,6 +66,7 @@ namespace CivilSim.UI
             _instance._panel?.SetActive(true);
         }
 
+        /// <summary>호버 해제 시 호출 — 패널 숨김</summary>
         public static void Hide()
         {
             if (_instance == null) return;
@@ -97,25 +93,6 @@ namespace CivilSim.UI
                 pop += $"고용 {data.JobCapacity}명";
             }
             Set(_populationText, pop);
-        }
-
-        private void FollowMouse()
-        {
-            if (_rect == null || _canvasRect == null) return;
-            if (Mouse.current == null) return;
-
-            Vector2 screen = Mouse.current.position.ReadValue();
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                _canvasRect, screen, null, out Vector2 local);
-
-            // 화면 밖 삐져나오지 않도록 피벗 자동 조정
-            float halfW = _canvasRect.rect.width  * 0.5f;
-            float halfH = _canvasRect.rect.height * 0.5f;
-            float px    = (local.x + _offset.x + _rect.rect.width  > halfW)  ? 1f : 0f;
-            float py    = (local.y + _offset.y - _rect.rect.height < -halfH) ? 0f : 1f;
-
-            _rect.pivot            = new Vector2(px, py);
-            _rect.anchoredPosition = local + _offset;
         }
 
         private static void Set(TextMeshProUGUI label, string text)
