@@ -1,37 +1,12 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\PJ\\CivilSim\\",
-  "Documents": [
-    {
-      "AbsoluteMoniker": "D:0:0:{DEA397C5-DA88-F066-ADFB-71CD3A1A5851}|Assembly-CSharp.csproj|c:\\pj\\civilsim\\assets\\scripts\\bulidingtestinput.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{DEA397C5-DA88-F066-ADFB-71CD3A1A5851}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\bulidingtestinput.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    }
-  ],
+  "Documents": [],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": [
-        {
-          "DockedWidth": 200,
-          "SelectedChildIndex": 0,
-          "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "BulidingTestInput.cs",
-              "DocumentMoniker": "C:\\PJ\\CivilSim\\Assets\\Scripts\\BulidingTestInput.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\BulidingTestInput.cs",
-              "ToolTip": "C:\\PJ\\CivilSim\\Assets\\Scripts\\BulidingTestInput.cs",
-              "RelativeToolTip": "Assets\\Scripts\\BulidingTestInput.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABsAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-27T08:22:16.644Z",
-              "EditorCaption": ""
-            }
-          ]
-        }
-      ]
+      "DocumentGroups": []
     }
   ]
 }
