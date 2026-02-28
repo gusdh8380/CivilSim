@@ -14,16 +14,20 @@ namespace CivilSim.UI
     ///
     /// 씬 구성:
     ///   Canvas
-    ///   └── BuildingPanel (이 컴포넌트)
-    ///       ├── TabContainer  (HorizontalLayoutGroup)
-    ///       └── ButtonScrollView
-    ///           └── Content   (GridLayoutGroup) ← _buttonContainer
+    ///   └── BuildingPanelRoot (이 컴포넌트 — 항상 Active)
+    ///       └── PanelVisual (Image) ← _panel에 할당 (CanvasGroup 자동 추가됨)
+    ///           ├── TabContainer  (HorizontalLayoutGroup)
+    ///           └── ButtonScrollView
+    ///               └── Content   (GridLayoutGroup) ← _buttonContainer
+    ///
+    /// ⚠️ _panel 은 반드시 이 스크립트보다 아래(자식)의 GameObject 이어야 합니다.
+    ///    같은 오브젝트에 할당하면 B 키가 작동하지 않습니다.
     /// </summary>
     public class BuildingPanelUI : MonoBehaviour
     {
         // ── 인스펙터 ──────────────────────────────────────────
-        [Header("패널 루트")]
-        [SerializeField] private GameObject _panel;
+        [Header("패널 루트 (자식 오브젝트를 할당 — 이 스크립트와 다른 오브젝트!)")]
+        [SerializeField] private GameObject _panel;          // 시각적 패널 (자식)
 
         [Header("탭")]
         [SerializeField] private Transform  _tabContainer;
@@ -41,7 +45,8 @@ namespace CivilSim.UI
         private BuildingDatabase         _db;
         private BuildingCategory?        _currentCategory;
         private readonly List<BuildingButtonUI> _buttons = new();
-        private Button                   _activeTabBtn;
+        private CanvasGroup              _panelGroup;      // ← SetActive 대신 사용
+        private bool                     _isVisible;
 
         // 탭 정의 (label, category / null = 전체)
         private static readonly (string Label, BuildingCategory? Cat)[] TabDefs =
@@ -56,16 +61,35 @@ namespace CivilSim.UI
 
         // ── Unity ────────────────────────────────────────────
 
+        private void Awake()
+        {
+            // _panel에 CanvasGroup 자동 추가 (없으면)
+            if (_panel != null)
+            {
+                _panelGroup = _panel.GetComponent<CanvasGroup>();
+                if (_panelGroup == null)
+                    _panelGroup = _panel.AddComponent<CanvasGroup>();
+            }
+            // 시작 시 숨김 (CanvasGroup 방식 — SetActive 대신)
+            SetVisible(false);
+        }
+
         private void Start()
         {
-            _db = GameManager.Instance.BuildingDB;
+            _db = GameManager.Instance?.BuildingDB;
+
+            if (_db == null)
+                Debug.LogWarning("[BuildingPanelUI] BuildingDatabase가 GameManager에 할당되지 않았습니다!");
+            else if (_db.Count == 0)
+                Debug.LogWarning("[BuildingPanelUI] BuildingDatabase에 BuildingData가 없습니다. 데이터를 추가해주세요.");
+
             BuildTabs();
             SelectCategory(null); // 전체 탭으로 시작
         }
 
         private void Update()
         {
-            // B키 토글
+            // B키 토글 — CanvasGroup 방식이라 이 Update()는 항상 실행됨
             if (Keyboard.current != null && Keyboard.current.bKey.wasPressedThisFrame)
                 Toggle();
         }
@@ -74,7 +98,15 @@ namespace CivilSim.UI
 
         private void BuildTabs()
         {
-            if (_tabContainer == null || _tabButtonPrefab == null) return;
+            if (_tabContainer == null || _tabButtonPrefab == null)
+            {
+                Debug.LogWarning("[BuildingPanelUI] TabContainer 또는 TabButtonPrefab이 할당되지 않았습니다.");
+                return;
+            }
+
+            // 기존 탭 제거
+            foreach (Transform child in _tabContainer)
+                Destroy(child.gameObject);
 
             foreach (var (label, cat) in TabDefs)
             {
@@ -82,13 +114,17 @@ namespace CivilSim.UI
                 var btn = go.GetComponent<Button>();
                 var txt = go.GetComponentInChildren<TextMeshProUGUI>();
 
-                if (txt != null) txt.text = label;
+                if (txt  != null) txt.text = label;
+                if (btn  == null) { Debug.LogError("[BuildingPanelUI] TabButtonPrefab에 Button 컴포넌트가 없습니다!"); continue; }
 
+                // ← 캡처 변수로 클로저 버그 방지
                 var capturedCat = cat;
                 btn.onClick.AddListener(() => SelectCategory(capturedCat));
 
-                if (cat == null) // 초기 활성 탭
-                    SetTabActive(btn);
+                // 초기 색상 적용
+                var colors = btn.colors;
+                colors.normalColor = (cat == null) ? _activeTabColor : _inactiveTabColor;
+                btn.colors = colors;
             }
         }
 
@@ -100,13 +136,14 @@ namespace CivilSim.UI
             int idx = 0;
             foreach (Transform child in _tabContainer)
             {
+                if (idx >= TabDefs.Length) break;
                 var btn = child.GetComponent<Button>();
-                if (btn == null) continue;
+                if (btn == null) { idx++; continue; }
+
                 bool isActive = (TabDefs[idx].Cat == category);
                 var colors    = btn.colors;
                 colors.normalColor = isActive ? _activeTabColor : _inactiveTabColor;
                 btn.colors         = colors;
-                if (isActive) _activeTabBtn = btn;
                 idx++;
             }
 
@@ -141,24 +178,27 @@ namespace CivilSim.UI
 
         // ── 공개 API ──────────────────────────────────────────
 
-        public void Toggle() => _panel?.SetActive(!_panel.activeSelf);
-        public void Show()   => _panel?.SetActive(true);
-        public void Hide()   => _panel?.SetActive(false);
+        /// <summary>B 키 또는 외부에서 패널 토글</summary>
+        public void Toggle() => SetVisible(!_isVisible);
+
+        public void Show() => SetVisible(true);
+        public void Hide() => SetVisible(false);
+
+        private void SetVisible(bool visible)
+        {
+            _isVisible = visible;
+            if (_panelGroup == null) return;
+
+            _panelGroup.alpha          = visible ? 1f : 0f;
+            _panelGroup.interactable   = visible;
+            _panelGroup.blocksRaycasts = visible;
+        }
 
         /// 외부에서 선택 버튼 하이라이트 해제 (철거 모드 등)
         public void ClearSelection()
         {
             foreach (var b in _buttons)
                 b?.Deselect();
-        }
-
-        private void SetTabActive(Button btn)
-        {
-            if (btn == null) return;
-            var colors             = btn.colors;
-            colors.normalColor     = _activeTabColor;
-            btn.colors             = colors;
-            _activeTabBtn          = btn;
         }
     }
 }
