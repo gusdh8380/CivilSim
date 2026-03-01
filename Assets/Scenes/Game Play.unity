@@ -1145,7 +1145,7 @@ MonoBehaviour:
   _showGrid: 1
   _lineColor: {r: 0, g: 0, b: 0, a: 0.15}
   _lineHeight: 0.02
-  _hideAboveFOV: 50
+  _hideAboveHeight: 250
 --- !u!114 &166904379
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4252,7 +4252,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CivilSim.CameraSystem.RTSCameraController
   _keyPanSpeed: 25
-  _edgePanning: 1
+  _edgePanning: 0
   _edgeThreshold: 15
   _zoomSpeed: 8
   _minHeight: 20
