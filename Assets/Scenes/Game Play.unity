@@ -501,6 +501,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 87913508}
   m_CullTransparentMesh: 1
+--- !u!1 &108462211
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 108462212}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &108462212
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 108462211}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1400, y: 50, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &110310852
 GameObject:
   m_ObjectHideFlags: 0
@@ -2472,7 +2503,6 @@ MonoBehaviour:
   _maintenanceText: {fileID: 670874582}
   _populationText: {fileID: 1902002739}
   _descriptionText: {fileID: 791372547}
-  _offset: {x: 12, y: -12}
 --- !u!1 &1282696078
 GameObject:
   m_ObjectHideFlags: 0
@@ -2506,11 +2536,6 @@ MonoBehaviour:
   - {fileID: 7550806925339669914, guid: 1e22cd3bf4e61f848a9e7bd0efa59f61, type: 3}
   - {fileID: 1278222803980417519, guid: 5717e753587e76640b72754fab0d07c8, type: 3}
   - {fileID: 2930917204650213472, guid: 8f1adde9c9602264d93ebb6a738ef464, type: 3}
-  _groundColors:
-  - {r: 0.21568629, g: 0.21568629, b: 0.21568629, a: 1}
-  - {r: 0.4, g: 0.6, b: 0.27, a: 1}
-  - {r: 0.47, g: 0.67, b: 0.34, a: 1}
-  - {r: 0.38, g: 0.56, b: 0.25, a: 1}
   _gridWidth: 100
   _gridHeight: 100
   _cellSize: 1
@@ -3710,3 +3735,4 @@ SceneRoots:
   - {fileID: 848249752}
   - {fileID: 1402499842}
   - {fileID: 1282696080}
+  - {fileID: 108462212}

@@ -1,12 +1,37 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\PJ\\CivilSim\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{DEA397C5-DA88-F066-ADFB-71CD3A1A5851}|Assembly-CSharp.csproj|c:\\pj\\civilsim\\assets\\scripts\\world\\groundgenerator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DEA397C5-DA88-F066-ADFB-71CD3A1A5851}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\world\\groundgenerator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": []
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "GroundGenerator.cs",
+              "DocumentMoniker": "C:\\PJ\\CivilSim\\Assets\\Scripts\\World\\GroundGenerator.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\World\\GroundGenerator.cs",
+              "ToolTip": "C:\\PJ\\CivilSim\\Assets\\Scripts\\World\\GroundGenerator.cs",
+              "RelativeToolTip": "Assets\\Scripts\\World\\GroundGenerator.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAF4AAAA5AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-28T12:10:35.054Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
     }
   ]
 }
