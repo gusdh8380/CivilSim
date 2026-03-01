@@ -81,6 +81,11 @@ namespace CivilSim.CameraSystem
             _cam = GetComponentInChildren<UnityEngine.Camera>();
             if (_cam == null) _cam = UnityEngine.Camera.main;
 
+            // 카메라가 자식 오브젝트인 경우, 자식 로컬 회전을 초기화한다.
+            // 부모(이 오브젝트)의 World Rotation 만으로 카메라 방향을 제어한다.
+            if (_cam != null && _cam.transform != transform)
+                _cam.transform.localRotation = Quaternion.identity;
+
             // XZ 목표 위치 초기화
             _targetPos = transform.position;
 
@@ -90,14 +95,12 @@ namespace CivilSim.CameraSystem
 
             _targetHeight = _targetPos.y;
 
-            // 현재 오일러 각도에서 yaw/pitch 초기화
+            // yaw는 씬 Y 방향 유지, pitch는 씬 설정과 무관하게 항상 60° 사선 시점으로 강제
             _yaw   = transform.eulerAngles.y;
-            _pitch = transform.eulerAngles.x;
+            _pitch = 60f;
 
-            // pitch가 0° (미설정) 이거나 75° 이상(거의 수직 top-down)이면
-            // 심시티 스타일 사선 시점 60°으로 초기화
-            if (Mathf.Approximately(_pitch, 0f) || _pitch >= 75f)
-                _pitch = 60f;
+            // Awake 시점에 즉시 회전 반영 (Update/ApplySmoothing을 기다리지 않음)
+            transform.rotation = Quaternion.Euler(_pitch, _yaw, 0f);
         }
 
         private void Update()
@@ -235,9 +238,9 @@ namespace CivilSim.CameraSystem
             transform.position = Vector3.SmoothDamp(
                 transform.position, _targetPos, ref _posVelocity, _moveSmoothTime);
 
-            // 회전
-            if (_allowOrbit)
-                transform.rotation = Quaternion.Euler(_pitch, _yaw, 0f);
+            // 회전 — _allowOrbit 여부와 무관하게 항상 적용
+            // (비활성 시 HandleOrbit에서 _pitch/_yaw가 갱신되지 않아 고정됨)
+            transform.rotation = Quaternion.Euler(_pitch, _yaw, 0f);
         }
 
         // ── 유틸 ─────────────────────────────────────────────
