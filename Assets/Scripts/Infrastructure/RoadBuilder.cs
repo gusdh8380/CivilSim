@@ -51,6 +51,13 @@ namespace CivilSim.Infrastructure
         {
             _grid  = GameManager.Instance.Grid;
             _roads = GameManager.Instance.Roads;
+
+            // Inspector 미연결 시 씬에서 자동 탐색 (폴백)
+            if (_grid  == null) _grid  = FindAnyObjectOfType<GridSystem>();
+            if (_roads == null) _roads = FindAnyObjectOfType<RoadManager>();
+
+            if (_grid  == null) Debug.LogError("[RoadBuilder] GridSystem을 찾을 수 없습니다. GameManager에 할당해주세요.");
+            if (_roads == null) Debug.LogError("[RoadBuilder] RoadManager를 찾을 수 없습니다. GameManager에 할당해주세요.");
         }
 
         private void Update()
@@ -130,7 +137,11 @@ namespace CivilSim.Infrastructure
 
         private void ExecuteAction(Vector2Int start, Vector2Int end)
         {
-            if (_roads == null) return;
+            if (_roads == null)
+            {
+                Debug.LogError("[RoadBuilder] RoadManager가 null입니다. GameManager Inspector에 RoadManager를 할당해주세요.");
+                return;
+            }
 
             if (Mode == RoadBuilderMode.Building)
             {
@@ -174,11 +185,14 @@ namespace CivilSim.Infrastructure
                 _previewTiles.Add(CreatePreviewTile());
 
             // 위치 갱신 & 표시
+            float cs = _grid != null ? _grid.CellSize : 10f;
             for (int i = 0; i < cells.Count; i++)
             {
                 var tile = _previewTiles[i];
                 tile.SetActive(true);
-                tile.transform.position = _grid.GridToWorld(cells[i]) + new Vector3(0.5f, 0.12f, 0.5f);
+                // GridToWorld는 이미 셀 중심(XZ)을 반환 — 추가 XZ 오프셋 불필요
+                tile.transform.position   = _grid.GridToWorld(cells[i]) + new Vector3(0f, cs * 0.12f, 0f);
+                tile.transform.localScale = new Vector3(cs * 0.95f, cs * 0.08f, cs * 0.95f);
                 tile.GetComponent<Renderer>().material = mat;
             }
 
@@ -195,8 +209,9 @@ namespace CivilSim.Infrastructure
 
         private GameObject CreatePreviewTile()
         {
+            float cs = _grid != null ? _grid.CellSize : 10f;
             var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            go.transform.localScale = new Vector3(1f, 0.08f, 1f);
+            go.transform.localScale = new Vector3(cs * 0.95f, cs * 0.08f, cs * 0.95f);
             go.name = "[RoadPreview]";
 
             var col = go.GetComponent<Collider>();
