@@ -15,7 +15,8 @@ namespace CivilSim.Grid
         [SerializeField, Range(10, 200)] private int _height = 100;
 
         [Header("Cell Size")]
-        [SerializeField, Range(0.5f, 5f)] private float _cellSize = 1f;
+        [Tooltip("Pandazole 도로 타일 크기에 맞춰 10으로 설정")]
+        [SerializeField, Range(1f, 20f)] private float _cellSize = 10f;
 
         [Header("Origin")]
         [SerializeField] private Vector3 _originOffset = Vector3.zero;

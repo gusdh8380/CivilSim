@@ -166,9 +166,10 @@ namespace CivilSim.Buildings
             {
                 _ghost = GameObject.CreatePrimitive(PrimitiveType.Cube);
                 DestroyImmediate(_ghost.GetComponent<BoxCollider>());
-                int sizeX = _rotation % 2 == 0 ? _selectedData.SizeX : _selectedData.SizeZ;
-                int sizeZ = _rotation % 2 == 0 ? _selectedData.SizeZ : _selectedData.SizeX;
-                _ghost.transform.localScale = new Vector3(sizeX * 0.9f, 1f, sizeZ * 0.9f);
+                int   sizeX = _rotation % 2 == 0 ? _selectedData.SizeX : _selectedData.SizeZ;
+                int   sizeZ = _rotation % 2 == 0 ? _selectedData.SizeZ : _selectedData.SizeX;
+                float cs    = _grid != null ? _grid.CellSize : 10f;
+                _ghost.transform.localScale = new Vector3(sizeX * cs * 0.9f, cs, sizeZ * cs * 0.9f);
             }
 
             _ghost.name = $"[Ghost] {_selectedData.BuildingName}";

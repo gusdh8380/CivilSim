@@ -123,11 +123,15 @@ namespace CivilSim.Buildings
                 return Instantiate(data.Prefab, worldPos, Quaternion.identity, _buildingRoot);
             }
 
-            // 프리팹 없을 때 — ProBuilder로 교체 전까지 큐브 사용
+            // 프리팹 없을 때 — 큐브 fallback (CellSize 반영)
+            float cs  = _grid.CellSize;
             var go  = GameObject.CreatePrimitive(PrimitiveType.Cube);
             go.transform.SetParent(_buildingRoot);
-            go.transform.position   = worldPos + new Vector3(data.SizeX * 0.5f - 0.5f, 0.5f, data.SizeZ * 0.5f - 0.5f);
-            go.transform.localScale = new Vector3(data.SizeX * 0.9f, 1f, data.SizeZ * 0.9f); // 살짝 여백
+            // GridToWorld 는 셀 중심을 반환. 멀티셀의 경우 중심 보정 필요
+            go.transform.position   = worldPos + new Vector3((data.SizeX - 1) * cs * 0.5f,
+                                                              cs * 0.5f,
+                                                              (data.SizeZ - 1) * cs * 0.5f);
+            go.transform.localScale = new Vector3(data.SizeX * cs * 0.9f, cs, data.SizeZ * cs * 0.9f);
 
             // 카테고리별 색상 구분
             var renderer = go.GetComponent<Renderer>();
