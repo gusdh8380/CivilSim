@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RoadTileDatabase
   m_EditorClassIdentifier: Assembly-CSharp::CivilSim.Infrastructure.RoadTileDatabase
   isolated:
-    prefab: {fileID: 7546371180376575364, guid: 69b6afc22a2bf5143bb43500f6fdc949, type: 3}
+    prefab: {fileID: 3301257244871238459, guid: bbf6aaa394158294db5535dd05892380, type: 3}
     yRotationOffset: 0
   end:
     prefab: {fileID: 7893901977543645526, guid: 0ff856192de3db649b1501f64519b29d, type: 3}
