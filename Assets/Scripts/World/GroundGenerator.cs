@@ -16,8 +16,9 @@ namespace CivilSim.World
     public class GroundGenerator : MonoBehaviour
     {
         // ── Ground Prefabs ─────────────────────────────────────
-        [Header("Ground Prefabs (3~4개, 스케일 1·1·1 Cube)")]
-        [Tooltip("각 Prefab은 고유 머티리얼을 가진 1×1×1 큐브이어야 합니다.")]
+        [Header("Ground Prefabs (3~4개, CellSize에 맞는 평지 타일)")]
+        [Tooltip("Pandazole 사용 시: 10×0.2×10 평지 타일 프리팹 3~4종.\n" +
+                 "직접 제작 시: 1×1×1 큐브에 머티리얼 적용 후 할당.")]
         [SerializeField] private GameObject[] _groundPrefabs;
 
         // ── 그리드 설정 ────────────────────────────────────────
@@ -26,9 +27,12 @@ namespace CivilSim.World
         [SerializeField] private int   _gridWidth  = 100;
         [Tooltip("GridSystem._height 와 동일하게 설정하세요.")]
         [SerializeField] private int   _gridHeight = 100;
-        [SerializeField] private float _cellSize   = 1f;
-        [Tooltip("Y=-0.5 이면 큐브 윗면이 y=0 (그리드 바닥)에 맞음.")]
-        [SerializeField] private float _groundY    = -0.5f;
+        [Tooltip("GridSystem._cellSize 와 동일하게 설정하세요. (Pandazole 기본 10)")]
+        [SerializeField] private float _cellSize   = 10f;
+        [Tooltip("타일 중심의 Y 위치.\n" +
+                 "Pandazole 평지 타일(두께 ~0.2): -0.1 권장 (윗면이 y=0)\n" +
+                 "1×1×1 큐브 폴백: -0.5")]
+        [SerializeField] private float _groundY    = -0.1f;
 
         // ── Noise / 클러스터 설정 ──────────────────────────────
         [Header("Noise / Cluster 설정")]
