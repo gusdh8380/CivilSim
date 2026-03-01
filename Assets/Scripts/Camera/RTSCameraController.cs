@@ -7,23 +7,30 @@ namespace CivilSim.CameraSystem
     /// 심시티 스타일 RTS 카메라 컨트롤러 (New Input System).
     ///
     /// 조작:
-    ///   Pan  : WASD / 방향키 / 화면 가장자리 마우스
+    ///   Pan  : WASD / 방향키
     ///   Pan  : 중클릭 드래그
     ///   Zoom : 마우스 휠 (카메라 높이 이동)
     ///   Orbit: Alt + 좌클릭 드래그
     ///
     /// CellSize = 10 기준 기본값:
-    ///   StartHeight 80, MinHeight 20, MaxHeight 300
+    ///   StartHeight 80, MinHeight 20, MaxHeight 300, Pitch 60°
     /// </summary>
     public class RTSCameraController : MonoBehaviour
     {
         // ── 인스펙터 ────────────────────────────────────────
 
         [Header("Pan")]
-        [Tooltip("수평 이동 기본 속도 (높이에 따라 자동 스케일됨)")]
-        [SerializeField] private float _keyPanSpeed   = 0.8f;   // height 배수 per second
-        [SerializeField] private bool  _edgePanning   = true;
+        [Tooltip("수평 이동 기본 속도 (높이에 따라 자동 스케일됨). SettingsPanelUI의 슬라이더로 런타임 조정 가능.")]
+        [SerializeField] private float _keyPanSpeed   = 0.4f;   // height 배수 per second (기본 절반)
+        [SerializeField] private bool  _edgePanning   = false;  // 마우스 가장자리 패닝 OFF (WASD 전용)
         [SerializeField, Range(5f, 50f)] private float _edgeThreshold = 15f;
+
+        /// <summary>런타임에 카메라 이동 속도를 조정한다 (설정 UI 연동).</summary>
+        public float KeyPanSpeed
+        {
+            get => _keyPanSpeed;
+            set => _keyPanSpeed = Mathf.Clamp(value, 0.05f, 3f);
+        }
 
         [Header("Zoom (Height)")]
         [Tooltip("마우스 휠 한 틱당 이동 높이 (units)")]
@@ -87,9 +94,10 @@ namespace CivilSim.CameraSystem
             _yaw   = transform.eulerAngles.y;
             _pitch = transform.eulerAngles.x;
 
-            // pitch 미설정 시 기본 45° 부감각
-            if (Mathf.Approximately(_pitch, 0f))
-                _pitch = 45f;
+            // pitch가 0° (미설정) 이거나 75° 이상(거의 수직 top-down)이면
+            // 심시티 스타일 사선 시점 60°으로 초기화
+            if (Mathf.Approximately(_pitch, 0f) || _pitch >= 75f)
+                _pitch = 60f;
         }
 
         private void Update()

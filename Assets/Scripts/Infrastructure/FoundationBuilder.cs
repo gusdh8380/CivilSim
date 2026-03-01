@@ -122,6 +122,9 @@ namespace CivilSim.Infrastructure
 
         public void Activate()
         {
+            Deactivate();   // 자신의 상태 초기화
+            // 다른 모드(건물·도로) 취소 — 단축키 충돌 방지
+            GameManager.Instance?.CancelAllModes();
             _isActive = true;
             Debug.Log("[FoundationBuilder] 지반 다지기 모드 시작 — LMB 드래그로 영역 지정, G/Esc/RMB 로 종료");
         }

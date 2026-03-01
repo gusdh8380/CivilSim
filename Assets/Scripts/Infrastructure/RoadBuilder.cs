@@ -114,7 +114,9 @@ namespace CivilSim.Infrastructure
 
         public void StartBuilding()
         {
-            Cancel();
+            Cancel();   // 자신의 상태 초기화
+            // 다른 모드(건물·지반) 취소 — 단축키 충돌 방지
+            GameManager.Instance?.CancelAllModes();
             Mode = RoadBuilderMode.Building;
             Debug.Log("[RoadBuilder] 도로 배치 모드 시작");
         }

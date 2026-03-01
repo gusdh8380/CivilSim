@@ -15,8 +15,8 @@ namespace CivilSim.Grid
         [SerializeField] private float _lineHeight = 0.02f; // 지면에서 살짝 위
 
         [Header("퍼포먼스")]
-        [SerializeField, Tooltip("줌이 이 이상이면 그리드를 숨김")]
-        private float _hideAboveFOV = 50f;
+        [SerializeField, Tooltip("카메라 높이(Y)가 이 값 이상이면 그리드를 숨김 (너무 멀면 선이 보이지 않음)")]
+        private float _hideAboveHeight = 250f;
 
         // ── 내부 ─────────────────────────────────────────────
         private GridSystem _grid;
@@ -36,8 +36,8 @@ namespace CivilSim.Grid
         {
             if (!_showGrid) return;
 
-            // 줌 레벨 체크 (너무 멀면 숨김)
-            if (_cam != null && !_cam.orthographic && _cam.fieldOfView > _hideAboveFOV)
+            // 높이 체크 (카메라가 너무 높으면 그리드 라인이 의미 없으므로 숨김)
+            if (_cam != null && _cam.transform.position.y > _hideAboveHeight)
                 return;
 
             DrawGrid();

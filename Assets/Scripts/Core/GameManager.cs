@@ -135,5 +135,16 @@ namespace CivilSim.Core
         // 지반 다지기
         public void StartFoundationBuilding() => _foundationBuilder?.Activate();
         public void StopFoundationBuilding()  => _foundationBuilder?.Deactivate();
+
+        /// <summary>
+        /// 현재 활성화된 모든 배치 모드(건물·도로·지반)를 동시에 취소한다.
+        /// 다른 모드를 시작하기 전에 호출해 단축키 충돌을 방지한다.
+        /// </summary>
+        public void CancelAllModes()
+        {
+            _buildingPlacer?.Cancel();
+            _roadBuilder?.Cancel();
+            _foundationBuilder?.Deactivate();
+        }
     }
 }

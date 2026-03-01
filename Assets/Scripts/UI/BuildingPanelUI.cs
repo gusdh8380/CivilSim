@@ -189,6 +189,10 @@ namespace CivilSim.UI
             _isVisible = visible;
             if (_panelGroup == null) return;
 
+            // 패널이 열릴 때 도로·지반 모드 취소 (단축키 충돌 방지)
+            if (visible)
+                GameManager.Instance?.CancelAllModes();
+
             _panelGroup.alpha          = visible ? 1f : 0f;
             _panelGroup.interactable   = visible;
             _panelGroup.blocksRaycasts = visible;

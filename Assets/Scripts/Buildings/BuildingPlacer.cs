@@ -44,6 +44,8 @@ namespace CivilSim.Buildings
         private Vector2Int _lastGridPos = new(-999, -999);
         private bool       _isValid;
         private int        _rotation;   // 0,1,2,3 → 0°,90°,180°,270°
+        private float      _lastWarningTime = -10f;   // 경고 쿨다운용
+        private const float WarningCooldown = 2f;
 
         public PlacerMode Mode { get; private set; } = PlacerMode.None;
 
@@ -94,8 +96,13 @@ namespace CivilSim.Buildings
             // ── 클릭 실행 ────────────────────────────────────
             if (mouse != null && mouse.leftButton.wasPressedThisFrame)
             {
-                if (Mode == PlacerMode.Placing && _isValid)
-                    ExecutePlace(gridPos);
+                if (Mode == PlacerMode.Placing)
+                {
+                    if (_isValid)
+                        ExecutePlace(gridPos);
+                    else
+                        NotifyPlacementFail(gridPos);   // ← 배치 불가 이유 안내
+                }
                 else if (Mode == PlacerMode.Removing)
                     ExecuteRemove(gridPos);
             }
@@ -106,7 +113,9 @@ namespace CivilSim.Buildings
         public void StartPlacing(BuildingData data)
         {
             if (data == null) return;
-            Cancel();
+            Cancel();   // 자신의 상태 초기화
+            // 다른 모드(도로·지반) 취소 — 단축키 충돌 방지
+            GameManager.Instance?.CancelAllModes();
 
             _selectedData = data;
             _rotation     = 0;
@@ -158,6 +167,41 @@ namespace CivilSim.Buildings
         private void ExecuteRemove(Vector2Int pos)
         {
             _manager.TryRemove(pos);
+        }
+
+        /// <summary>
+        /// 배치 불가 원인을 분석해 플레이어에게 경고 알림을 보낸다.
+        /// 2초 쿨다운으로 스팸 방지.
+        /// </summary>
+        private void NotifyPlacementFail(Vector2Int pos)
+        {
+            if (Time.time - _lastWarningTime < WarningCooldown) return;
+            _lastWarningTime = Time.time;
+
+            if (_selectedData == null || _grid == null) return;
+
+            int sizeX = _rotation % 2 == 0 ? _selectedData.SizeX : _selectedData.SizeZ;
+            int sizeZ = _rotation % 2 == 0 ? _selectedData.SizeZ : _selectedData.SizeX;
+
+            bool needsFoundation = false;
+            bool alreadyOccupied = false;
+
+            for (int dx = 0; dx < sizeX; dx++)
+            for (int dz = 0; dz < sizeZ; dz++)
+            {
+                var cell = _grid.GetCell(new Vector2Int(pos.x + dx, pos.y + dz));
+                if (cell == null) continue;
+                if (cell.IsEmpty || cell.State == CellState.Zone) needsFoundation = true;
+                else if (cell.HasBuilding || cell.HasRoad)        alreadyOccupied = true;
+            }
+
+            string msg = needsFoundation
+                ? $"'{_selectedData.BuildingName}' 을(를) 짓기 전에 지반을 먼저 다지세요! (G 키)"
+                : alreadyOccupied
+                ? "이미 사용 중인 셀이 있어 배치할 수 없습니다."
+                : "이 위치에는 배치할 수 없습니다.";
+
+            GameEventBus.Publish(new NotificationEvent { Message = msg, Type = NotificationType.Warning });
         }
 
         // ── 고스트 ───────────────────────────────────────────

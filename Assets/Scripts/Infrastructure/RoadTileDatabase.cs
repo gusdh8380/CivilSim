@@ -52,10 +52,10 @@ namespace CivilSim.Infrastructure
         [Tooltip("코너 타일 – 2방향 L자\nPandazole: Env_Road_Cornor_01")]
         public RoadTileEntry corner;
 
-        [Tooltip("T자 타일 – 3방향\nPandazole: Env_Road_Side_02")]
+        [Tooltip("T자 타일 – 3방향\nPandazole: Env_Road_Side_03  (yOffset 0°)")]
         public RoadTileEntry tJunction;
 
-        [Tooltip("십자 타일 – 4방향\nPandazole: Env_Road_Cross_02")]
+        [Tooltip("십자 타일 – 4방향\nPandazole: Env_Road_Cross_01  (대칭, yOffset 0°)")]
         public RoadTileEntry cross;
     }
 }
