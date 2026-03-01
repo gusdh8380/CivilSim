@@ -9,50 +9,58 @@ namespace CivilSim.CameraSystem
     /// 조작:
     ///   Pan  : WASD / 방향키 / 화면 가장자리 마우스
     ///   Pan  : 중클릭 드래그
-    ///   Zoom : 마우스 휠
-    ///   Orbit: Alt + 좌클릭 드래그 (선택)
+    ///   Zoom : 마우스 휠 (카메라 높이 이동)
+    ///   Orbit: Alt + 좌클릭 드래그
+    ///
+    /// CellSize = 10 기준 기본값:
+    ///   StartHeight 80, MinHeight 20, MaxHeight 300
     /// </summary>
     public class RTSCameraController : MonoBehaviour
     {
         // ── 인스펙터 ────────────────────────────────────────
 
         [Header("Pan")]
-        [SerializeField] private float _keyPanSpeed  = 25f;
-        [SerializeField] private bool  _edgePanning  = true;
+        [Tooltip("수평 이동 기본 속도 (높이에 따라 자동 스케일됨)")]
+        [SerializeField] private float _keyPanSpeed   = 0.8f;   // height 배수 per second
+        [SerializeField] private bool  _edgePanning   = true;
         [SerializeField, Range(5f, 50f)] private float _edgeThreshold = 15f;
 
-        [Header("Zoom")]
-        [SerializeField] private float _zoomSpeed  = 8f;
-        [SerializeField] private float _minZoom    = 10f;
-        [SerializeField] private float _maxZoom    = 70f;
-        [SerializeField] private float _zoomSmooth = 10f;
+        [Header("Zoom (Height)")]
+        [Tooltip("마우스 휠 한 틱당 이동 높이 (units)")]
+        [SerializeField] private float _zoomSpeed    = 25f;
+        [Tooltip("카메라 최저 높이 (가장 가까운 줌)")]
+        [SerializeField] private float _minHeight    = 20f;
+        [Tooltip("카메라 최고 높이 (가장 먼 줌)")]
+        [SerializeField] private float _maxHeight    = 300f;
+        [SerializeField] private float _zoomSmooth   = 10f;
+        [Tooltip("씬 시작 시 카메라 높이. 0이면 현재 트랜스폼 Y 사용.")]
+        [SerializeField] private float _startHeight  = 80f;
 
         [Header("Orbit")]
-        [SerializeField] private bool  _allowOrbit    = true;
-        [SerializeField] private float _orbitSpeed    = 180f;
-        [SerializeField] private float _minPitch      = 20f;
-        [SerializeField] private float _maxPitch      = 80f;
+        [SerializeField] private bool  _allowOrbit = true;
+        [SerializeField] private float _orbitSpeed = 180f;
+        [SerializeField] private float _minPitch   = 20f;
+        [SerializeField] private float _maxPitch   = 80f;
 
         [Header("Movement Smoothing")]
         [SerializeField] private float _moveSmoothTime = 0.12f;
 
         [Header("Bounds (World XZ)")]
-        [SerializeField] private Vector2 _minBounds = new Vector2(0f,   0f);
-        [SerializeField] private Vector2 _maxBounds = new Vector2(100f, 100f);
+        [SerializeField] private Vector2 _minBounds = new Vector2(0f,    0f);
+        [SerializeField] private Vector2 _maxBounds = new Vector2(1000f, 1000f);
 
         // ── 내부 상태 ────────────────────────────────────────
         private UnityEngine.Camera _cam;
 
-        // Pan
+        // Pan + Height (targetPos.y = camera height)
         private Vector3 _targetPos;
         private Vector3 _posVelocity;
-
-        // Zoom (FOV or ortho size)
-        private float _targetFOV;
+        private float   _targetHeight;
+        private float   _heightVelocity;
 
         // Middle-drag
-        private bool  _isMidDragging;
-        private Vector3 _dragAnchor;        // 드래그 시작 시점 월드 좌표
+        private bool    _isMidDragging;
+        private Vector3 _dragAnchor;
 
         // Orbit
         private float _yaw;
@@ -66,12 +74,22 @@ namespace CivilSim.CameraSystem
             _cam = GetComponentInChildren<UnityEngine.Camera>();
             if (_cam == null) _cam = UnityEngine.Camera.main;
 
+            // XZ 목표 위치 초기화
             _targetPos = transform.position;
-            _targetFOV = _cam.orthographic ? _cam.orthographicSize : _cam.fieldOfView;
+
+            // 시작 높이 적용 (_startHeight > 0 이면 강제 설정)
+            if (_startHeight > 0.1f)
+                _targetPos.y = _startHeight;
+
+            _targetHeight = _targetPos.y;
 
             // 현재 오일러 각도에서 yaw/pitch 초기화
             _yaw   = transform.eulerAngles.y;
             _pitch = transform.eulerAngles.x;
+
+            // pitch 미설정 시 기본 45° 부감각
+            if (Mathf.Approximately(_pitch, 0f))
+                _pitch = 45f;
         }
 
         private void Update()
@@ -103,11 +121,12 @@ namespace CivilSim.CameraSystem
 
             if (input == Vector3.zero) return;
 
-            // 카메라 정면 방향 기준으로 이동 (y 무시)
             Vector3 forward = Vector3.ProjectOnPlane(transform.forward, Vector3.up).normalized;
             Vector3 right   = Vector3.ProjectOnPlane(transform.right,   Vector3.up).normalized;
 
-            _targetPos += (forward * input.z + right * input.x) * (_keyPanSpeed * Time.deltaTime);
+            // 높이에 비례한 팬 속도 (높이 올라갈수록 빠르게)
+            float speed = _keyPanSpeed * _targetHeight * Time.deltaTime;
+            _targetPos += (forward * input.z + right * input.x) * speed;
         }
 
         private void HandleEdgePan()
@@ -115,7 +134,6 @@ namespace CivilSim.CameraSystem
             if (!_edgePanning) return;
             if (Mouse.current == null) return;
 
-            // 에디터 Game 뷰에서 마우스가 윈도우 안에 있을 때만
 #if UNITY_EDITOR
             if (!UnityEngine.Application.isFocused) return;
 #endif
@@ -123,14 +141,14 @@ namespace CivilSim.CameraSystem
             Vector2 mp    = Mouse.current.position.ReadValue();
             float   sw    = Screen.width;
             float   sh    = Screen.height;
-            float   speed = _keyPanSpeed * Time.deltaTime;
+            float   speed = _keyPanSpeed * _targetHeight * Time.deltaTime;
 
             Vector3 forward = Vector3.ProjectOnPlane(transform.forward, Vector3.up).normalized;
             Vector3 right   = Vector3.ProjectOnPlane(transform.right,   Vector3.up).normalized;
 
-            if (mp.x < _edgeThreshold)           _targetPos -= right   * speed;
-            else if (mp.x > sw - _edgeThreshold) _targetPos += right   * speed;
-            if (mp.y < _edgeThreshold)            _targetPos -= forward * speed;
+            if (mp.x < _edgeThreshold)            _targetPos -= right   * speed;
+            else if (mp.x > sw - _edgeThreshold)  _targetPos += right   * speed;
+            if (mp.y < _edgeThreshold)             _targetPos -= forward * speed;
             else if (mp.y > sh - _edgeThreshold)  _targetPos += forward * speed;
         }
 
@@ -155,7 +173,7 @@ namespace CivilSim.CameraSystem
             _targetPos     += new Vector3(delta.x, 0f, delta.z);
         }
 
-        // ── Zoom ─────────────────────────────────────────────
+        // ── Zoom (Height) ─────────────────────────────────────
 
         private void HandleZoom()
         {
@@ -165,8 +183,9 @@ namespace CivilSim.CameraSystem
             float scroll = mouse.scroll.ReadValue().y;
             if (Mathf.Abs(scroll) < 0.01f) return;
 
-            _targetFOV -= scroll * _zoomSpeed;
-            _targetFOV  = Mathf.Clamp(_targetFOV, _minZoom, _maxZoom);
+            // 휠 위 = 줌인 (높이 낮아짐), 휠 아래 = 줌아웃 (높이 높아짐)
+            _targetHeight -= scroll * _zoomSpeed;
+            _targetHeight  = Mathf.Clamp(_targetHeight, _minHeight, _maxHeight);
         }
 
         // ── Orbit ────────────────────────────────────────────
@@ -181,7 +200,6 @@ namespace CivilSim.CameraSystem
             bool lmb     = mouse.leftButton.isPressed;
 
             _isOrbiting = altHeld && lmb;
-
             if (!_isOrbiting) return;
 
             Vector2 delta = mouse.delta.ReadValue();
@@ -200,27 +218,25 @@ namespace CivilSim.CameraSystem
 
         private void ApplySmoothing()
         {
-            // 위치
+            // 높이 스무딩
+            float smoothedHeight = Mathf.SmoothDamp(
+                transform.position.y, _targetHeight, ref _heightVelocity, _moveSmoothTime);
+            _targetPos.y = smoothedHeight;
+
+            // 위치 스무딩 (XZ)
             transform.position = Vector3.SmoothDamp(
                 transform.position, _targetPos, ref _posVelocity, _moveSmoothTime);
 
             // 회전
             if (_allowOrbit)
                 transform.rotation = Quaternion.Euler(_pitch, _yaw, 0f);
-
-            // 줌
-            if (_cam.orthographic)
-                _cam.orthographicSize = Mathf.Lerp(_cam.orthographicSize, _targetFOV, Time.deltaTime * _zoomSmooth);
-            else
-                _cam.fieldOfView = Mathf.Lerp(_cam.fieldOfView, _targetFOV, Time.deltaTime * _zoomSmooth);
         }
 
         // ── 유틸 ─────────────────────────────────────────────
 
-        /// 화면 좌표 → 지면(y=0) 월드 좌표
         private Vector3 RaycastGround(Vector2 screenPos)
         {
-            Ray ray = _cam.ScreenPointToRay(screenPos);
+            Ray ray   = _cam.ScreenPointToRay(screenPos);
             var plane = new Plane(Vector3.up, Vector3.zero);
             if (plane.Raycast(ray, out float dist))
                 return ray.GetPoint(dist);
@@ -229,14 +245,12 @@ namespace CivilSim.CameraSystem
 
         // ── 공개 API ─────────────────────────────────────────
 
-        /// GridSystem의 그리드 크기에 맞게 이동 경계를 설정한다.
         public void SetBoundsFromGrid(Vector2 gridMin, Vector2 gridMax)
         {
             _minBounds = gridMin;
             _maxBounds = gridMax;
         }
 
-        /// 특정 월드 좌표로 카메라 순간이동
         public void TeleportTo(Vector3 worldPos)
         {
             _targetPos         = new Vector3(worldPos.x, _targetPos.y, worldPos.z);
