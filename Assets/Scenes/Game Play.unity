@@ -1177,6 +1177,65 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &191294579
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 191294582}
+  - component: {fileID: 191294581}
+  - component: {fileID: 191294580}
+  m_Layer: 0
+  m_Name: FoundationManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &191294580
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 191294579}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53857aabadbca9c44828f26ad8b102c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CivilSim.Infrastructure.FoundationManager
+  _foundationPrefab: {fileID: 3301257244871238459, guid: bbf6aaa394158294db5535dd05892380, type: 3}
+  _foundationRoot: {fileID: 0}
+--- !u!114 &191294581
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 191294579}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a171ac67adec6db448aa6e9023549949, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CivilSim.Infrastructure.FoundationBuilder
+--- !u!4 &191294582
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 191294579}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 50.50033, y: -0, z: 58.5405}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &248996320
 GameObject:
   m_ObjectHideFlags: 0
@@ -1402,6 +1461,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CivilSim.Buildings.BuildingPlacer
   _validMaterial: {fileID: 0}
   _invalidMaterial: {fileID: 0}
+  _ghostYOffset: 0.2
 --- !u!4 &289878029
 Transform:
   m_ObjectHideFlags: 0
@@ -3870,6 +3930,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CivilSim.Buildings.BuildingManager
   _buildingRoot: {fileID: 0}
+  _buildingYOffset: 0.2
 --- !u!4 &1484025910
 Transform:
   m_ObjectHideFlags: 0
@@ -4058,9 +4119,11 @@ MonoBehaviour:
   _buildingManager: {fileID: 1484025909}
   _buildingPlacer: {fileID: 289878028}
   _buildingDatabase: {fileID: 11400000, guid: 99d97ee26b79bad4bb3571df412d26c4, type: 2}
-  _economyManager: {fileID: 0}
-  _roadManager: {fileID: 0}
-  _roadBuilder: {fileID: 0}
+  _economyManager: {fileID: 1746246693}
+  _roadManager: {fileID: 1746246694}
+  _roadBuilder: {fileID: 1746246695}
+  _foundationManager: {fileID: 191294580}
+  _foundationBuilder: {fileID: 191294581}
 --- !u!114 &1746246689
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4187,7 +4250,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CivilSim.CameraSystem.RTSCameraController
   _keyPanSpeed: 25
-  _dragPanSpeed: 1
   _edgePanning: 1
   _edgeThreshold: 15
   _zoomSpeed: 8
@@ -4200,7 +4262,7 @@ MonoBehaviour:
   _maxPitch: 80
   _moveSmoothTime: 0.12
   _minBounds: {x: 0, y: 0}
-  _maxBounds: {x: 100, y: 100}
+  _maxBounds: {x: 10000, y: 10000}
 --- !u!4 &1832762372
 Transform:
   m_ObjectHideFlags: 0
@@ -4667,7 +4729,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: -440}
+  m_AnchoredPosition: {x: 0, y: -418}
   m_SizeDelta: {x: 1820, y: 140}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1902002737
@@ -4982,7 +5044,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1aa08ab6e0800fa44ae55d278d1423e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ScrollRect
-  m_Content: {fileID: 0}
+  m_Content: {fileID: 1514431760}
   m_Horizontal: 1
   m_Vertical: 0
   m_MovementType: 1
@@ -5327,3 +5389,4 @@ SceneRoots:
   - {fileID: 848249752}
   - {fileID: 1402499842}
   - {fileID: 1282696080}
+  - {fileID: 191294582}

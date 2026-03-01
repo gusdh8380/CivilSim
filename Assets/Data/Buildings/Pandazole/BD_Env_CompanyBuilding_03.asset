@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4fff32086e86456480948223adbf4d8, type: 3}
+  m_Name: BD_Env_CompanyBuilding_03
+  m_EditorClassIdentifier: Assembly-CSharp::CivilSim.Buildings.BuildingData
+  BuildingName: "\uD68C\uC0AC \uAC74\uBB3C 03"
+  Category: 2
+  Description: Pandazole Env_CompanyBuilding_03
+  SizeX: 1
+  SizeZ: 1
+  BuildCost: 3000
+  MaintenanceCostPerMonth: 100
+  ResidentCapacity: 0
+  JobCapacity: 10
+  RequiresPower: 1
+  RequiresWater: 1
+  PowerConsumption: 30
+  WaterConsumption: 20
+  Prefab: {fileID: 1805269126570203252, guid: cab431cd2a680084693f2afc089d81fa, type: 3}
+  Icon: {fileID: 0}
