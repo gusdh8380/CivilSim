@@ -60,10 +60,29 @@ namespace CivilSim.Core
             }
 
             Instance = this;
+            AutoDiscoverSystems();   // Inspector 미연결 시 자동 탐색
             ValidateSystems();
             GameEventBus.Publish(new GameStartedEvent());
 
             Debug.Log("[GameManager] 시스템 초기화 완료.");
+        }
+
+        /// <summary>
+        /// Inspector에서 할당되지 않은 서브시스템을 씬에서 자동으로 탐색한다.
+        /// 씬에 컴포넌트가 존재하면 연결하므로 Inspector 할당을 빠뜨려도 동작한다.
+        /// </summary>
+        private void AutoDiscoverSystems()
+        {
+            if (_gameClock       == null) _gameClock       = FindAnyObjectOfType<GameClock>();
+            if (_tickSystem      == null) _tickSystem      = FindAnyObjectOfType<TickSystem>();
+            if (_gridSystem      == null) _gridSystem      = FindAnyObjectOfType<GridSystem>();
+            if (_gridVisualizer  == null) _gridVisualizer  = FindAnyObjectOfType<GridVisualizer>();
+            if (_buildingManager == null) _buildingManager = FindAnyObjectOfType<BuildingManager>();
+            if (_buildingPlacer  == null) _buildingPlacer  = FindAnyObjectOfType<BuildingPlacer>();
+            if (_economyManager  == null) _economyManager  = FindAnyObjectOfType<EconomyManager>();
+            if (_roadManager     == null) _roadManager     = FindAnyObjectOfType<RoadManager>();
+            if (_roadBuilder     == null) _roadBuilder     = FindAnyObjectOfType<RoadBuilder>();
+            // BuildingDatabase는 ScriptableObject라 FindAnyObjectOfType 대상 아님 — Inspector 할당 필수
         }
 
         private void OnDestroy()
