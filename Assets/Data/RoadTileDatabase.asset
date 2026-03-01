@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d2868fd4d303f94d85ec170ddb2b3f8, type: 3}
+  m_Name: RoadTileDatabase
+  m_EditorClassIdentifier: Assembly-CSharp::CivilSim.Infrastructure.RoadTileDatabase
+  isolated:
+    prefab: {fileID: 3301257244871238459, guid: bbf6aaa394158294db5535dd05892380, type: 3}
+    yRotationOffset: 0
+  end:
+    prefab: {fileID: 7893901977543645526, guid: 0ff856192de3db649b1501f64519b29d, type: 3}
+    yRotationOffset: 0
+  straight:
+    prefab: {fileID: 4412122052823812425, guid: 7192bd53105203e40943cfe63c601702, type: 3}
+    yRotationOffset: 0
+  corner:
+    prefab: {fileID: 6241708434642177863, guid: a123fb8bf915c794da2bea3edfebe933, type: 3}
+    yRotationOffset: 0
+  tJunction:
+    prefab: {fileID: 8395529729467324237, guid: 0c619af28f435d3488ec0285736ee8f0, type: 3}
+    yRotationOffset: 0
+  cross:
+    prefab: {fileID: 7186611593404455177, guid: 9123a496f00e31842b80b49e7b41ac8b, type: 3}
+    yRotationOffset: 0

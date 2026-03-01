@@ -26,4 +26,4 @@ MonoBehaviour:
   PowerConsumption: 10
   WaterConsumption: 10
   Prefab: {fileID: 6045110163862441004, guid: fe3b2a494e25ed94fb3ba66807a29c88, type: 3}
-  Icon: {fileID: 0}
+  Icon: {fileID: 21300000, guid: a2b9b0caea123854f87c4e326f31404f, type: 3}

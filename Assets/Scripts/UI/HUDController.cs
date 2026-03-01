@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using CivilSim.Core;
@@ -113,20 +113,20 @@ namespace CivilSim.UI
         private void UpdateMoneyUI(int amount)
         {
             if (_moneyText == null) return;
-            _moneyText.text  = $"💰 ₩{amount:N0}";
+            _moneyText.text  = $"{amount:N0}";
             _moneyText.color = amount >= 0 ? _moneyPositiveColor : _moneyNegativeColor;
         }
 
         private void UpdatePopulationUI()
         {
             if (_populationText == null) return;
-            _populationText.text = $"👥 {_population:N0}명";
+            _populationText.text = $"{_population:N0}명";
         }
 
         private void UpdateDateUI()
         {
             if (_dateText == null) return;
-            _dateText.text = $"📅 {_currentYear}년 {_currentMonth}월 {_currentDay}일";
+            _dateText.text = $"{_currentYear}년 {_currentMonth}월 {_currentDay}일";
         }
 
         private void UpdateSpeedButtonColors(TimeSpeed speed)
