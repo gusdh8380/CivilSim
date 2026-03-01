@@ -127,6 +127,18 @@ namespace CivilSim.Buildings
 
             if (!_grid.CanBuildArea(pos, sizeX, sizeZ)) return;
 
+            // 자금 체크 및 차감
+            var economy = GameManager.Instance.Economy;
+            if (economy != null && !economy.TrySpend(_selectedData.BuildCost))
+            {
+                GameEventBus.Publish(new NotificationEvent
+                {
+                    Message = $"자금 부족! '{_selectedData.BuildingName}' 건설에 ₩{_selectedData.BuildCost:N0} 필요.",
+                    Type    = NotificationType.Warning,
+                });
+                return;
+            }
+
             _manager.TryPlace(pos, _selectedData);
             // 연속 배치 유지 (RMB 또는 Escape로 취소)
         }

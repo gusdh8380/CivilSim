@@ -1,12 +1,14 @@
 using UnityEngine;
 using CivilSim.Grid;
 using CivilSim.Buildings;
+using CivilSim.Economy;
+using CivilSim.Infrastructure;
 
 namespace CivilSim.Core
 {
     /// <summary>
     /// 게임의 진입점이자 모든 서브시스템 참조를 보유하는 싱글턴.
-    /// 다른 스크립트에서 GameManager.Instance.Grid 처럼 접근한다.
+    /// 다른 스크립트에서 GameManager.Instance.{시스템} 으로 접근한다.
     /// FindObjectOfType 사용 금지.
     /// </summary>
     public class GameManager : MonoBehaviour
@@ -28,6 +30,13 @@ namespace CivilSim.Core
         [SerializeField] private BuildingPlacer   _buildingPlacer;
         [SerializeField] private BuildingDatabase _buildingDatabase;
 
+        [Header("Economy")]
+        [SerializeField] private EconomyManager _economyManager;
+
+        [Header("Infrastructure")]
+        [SerializeField] private RoadManager _roadManager;
+        [SerializeField] private RoadBuilder _roadBuilder;
+
         // ── 공개 접근자 ──────────────────────────────────────
         public GameClock        Clock      => _gameClock;
         public TickSystem       Tick       => _tickSystem;
@@ -36,6 +45,9 @@ namespace CivilSim.Core
         public BuildingManager  Buildings  => _buildingManager;
         public BuildingPlacer   Placer     => _buildingPlacer;
         public BuildingDatabase BuildingDB => _buildingDatabase;
+        public EconomyManager   Economy    => _economyManager;
+        public RoadManager      Roads      => _roadManager;
+        public RoadBuilder      RoadBuild  => _roadBuilder;
 
         // ── Unity ───────────────────────────────────────────
 
@@ -73,6 +85,9 @@ namespace CivilSim.Core
             if (_buildingManager  == null) Debug.LogError("[GameManager] BuildingManager가 할당되지 않았습니다.");
             if (_buildingPlacer   == null) Debug.LogError("[GameManager] BuildingPlacer가 할당되지 않았습니다.");
             if (_buildingDatabase == null) Debug.LogWarning("[GameManager] BuildingDatabase가 할당되지 않았습니다.");
+            if (_economyManager   == null) Debug.LogWarning("[GameManager] EconomyManager가 할당되지 않았습니다.");
+            if (_roadManager      == null) Debug.LogWarning("[GameManager] RoadManager가 할당되지 않았습니다.");
+            if (_roadBuilder      == null) Debug.LogWarning("[GameManager] RoadBuilder가 할당되지 않았습니다.");
         }
 
         // ── 편의 메서드 ──────────────────────────────────────
@@ -80,9 +95,14 @@ namespace CivilSim.Core
         public void SetTimeSpeed(TimeSpeed speed) => _gameClock?.SetSpeed(speed);
         public void TogglePause()                 => _gameClock?.TogglePause();
 
-        /// 건물 배치 모드 시작 (UI에서 호출)
+        // 건물 배치/철거
         public void StartPlacing(BuildingData data) => _buildingPlacer?.StartPlacing(data);
         public void StartRemoving()                 => _buildingPlacer?.StartRemoving();
         public void CancelPlacing()                 => _buildingPlacer?.Cancel();
+
+        // 도로 배치/철거
+        public void StartRoadBuilding() => _roadBuilder?.StartBuilding();
+        public void StartRoadRemoving() => _roadBuilder?.StartRemoving();
+        public void CancelRoad()        => _roadBuilder?.Cancel();
     }
 }
