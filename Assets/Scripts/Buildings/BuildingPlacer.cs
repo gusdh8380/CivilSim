@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using CivilSim.Core;
@@ -23,16 +24,26 @@ namespace CivilSim.Buildings
         [SerializeField] private Material _validMaterial;
         [SerializeField] private Material _invalidMaterial;
 
+        [Header("고스트 Y 오프셋 (지반 위에 표시)")]
+        [Tooltip("BuildingManager._buildingYOffset 과 맞춰야 한다. Pandazole 기본: 0.2")]
+        [SerializeField] private float _ghostYOffset = 0.2f;
+
         // ── 내부 상태 ─────────────────────────────────────────
-        private GridSystem      _grid;
-        private BuildingManager _manager;
+        private GridSystem         _grid;
+        private BuildingManager    _manager;
         private UnityEngine.Camera _cam;
 
         private BuildingData _selectedData;
         private GameObject   _ghost;
-        private Vector2Int   _lastGridPos = new(-999, -999);
-        private bool         _isValid;
-        private int          _rotation;   // 0,1,2,3 → 0°,90°,180°,270°
+
+        // 셀 지시자 (배치 예정 각 셀마다 얇은 타일)
+        private readonly List<GameObject> _cellIndicators = new();
+        private Material _cellValidMat;
+        private Material _cellInvalidMat;
+
+        private Vector2Int _lastGridPos = new(-999, -999);
+        private bool       _isValid;
+        private int        _rotation;   // 0,1,2,3 → 0°,90°,180°,270°
 
         public PlacerMode Mode { get; private set; } = PlacerMode.None;
 
@@ -112,6 +123,7 @@ namespace CivilSim.Buildings
         public void Cancel()
         {
             DestroyGhost();
+            ClearCellIndicators();
             _selectedData = null;
             _rotation     = 0;
             Mode          = PlacerMode.None;
@@ -121,7 +133,6 @@ namespace CivilSim.Buildings
 
         private void ExecutePlace(Vector2Int pos)
         {
-            // 회전 적용된 크기 계산
             int sizeX = _rotation % 2 == 0 ? _selectedData.SizeX : _selectedData.SizeZ;
             int sizeZ = _rotation % 2 == 0 ? _selectedData.SizeZ : _selectedData.SizeX;
 
@@ -139,7 +150,8 @@ namespace CivilSim.Buildings
                 return;
             }
 
-            _manager.TryPlace(pos, _selectedData);
+            // ★ 회전값을 BuildingManager에 전달
+            _manager.TryPlace(pos, _selectedData, _rotation);
             // 연속 배치 유지 (RMB 또는 Escape로 취소)
         }
 
@@ -169,6 +181,7 @@ namespace CivilSim.Buildings
                 int   sizeX = _rotation % 2 == 0 ? _selectedData.SizeX : _selectedData.SizeZ;
                 int   sizeZ = _rotation % 2 == 0 ? _selectedData.SizeZ : _selectedData.SizeX;
                 float cs    = _grid != null ? _grid.CellSize : 10f;
+                // ★ CellSize 반영 (이전: sizeX * 0.9f → sizeX * cs * 0.9f)
                 _ghost.transform.localScale = new Vector3(sizeX * cs * 0.9f, cs, sizeZ * cs * 0.9f);
             }
 
@@ -190,20 +203,26 @@ namespace CivilSim.Buildings
         {
             if (Mode != PlacerMode.Placing) return;
 
-            int sizeX = _rotation % 2 == 0 ? _selectedData.SizeX : _selectedData.SizeZ;
-            int sizeZ = _rotation % 2 == 0 ? _selectedData.SizeZ : _selectedData.SizeX;
+            int   sizeX = _rotation % 2 == 0 ? _selectedData.SizeX : _selectedData.SizeZ;
+            int   sizeZ = _rotation % 2 == 0 ? _selectedData.SizeZ : _selectedData.SizeX;
+            float cs    = _grid != null ? _grid.CellSize : 10f;
 
             _isValid = _grid.CanBuildArea(gridPos, sizeX, sizeZ);
 
             if (_ghost != null)
             {
                 Vector3 worldPos = _grid.GridToWorld(gridPos);
-                // 멀티셀의 경우 중심점 보정
-                _ghost.transform.position = worldPos + new Vector3((sizeX - 1) * _grid.CellSize * 0.5f,
-                                                                     0.5f,
-                                                                     (sizeZ - 1) * _grid.CellSize * 0.5f);
+                // ★ 지반 오프셋 + 멀티셀 중심 보정
+                worldPos.y += _ghostYOffset;
+                _ghost.transform.position = worldPos + new Vector3(
+                    (sizeX - 1) * cs * 0.5f,
+                    0f,
+                    (sizeZ - 1) * cs * 0.5f);
+
                 SetGhostMaterial(_isValid ? _validMaterial : _invalidMaterial);
             }
+
+            UpdateCellIndicators(gridPos, sizeX, sizeZ);
         }
 
         private void Rotate()
@@ -212,12 +231,13 @@ namespace CivilSim.Buildings
             if (_ghost != null)
             {
                 ApplyGhostRotation();
-                // 스케일도 교체
-                if (_selectedData.Prefab == null && _ghost != null)
+                // ★ 큐브 fallback 스케일 교체 (CellSize 반영)
+                if (_selectedData.Prefab == null)
                 {
-                    int sizeX = _rotation % 2 == 0 ? _selectedData.SizeX : _selectedData.SizeZ;
-                    int sizeZ = _rotation % 2 == 0 ? _selectedData.SizeZ : _selectedData.SizeX;
-                    _ghost.transform.localScale = new Vector3(sizeX * 0.9f, 1f, sizeZ * 0.9f);
+                    int   sizeX = _rotation % 2 == 0 ? _selectedData.SizeX : _selectedData.SizeZ;
+                    int   sizeZ = _rotation % 2 == 0 ? _selectedData.SizeZ : _selectedData.SizeX;
+                    float cs    = _grid != null ? _grid.CellSize : 10f;
+                    _ghost.transform.localScale = new Vector3(sizeX * cs * 0.9f, cs, sizeZ * cs * 0.9f);
                 }
                 UpdateGhost(_lastGridPos);
             }
@@ -236,6 +256,69 @@ namespace CivilSim.Buildings
                 r.material = mat;
         }
 
+        // ── 셀 지시자 ─────────────────────────────────────────
+
+        /// <summary>
+        /// 배치 예정 셀마다 얇은 오버레이 타일을 생성·갱신한다.
+        /// 셀별로 CanBuild(Foundation 상태인지) 여부를 개별 판정해 색을 구분한다.
+        /// </summary>
+        private void UpdateCellIndicators(Vector2Int origin, int sizeX, int sizeZ)
+        {
+            float cs     = _grid != null ? _grid.CellSize : 10f;
+            int   needed = sizeX * sizeZ;
+
+            // 부족하면 생성
+            while (_cellIndicators.Count < needed)
+            {
+                var tile = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                tile.name = "[CellIndicator]";
+                DestroyImmediate(tile.GetComponent<BoxCollider>());
+                tile.transform.localScale = new Vector3(cs * 0.95f, cs * 0.04f, cs * 0.95f);
+                _cellIndicators.Add(tile);
+            }
+            // 남으면 제거
+            while (_cellIndicators.Count > needed)
+            {
+                int last = _cellIndicators.Count - 1;
+                Destroy(_cellIndicators[last]);
+                _cellIndicators.RemoveAt(last);
+            }
+
+            int idx = 0;
+            for (int dx = 0; dx < sizeX; dx++)
+            {
+                for (int dz = 0; dz < sizeZ; dz++)
+                {
+                    var cellPos = new Vector2Int(origin.x + dx, origin.y + dz);
+                    var cell    = _grid?.GetCell(cellPos);
+
+                    // 셀별 개별 판정: Foundation 상태이고 건물이 없어야 배치 가능
+                    bool cellOk = cell != null && cell.CanBuild;
+
+                    Vector3 worldPos = _grid != null
+                        ? _grid.GridToWorld(cellPos)
+                        : new Vector3(cellPos.x * 10f, 0f, cellPos.y * 10f);
+                    worldPos.y = 0.05f;   // 지면 바로 위
+
+                    var go = _cellIndicators[idx];
+                    go.transform.position = worldPos;
+
+                    var rend = go.GetComponent<Renderer>();
+                    if (rend != null)
+                        rend.material = cellOk ? _cellValidMat : _cellInvalidMat;
+
+                    idx++;
+                }
+            }
+        }
+
+        private void ClearCellIndicators()
+        {
+            foreach (var tile in _cellIndicators)
+                if (tile != null) Destroy(tile);
+            _cellIndicators.Clear();
+        }
+
         // ── 유틸 ─────────────────────────────────────────────
 
         private Vector2Int ScreenToGrid()
@@ -244,8 +327,8 @@ namespace CivilSim.Buildings
             var mouse = Mouse.current;
             if (mouse == null) return Vector2Int.zero;
 
-            Ray ray      = _cam.ScreenPointToRay(mouse.position.ReadValue());
-            var plane    = new Plane(Vector3.up, Vector3.zero);
+            Ray ray   = _cam.ScreenPointToRay(mouse.position.ReadValue());
+            var plane = new Plane(Vector3.up, Vector3.zero);
             if (plane.Raycast(ray, out float dist))
                 return _grid.WorldToGridClamped(ray.GetPoint(dist));
 
@@ -255,24 +338,27 @@ namespace CivilSim.Buildings
         private void EnsureMaterials()
         {
             if (_validMaterial == null)
-                _validMaterial = CreateTransparentMaterial(new Color(0.2f, 1f, 0.2f, 0.45f));
+                _validMaterial = CreateTransparentMaterial(new Color(0.2f, 1f, 0.2f, 0.4f));
 
             if (_invalidMaterial == null)
-                _invalidMaterial = CreateTransparentMaterial(new Color(1f, 0.2f, 0.2f, 0.45f));
+                _invalidMaterial = CreateTransparentMaterial(new Color(1f, 0.2f, 0.2f, 0.4f));
+
+            // 셀 지시자용 (고스트보다 약간 진한 색)
+            _cellValidMat   = CreateTransparentMaterial(new Color(0.1f, 0.9f, 0.1f, 0.6f));
+            _cellInvalidMat = CreateTransparentMaterial(new Color(0.9f, 0.1f, 0.1f, 0.6f));
         }
 
         private static Material CreateTransparentMaterial(Color color)
         {
-            // URP → Standard 순서로 셰이더 탐색
             var shader = Shader.Find("Universal Render Pipeline/Lit")
                       ?? Shader.Find("Standard");
 
             var mat = new Material(shader) { hideFlags = HideFlags.HideAndDontSave };
             mat.color = color;
 
-            // 투명도 설정 (URP)
-            mat.SetFloat("_Surface", 1f);           // 1 = Transparent
-            mat.SetFloat("_Blend",   0f);           // Alpha
+            // URP 투명도 설정
+            mat.SetFloat("_Surface", 1f);   // 1 = Transparent
+            mat.SetFloat("_Blend",   0f);   // Alpha blending
             mat.SetFloat("_ZWrite",  0f);
             mat.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
             mat.renderQueue = 3000;
@@ -282,11 +368,16 @@ namespace CivilSim.Buildings
 
         private void OnDestroy()
         {
-            // 동적 생성 머티리얼 정리
-            if (_validMaterial   != null && _validMaterial.hideFlags   == HideFlags.HideAndDontSave)
-                Destroy(_validMaterial);
-            if (_invalidMaterial != null && _invalidMaterial.hideFlags == HideFlags.HideAndDontSave)
-                Destroy(_invalidMaterial);
+            ClearCellIndicators();
+
+            void DestroyIfDynamic(Material m)
+            {
+                if (m != null && m.hideFlags == HideFlags.HideAndDontSave) Destroy(m);
+            }
+            DestroyIfDynamic(_validMaterial);
+            DestroyIfDynamic(_invalidMaterial);
+            DestroyIfDynamic(_cellValidMat);
+            DestroyIfDynamic(_cellInvalidMat);
         }
     }
 }

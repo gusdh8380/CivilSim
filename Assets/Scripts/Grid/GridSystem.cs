@@ -162,8 +162,33 @@ namespace CivilSim.Grid
         {
             var cell = GetCell(pos);
             if (cell == null) return;
-            cell.State      = cell.Zone != ZoneType.None ? CellState.Zone : CellState.Empty;
+            // 철거 후 지반은 유지 (Foundation → 재건 가능)
+            cell.State      = CellState.Foundation;
             cell.BuildingId = -1;
+        }
+
+        public void PlaceFoundation(Vector2Int pos)
+        {
+            var cell = GetCell(pos);
+            if (cell == null) return;
+            cell.State = CellState.Foundation;
+        }
+
+        public void RemoveFoundation(Vector2Int pos)
+        {
+            var cell = GetCell(pos);
+            if (cell == null || cell.State != CellState.Foundation) return;
+            cell.State = CellState.Empty;
+        }
+
+        public bool CanPlaceFoundationArea(Vector2Int origin, int sizeCol, int sizeRow)
+        {
+            if (!IsValidArea(origin, sizeCol, sizeRow)) return false;
+            for (int dc = 0; dc < sizeCol; dc++)
+                for (int dr = 0; dr < sizeRow; dr++)
+                    if (!GetCell(new Vector2Int(origin.x + dc, origin.y + dr))?.CanPlaceFoundation ?? true)
+                        return false;
+            return true;
         }
 
         public void PlaceRoad(Vector2Int pos)

@@ -34,20 +34,24 @@ namespace CivilSim.Core
         [SerializeField] private EconomyManager _economyManager;
 
         [Header("Infrastructure")]
-        [SerializeField] private RoadManager _roadManager;
-        [SerializeField] private RoadBuilder _roadBuilder;
+        [SerializeField] private RoadManager       _roadManager;
+        [SerializeField] private RoadBuilder       _roadBuilder;
+        [SerializeField] private FoundationManager _foundationManager;
+        [SerializeField] private FoundationBuilder _foundationBuilder;
 
         // ── 공개 접근자 ──────────────────────────────────────
-        public GameClock        Clock      => _gameClock;
-        public TickSystem       Tick       => _tickSystem;
-        public GridSystem       Grid       => _gridSystem;
-        public GridVisualizer   GridVisual => _gridVisualizer;
-        public BuildingManager  Buildings  => _buildingManager;
-        public BuildingPlacer   Placer     => _buildingPlacer;
-        public BuildingDatabase BuildingDB => _buildingDatabase;
-        public EconomyManager   Economy    => _economyManager;
-        public RoadManager      Roads      => _roadManager;
-        public RoadBuilder      RoadBuild  => _roadBuilder;
+        public GameClock        Clock           => _gameClock;
+        public TickSystem       Tick            => _tickSystem;
+        public GridSystem       Grid            => _gridSystem;
+        public GridVisualizer   GridVisual      => _gridVisualizer;
+        public BuildingManager  Buildings       => _buildingManager;
+        public BuildingPlacer   Placer          => _buildingPlacer;
+        public BuildingDatabase BuildingDB      => _buildingDatabase;
+        public EconomyManager   Economy         => _economyManager;
+        public RoadManager      Roads           => _roadManager;
+        public RoadBuilder      RoadBuild       => _roadBuilder;
+        public FoundationManager Foundation     => _foundationManager;
+        public FoundationBuilder FoundationBuild => _foundationBuilder;
 
         // ── Unity ───────────────────────────────────────────
 
@@ -80,8 +84,10 @@ namespace CivilSim.Core
             if (_buildingManager == null) _buildingManager = FindObjectOfType<BuildingManager>();
             if (_buildingPlacer  == null) _buildingPlacer  = FindObjectOfType<BuildingPlacer>();
             if (_economyManager  == null) _economyManager  = FindObjectOfType<EconomyManager>();
-            if (_roadManager     == null) _roadManager     = FindObjectOfType<RoadManager>();
-            if (_roadBuilder     == null) _roadBuilder     = FindObjectOfType<RoadBuilder>();
+            if (_roadManager        == null) _roadManager        = FindObjectOfType<RoadManager>();
+            if (_roadBuilder        == null) _roadBuilder        = FindObjectOfType<RoadBuilder>();
+            if (_foundationManager  == null) _foundationManager  = FindObjectOfType<FoundationManager>();
+            if (_foundationBuilder  == null) _foundationBuilder  = FindObjectOfType<FoundationBuilder>();
             // BuildingDatabase는 ScriptableObject라 FindObjectOfType 대상 아님 — Inspector 할당 필수
         }
 
@@ -105,8 +111,10 @@ namespace CivilSim.Core
             if (_buildingPlacer   == null) Debug.LogError("[GameManager] BuildingPlacer가 할당되지 않았습니다.");
             if (_buildingDatabase == null) Debug.LogWarning("[GameManager] BuildingDatabase가 할당되지 않았습니다.");
             if (_economyManager   == null) Debug.LogWarning("[GameManager] EconomyManager가 할당되지 않았습니다.");
-            if (_roadManager      == null) Debug.LogWarning("[GameManager] RoadManager가 할당되지 않았습니다.");
-            if (_roadBuilder      == null) Debug.LogWarning("[GameManager] RoadBuilder가 할당되지 않았습니다.");
+            if (_roadManager       == null) Debug.LogWarning("[GameManager] RoadManager가 할당되지 않았습니다.");
+            if (_roadBuilder       == null) Debug.LogWarning("[GameManager] RoadBuilder가 할당되지 않았습니다.");
+            if (_foundationManager == null) Debug.LogWarning("[GameManager] FoundationManager가 할당되지 않았습니다.");
+            if (_foundationBuilder == null) Debug.LogWarning("[GameManager] FoundationBuilder가 할당되지 않았습니다.");
         }
 
         // ── 편의 메서드 ──────────────────────────────────────
@@ -123,5 +131,9 @@ namespace CivilSim.Core
         public void StartRoadBuilding() => _roadBuilder?.StartBuilding();
         public void StartRoadRemoving() => _roadBuilder?.StartRemoving();
         public void CancelRoad()        => _roadBuilder?.Cancel();
+
+        // 지반 다지기
+        public void StartFoundationBuilding() => _foundationBuilder?.Activate();
+        public void StopFoundationBuilding()  => _foundationBuilder?.Deactivate();
     }
 }

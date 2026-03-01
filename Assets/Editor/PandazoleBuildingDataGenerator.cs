@@ -153,28 +153,35 @@ namespace CivilSim.Editor
         // ── 셀 크기 자동 계산 ─────────────────────────────────────
 
         /// <summary>
-        /// 프리팹의 Renderer 합산 Bounds에서 XZ 크기를 읽어
+        /// 프리팹의 MeshFilter.sharedMesh.bounds + 변환 행렬을 합산하여
         /// CellSize 단위로 몇 셀인지 계산한다. (최소 1, 최대 4)
+        ///
+        /// Renderer.bounds 방식은 씬에 배치되지 않은 프리팹에서 (0,0,0)을 반환하는
+        /// 버그가 있으므로 MeshFilter.sharedMesh (에디터에서 항상 유효) 를 사용한다.
         /// </summary>
         private static Vector2Int CalcCellSize(GameObject prefab)
         {
             if (prefab == null) return Vector2Int.one;
 
-            // 임시 인스턴스로 bounds 계산 (씬에 추가하지 않음)
-            var instance  = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
-            var renderers = instance.GetComponentsInChildren<Renderer>();
+            var meshFilters = prefab.GetComponentsInChildren<MeshFilter>();
+            if (meshFilters.Length == 0) return Vector2Int.one;
 
-            if (renderers.Length == 0)
+            bool   hasBounds = false;
+            Bounds combined  = default;
+
+            foreach (var mf in meshFilters)
             {
-                DestroyImmediate(instance);
-                return Vector2Int.one;
+                if (mf.sharedMesh == null) continue;
+
+                // 메시 로컬 바운드를 프리팹 루트 로컬 공간으로 변환
+                Matrix4x4 m      = GetLocalToRootMatrix(mf.transform, prefab.transform);
+                Bounds    bounds = TransformBounds(mf.sharedMesh.bounds, m);
+
+                if (!hasBounds) { combined = bounds; hasBounds = true; }
+                else              combined.Encapsulate(bounds);
             }
 
-            Bounds combined = renderers[0].bounds;
-            foreach (var r in renderers)
-                combined.Encapsulate(r.bounds);
-
-            DestroyImmediate(instance);
+            if (!hasBounds) return Vector2Int.one;
 
             float sizeX = combined.size.x;
             float sizeZ = combined.size.z;
@@ -186,7 +193,44 @@ namespace CivilSim.Editor
             cellX = Mathf.Min(cellX, 4);
             cellZ = Mathf.Min(cellZ, 4);
 
+            Debug.Log($"  {prefab.name}: meshSize=({sizeX:F1},{sizeZ:F1}) → cells=({cellX},{cellZ})");
             return new Vector2Int(cellX, cellZ);
+        }
+
+        /// <summary>
+        /// leaf Transform 의 로컬 공간에서 root Transform 의 로컬 공간으로 변환하는 행렬.
+        /// 씬에 배치되지 않은 프리팹에서도 localPosition/Rotation/Scale 은 유효하다.
+        /// </summary>
+        private static Matrix4x4 GetLocalToRootMatrix(Transform leaf, Transform root)
+        {
+            Matrix4x4 m = Matrix4x4.identity;
+            Transform t = leaf;
+            while (t != null && t != root)
+            {
+                m = Matrix4x4.TRS(t.localPosition, t.localRotation, t.localScale) * m;
+                t = t.parent;
+            }
+            return m;
+        }
+
+        /// <summary>
+        /// 로컬 Bounds를 주어진 행렬로 변환한 후 AABB Bounds로 반환한다.
+        /// 8개 꼭짓점을 모두 변환하여 새 AABB를 구성한다.
+        /// </summary>
+        private static Bounds TransformBounds(Bounds local, Matrix4x4 m)
+        {
+            Vector3 c = local.center;
+            Vector3 e = local.extents;
+
+            Bounds result = new Bounds(m.MultiplyPoint3x4(c + new Vector3( e.x,  e.y,  e.z)), Vector3.zero);
+            result.Encapsulate(m.MultiplyPoint3x4(c + new Vector3(-e.x,  e.y,  e.z)));
+            result.Encapsulate(m.MultiplyPoint3x4(c + new Vector3( e.x, -e.y,  e.z)));
+            result.Encapsulate(m.MultiplyPoint3x4(c + new Vector3(-e.x, -e.y,  e.z)));
+            result.Encapsulate(m.MultiplyPoint3x4(c + new Vector3( e.x,  e.y, -e.z)));
+            result.Encapsulate(m.MultiplyPoint3x4(c + new Vector3(-e.x,  e.y, -e.z)));
+            result.Encapsulate(m.MultiplyPoint3x4(c + new Vector3( e.x, -e.y, -e.z)));
+            result.Encapsulate(m.MultiplyPoint3x4(c + new Vector3(-e.x, -e.y, -e.z)));
+            return result;
         }
 
         // ── BuildingData 채우기 ────────────────────────────────────

@@ -5,10 +5,11 @@ namespace CivilSim.Grid
 {
     public enum CellState
     {
-        Empty,      // 아무것도 없음
-        Road,       // 도로 점유
-        Building,   // 건물 점유
-        Zone        // 구역 지정만 됨 (건물 없음)
+        Empty,       // 아무것도 없음 (지반 없음)
+        Foundation,  // 지반 정비됨 (건물 배치 가능)
+        Road,        // 도로 점유
+        Building,    // 건물 점유
+        Zone         // 구역 지정만 됨 (호환용)
     }
 
     public enum ZoneType
@@ -41,11 +42,15 @@ namespace CivilSim.Grid
         public bool HasWater { get; set; } = false;
 
         // ── 파생 프로퍼티 ──────────────────────────────────
-        public bool IsEmpty      => State == CellState.Empty;
-        public bool HasBuilding  => State == CellState.Building;
-        public bool HasRoad      => State == CellState.Road;
-        public bool IsZoned      => Zone != ZoneType.None;
-        public bool CanBuild     => State == CellState.Empty || State == CellState.Zone;
+        public bool IsEmpty           => State == CellState.Empty;
+        public bool HasBuilding       => State == CellState.Building;
+        public bool HasRoad           => State == CellState.Road;
+        public bool HasFoundation     => State == CellState.Foundation || State == CellState.Building;
+        public bool IsZoned           => Zone != ZoneType.None;
+        /// 건물 배치 가능: 지반이 있고 빈 상태일 때만
+        public bool CanBuild          => State == CellState.Foundation;
+        /// 지반 설치 가능: 완전히 비어 있거나 Zone일 때
+        public bool CanPlaceFoundation => State == CellState.Empty || State == CellState.Zone;
 
         public Vector2Int Position => new Vector2Int(Col, Row);
 
@@ -59,11 +64,11 @@ namespace CivilSim.Grid
         // ── 조작 ──────────────────────────────────────────
         public void Clear()
         {
-            State     = CellState.Empty;
-            Zone      = ZoneType.None;
+            State      = CellState.Empty;
+            Zone       = ZoneType.None;
             BuildingId = -1;
-            HasPower  = false;
-            HasWater  = false;
+            HasPower   = false;
+            HasWater   = false;
         }
 
         public override string ToString()

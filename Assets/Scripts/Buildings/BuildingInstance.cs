@@ -9,9 +9,11 @@ namespace CivilSim.Buildings
     public class BuildingInstance : MonoBehaviour
     {
         // ── 식별 정보 ─────────────────────────────────────────
-        public int          InstanceId    { get; private set; }
-        public BuildingData Data          { get; private set; }
+        public int          InstanceId { get; private set; }
+        public BuildingData Data       { get; private set; }
         public UnityEngine.Vector2Int GridOrigin { get; private set; }
+        /// 배치 시 회전값 (0=0°, 1=90°, 2=180°, 3=270°)
+        public int Rotation { get; private set; }
 
         // ── 유틸리티 상태 ─────────────────────────────────────
         public bool IsPowered { get; set; } = false;
@@ -24,13 +26,19 @@ namespace CivilSim.Buildings
 
         // ── 초기화 ───────────────────────────────────────────
 
-        public void Initialize(int id, BuildingData data, UnityEngine.Vector2Int gridOrigin)
+        public void Initialize(int id, BuildingData data, UnityEngine.Vector2Int gridOrigin, int rotation = 0)
         {
-            InstanceId  = id;
-            Data        = data;
-            GridOrigin  = gridOrigin;
-            name        = $"[Building] {data.BuildingName} ({gridOrigin.x},{gridOrigin.y})";
+            InstanceId = id;
+            Data       = data;
+            GridOrigin = gridOrigin;
+            Rotation   = rotation;
+            name       = $"[Building] {data.BuildingName} ({gridOrigin.x},{gridOrigin.y}) R{rotation * 90}°";
         }
+
+        /// 회전을 반영한 실제 점유 셀 크기
+        public UnityEngine.Vector2Int EffectiveSize => Rotation % 2 == 0
+            ? new UnityEngine.Vector2Int(Data.SizeX, Data.SizeZ)
+            : new UnityEngine.Vector2Int(Data.SizeZ, Data.SizeX);
 
         // ── 공개 API ─────────────────────────────────────────
 
