@@ -15,8 +15,10 @@ namespace CivilSim.Grid
         [SerializeField, Range(10, 200)] private int _height = 100;
 
         [Header("Cell Size")]
-        [Tooltip("Pandazole 도로 타일 크기에 맞춰 10으로 설정")]
-        [SerializeField, Range(1f, 20f)] private float _cellSize = 10f;
+        [Tooltip("도로 프리팹이 할당되면 XZ 크기에서 자동 계산. 미할당 시 아래 값을 사용.")]
+        [SerializeField] private GameObject _referenceRoadPrefab;
+        [Tooltip("_referenceRoadPrefab 미할당 시 사용할 수동 설정값.")]
+        [SerializeField, Range(1f, 50f)] private float _cellSize = 10f;
 
         [Header("Origin")]
         [SerializeField] private Vector3 _originOffset = Vector3.zero;
@@ -37,6 +39,20 @@ namespace CivilSim.Grid
 
         private void Awake()
         {
+            if (_referenceRoadPrefab != null)
+            {
+                float detected = DetectTileSize(_referenceRoadPrefab);
+                if (detected > 0.1f)
+                {
+                    Debug.Log($"[GridSystem] 도로 프리팹에서 CellSize 자동 감지: {detected:F2} (기존: {_cellSize})");
+                    _cellSize = detected;
+                }
+                else
+                {
+                    Debug.LogWarning($"[GridSystem] 도로 프리팹 크기 감지 실패 — CellSize={_cellSize} 유지");
+                }
+            }
+
             InitializeGrid();
         }
 
@@ -248,6 +264,66 @@ namespace CivilSim.Grid
             foreach (var neighbor in GetNeighbors4(pos))
                 if (neighbor.HasRoad) return true;
             return false;
+        }
+
+        // ── 프리팹 크기 자동 감지 ─────────────────────────────
+
+        /// <summary>
+        /// 도로 프리팹의 MeshFilter.sharedMesh bounds 합산으로 XZ 타일 크기를 반환.
+        /// Renderer.bounds 는 씬 밖 프리팹에서 (0,0,0) 을 반환하므로 sharedMesh 방식 사용.
+        /// </summary>
+        private static float DetectTileSize(GameObject prefab)
+        {
+            if (prefab == null) return 0f;
+
+            var meshFilters = prefab.GetComponentsInChildren<MeshFilter>();
+            if (meshFilters.Length == 0) return 0f;
+
+            bool   hasBounds = false;
+            Bounds combined  = default;
+
+            foreach (var mf in meshFilters)
+            {
+                if (mf.sharedMesh == null) continue;
+                Matrix4x4 m  = PrefabLocalToRootMatrix(mf.transform, prefab.transform);
+                Bounds    b  = TransformBoundsStatic(mf.sharedMesh.bounds, m);
+                if (!hasBounds) { combined = b; hasBounds = true; }
+                else              combined.Encapsulate(b);
+            }
+
+            if (!hasBounds) return 0f;
+
+            // XZ 중 큰 쪽을 타일 크기로 사용 (정방형이면 동일)
+            float size = Mathf.Max(combined.size.x, combined.size.z);
+            // 0.5 단위로 반올림
+            return Mathf.Round(size * 2f) * 0.5f;
+        }
+
+        private static Matrix4x4 PrefabLocalToRootMatrix(Transform leaf, Transform root)
+        {
+            Matrix4x4 m = Matrix4x4.identity;
+            Transform t = leaf;
+            while (t != null && t != root)
+            {
+                m = Matrix4x4.TRS(t.localPosition, t.localRotation, t.localScale) * m;
+                t = t.parent;
+            }
+            return m;
+        }
+
+        private static Bounds TransformBoundsStatic(Bounds local, Matrix4x4 m)
+        {
+            Vector3 c = local.center;
+            Vector3 e = local.extents;
+            Bounds  r = new Bounds(m.MultiplyPoint3x4(c + new Vector3( e.x,  e.y,  e.z)), Vector3.zero);
+            r.Encapsulate(m.MultiplyPoint3x4(c + new Vector3(-e.x,  e.y,  e.z)));
+            r.Encapsulate(m.MultiplyPoint3x4(c + new Vector3( e.x, -e.y,  e.z)));
+            r.Encapsulate(m.MultiplyPoint3x4(c + new Vector3(-e.x, -e.y,  e.z)));
+            r.Encapsulate(m.MultiplyPoint3x4(c + new Vector3( e.x,  e.y, -e.z)));
+            r.Encapsulate(m.MultiplyPoint3x4(c + new Vector3(-e.x,  e.y, -e.z)));
+            r.Encapsulate(m.MultiplyPoint3x4(c + new Vector3( e.x, -e.y, -e.z)));
+            r.Encapsulate(m.MultiplyPoint3x4(c + new Vector3(-e.x, -e.y, -e.z)));
+            return r;
         }
     }
 }
