@@ -1160,7 +1160,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CivilSim.Grid.GridSystem
   _width: 100
   _height: 100
-  _cellSize: 1
+  _referenceRoadPrefab: {fileID: 3301257244871238459, guid: bbf6aaa394158294db5535dd05892380, type: 3}
+  _cellSize: 10
   _originOffset: {x: 0, y: 0, z: 0}
 --- !u!4 &166904380
 Transform:
@@ -3606,9 +3607,10 @@ MonoBehaviour:
   - {fileID: 7550806925339669914, guid: 1e22cd3bf4e61f848a9e7bd0efa59f61, type: 3}
   - {fileID: 1278222803980417519, guid: 5717e753587e76640b72754fab0d07c8, type: 3}
   - {fileID: 2930917204650213472, guid: 8f1adde9c9602264d93ebb6a738ef464, type: 3}
-  _gridWidth: 100
-  _gridHeight: 100
-  _cellSize: 1
+  _gridSystem: {fileID: 0}
+  _fallbackWidth: 100
+  _fallbackHeight: 100
+  _fallbackCellSize: 10
   _groundY: -0.5
   _primaryScale: 0.07
   _secondaryScale: 0.22
@@ -4253,9 +4255,10 @@ MonoBehaviour:
   _edgePanning: 1
   _edgeThreshold: 15
   _zoomSpeed: 8
-  _minZoom: 10
-  _maxZoom: 70
+  _minHeight: 20
+  _maxHeight: 300
   _zoomSmooth: 10
+  _startHeight: 80
   _allowOrbit: 1
   _orbitSpeed: 180
   _minPitch: 20
