@@ -25,12 +25,12 @@ namespace CivilSim.Infrastructure
     ///
     /// ┌──────────────────────────────────────────────────────────────────┐
     /// │  Pandazole 권장 매핑                                              │
-    /// │  isolated   → Env_Road_Free                                       │
-    /// │  end        → Env_Road_End_01  (기본 방향: +Z(북) 쪽이 열림)     │
-    /// │  straight   → Env_Road_Straight_02  (기본: 남북 방향)            │
-    /// │  corner     → Env_Road_Cornor_01    (기본: 북·동이 열림)         │
-    /// │  tJunction  → Env_Road_Side_02      (기본: 북·동·서 열림)        │
-    /// │  cross      → Env_Road_Cross_02                                   │
+    /// │  isolated   → Env_Road_Free                                              │
+    /// │  end        → Env_Road_End_01  (메시 기본: +X(동) 열림 → offset 270°)  │
+    /// │  straight   → Env_Road_Straight_02  (메시 기본: 동서 → offset 270°)    │
+    /// │  corner     → Env_Road_Cornor_01    (메시 기본: 북+동 열림 → offset 0°)│
+    /// │  tJunction  → Env_Road_Side_03      (기본: 북·동·서 열림 → offset 0°)  │
+    /// │  cross      → Env_Road_Cross_01     (대칭 → offset 0°)                 │
     /// └──────────────────────────────────────────────────────────────────┘
     /// </summary>
     [CreateAssetMenu(

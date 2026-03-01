@@ -45,10 +45,10 @@ namespace CivilSim.Infrastructure
         // 값     = (typeIdx, extraYRot)
         //   typeIdx: 0=isolated, 1=end, 2=corner, 3=straight, 4=tJunction, 5=cross
         //
-        // 기준 프리팹 방향 (yRotationOffset = 0 일 때):
-        //   end       → 열림 방향 = +Z (북, N)
-        //   straight  → +Z ↔ -Z (남북, N-S)
-        //   corner    → 북(N) + 동(E) 가 열림
+        // ── 실제 Pandazole 프리팹 기본 방향 (yRotationOffset = 0 일 때) ──
+        //   end       → 열림 방향 = +X (동, E)   ★ yRotationOffset=270 으로 보정
+        //   straight  → +X ↔ -X (동서, E-W)      ★ yRotationOffset=270 으로 보정
+        //   corner    → 북(N,+Z) + 동(E,+X) 가 열림  ← 보정 불필요
         //   tJunction → 남(S)이 닫힘, 북·동·서(N·E·W) 열림  (비트마스크 11)
         //   cross     → 방향 무관
         private static readonly (int type, float rot)[] _bitmaskTable =
