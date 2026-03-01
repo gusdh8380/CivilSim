@@ -18,7 +18,6 @@ namespace CivilSim.CameraSystem
 
         [Header("Pan")]
         [SerializeField] private float _keyPanSpeed  = 25f;
-        [SerializeField] private float _dragPanSpeed = 1f;
         [SerializeField] private bool  _edgePanning  = true;
         [SerializeField, Range(5f, 50f)] private float _edgeThreshold = 15f;
 

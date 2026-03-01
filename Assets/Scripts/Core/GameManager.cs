@@ -73,16 +73,16 @@ namespace CivilSim.Core
         /// </summary>
         private void AutoDiscoverSystems()
         {
-            if (_gameClock       == null) _gameClock       = FindAnyObjectOfType<GameClock>();
-            if (_tickSystem      == null) _tickSystem      = FindAnyObjectOfType<TickSystem>();
-            if (_gridSystem      == null) _gridSystem      = FindAnyObjectOfType<GridSystem>();
-            if (_gridVisualizer  == null) _gridVisualizer  = FindAnyObjectOfType<GridVisualizer>();
-            if (_buildingManager == null) _buildingManager = FindAnyObjectOfType<BuildingManager>();
-            if (_buildingPlacer  == null) _buildingPlacer  = FindAnyObjectOfType<BuildingPlacer>();
-            if (_economyManager  == null) _economyManager  = FindAnyObjectOfType<EconomyManager>();
-            if (_roadManager     == null) _roadManager     = FindAnyObjectOfType<RoadManager>();
-            if (_roadBuilder     == null) _roadBuilder     = FindAnyObjectOfType<RoadBuilder>();
-            // BuildingDatabase는 ScriptableObject라 FindAnyObjectOfType 대상 아님 — Inspector 할당 필수
+            if (_gameClock       == null) _gameClock       = FindObjectOfType<GameClock>();
+            if (_tickSystem      == null) _tickSystem      = FindObjectOfType<TickSystem>();
+            if (_gridSystem      == null) _gridSystem      = FindObjectOfType<GridSystem>();
+            if (_gridVisualizer  == null) _gridVisualizer  = FindObjectOfType<GridVisualizer>();
+            if (_buildingManager == null) _buildingManager = FindObjectOfType<BuildingManager>();
+            if (_buildingPlacer  == null) _buildingPlacer  = FindObjectOfType<BuildingPlacer>();
+            if (_economyManager  == null) _economyManager  = FindObjectOfType<EconomyManager>();
+            if (_roadManager     == null) _roadManager     = FindObjectOfType<RoadManager>();
+            if (_roadBuilder     == null) _roadBuilder     = FindObjectOfType<RoadBuilder>();
+            // BuildingDatabase는 ScriptableObject라 FindObjectOfType 대상 아님 — Inspector 할당 필수
         }
 
         private void OnDestroy()

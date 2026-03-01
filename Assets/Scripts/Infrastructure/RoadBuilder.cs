@@ -53,8 +53,8 @@ namespace CivilSim.Infrastructure
             _roads = GameManager.Instance.Roads;
 
             // Inspector 미연결 시 씬에서 자동 탐색 (폴백)
-            if (_grid  == null) _grid  = FindAnyObjectOfType<GridSystem>();
-            if (_roads == null) _roads = FindAnyObjectOfType<RoadManager>();
+            if (_grid  == null) _grid  = FindObjectOfType<GridSystem>();
+            if (_roads == null) _roads = FindObjectOfType<RoadManager>();
 
             if (_grid  == null) Debug.LogError("[RoadBuilder] GridSystem을 찾을 수 없습니다. GameManager에 할당해주세요.");
             if (_roads == null) Debug.LogError("[RoadBuilder] RoadManager를 찾을 수 없습니다. GameManager에 할당해주세요.");
