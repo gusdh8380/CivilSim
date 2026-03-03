@@ -11,6 +11,9 @@ namespace CivilSim.Infrastructure
     /// </summary>
     public class UtilityManager : MonoBehaviour
     {
+        private const int PowerSupplyHashSalt = 19349663;
+        private const int WaterSupplyHashSalt = 83492791;
+
         [Header("서비스 커버리지")]
         [SerializeField, Min(1)] private int _defaultServiceRadius = 8;
         [SerializeField, Min(1)] private int _serviceValueAtFullCoverage = 60;
@@ -338,12 +341,12 @@ namespace CivilSim.Infrastructure
                 if (inst == null || data == null) continue;
 
                 if (data.RequiresPower)
-                    inst.IsPowered = IsSuppliedByRate(inst.InstanceId, powerRate, 19349663);
+                    inst.IsPowered = IsSuppliedByRate(inst.InstanceId, powerRate, PowerSupplyHashSalt);
                 else
                     inst.IsPowered = true;
 
                 if (data.RequiresWater)
-                    inst.IsWatered = IsSuppliedByRate(inst.InstanceId, waterRate, 83492791);
+                    inst.IsWatered = IsSuppliedByRate(inst.InstanceId, waterRate, WaterSupplyHashSalt);
                 else
                     inst.IsWatered = true;
             }

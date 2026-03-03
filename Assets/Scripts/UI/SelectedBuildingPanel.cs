@@ -86,10 +86,7 @@ namespace CivilSim.UI
                 }
                 else
                 {
-                    string warn = "WARN ";
-                    if (data.RequiresPower && !_current.IsPowered) warn += "전기 없음  ";
-                    if (data.RequiresWater && !_current.IsWatered) warn += "수도 없음";
-                    _statusText.text  = warn.Trim();
+                    _statusText.text  = BuildWarningText(data);
                     _statusText.color = Color.yellow;
                 }
             }
@@ -108,6 +105,14 @@ namespace CivilSim.UI
         {
             if (_current == null || _panel == null || !_panel.activeSelf) return;
             Refresh();
+        }
+
+        private string BuildWarningText(BuildingData data)
+        {
+            string warn = "WARN ";
+            if (data.RequiresPower && !_current.IsPowered) warn += "전기 없음  ";
+            if (data.RequiresWater && !_current.IsWatered) warn += "수도 없음";
+            return warn.Trim();
         }
 
         private static string CategoryLabel(BuildingCategory cat) => cat switch
