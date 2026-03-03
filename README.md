@@ -1,65 +1,76 @@
 # CivilSim
 
-심시티 스타일의 토목/건축 시뮬레이터 게임. Unity 6 + WebGL.
+Unity 6 기반 미니 시티빌더 프로젝트다.  
+현재는 `Entry -> LoadingScene -> Game Play` 흐름과 수동 배치 중심 코어 루프를 구현한 상태다.
 
-## 기술 스택
+## 프로젝트 상태
 
-- **Engine**: Unity 6 (6000.x)
-- **Build Target**: WebGL
-- **Render Pipeline**: Universal Render Pipeline (URP)
-- **Input**: Unity Input System
+- 엔진: Unity 6 (6000.3.x)
+- 렌더링: URP
+- 입력: Unity Input System
+- 타겟: WebGL
 
-## 게임 개요
+### 현재 구현된 핵심 루프
 
-플레이어가 도시를 설계하고, 도로·건물·인프라를 배치하여 성장하는 도시를 관리하는 시뮬레이션 게임.
+1. 지반 정비
+2. 도로 배치/철거
+3. 구역 지정/해제
+4. 건물 수동 배치/철거
+5. 월 정산(예산/수요/인구 반영)
+6. 정책, 월간보고, 게임설정 패널 운영
+7. 저장/불러오기(엔트리 슬롯 선택 포함)
 
-### 핵심 기능 (예정)
+## 씬 구성
 
-- [ ] 그리드 기반 건물 배치 시스템
-- [ ] 도로 / 교통 인프라
-- [ ] 전기 / 수도 네트워크
-- [ ] 인구 및 경제 시스템
-- [ ] 구역 지정 (주거 / 상업 / 공업)
-- [ ] 토목 시설 (댐, 교량, 터널)
+- `Assets/Scenes/Entry.unity`
+  - 새 게임 시작
+  - 저장 슬롯 목록 불러오기
+- `Assets/Scenes/LoadingScene.unity`
+  - 비동기 로딩 UI
+- `Assets/Scenes/Game Play.unity`
+  - 실제 플레이 씬
 
-## 프로젝트 구조
+Build Settings에는 위 3개 씬이 등록되어 있어야 한다.
 
-```
-Assets/
-├── Scenes/          # 씬 파일
-├── Scripts/
-│   ├── Core/        # GameManager, EventSystem
-│   ├── Grid/        # 그리드 배치 시스템
-│   ├── Buildings/   # 건물 타입 및 배치
-│   ├── Infrastructure/ # 도로, 유틸리티
-│   ├── Economy/     # 자원 및 경제
-│   ├── Population/  # 인구 시스템
-│   ├── UI/          # UI 컨트롤러
-│   └── Camera/      # 카메라 컨트롤
-├── Prefabs/
-├── Materials/
-├── Textures/
-└── Audio/
-```
+## 조작 키
 
-## 시작하기
+- `B`: 건물 패널 토글
+- `F`: 도로 모드 토글
+- `G`: 지반 모드 토글
+- `Z`: 구역 모드 토글
+- `R/C/I/X`: 구역 타입 전환/해제
+- `ESC` or `RMB`: 현재 모드 취소
 
-1. Unity Hub에서 Unity 6 (6000.x)로 이 프로젝트를 연다.
-2. Build Settings → WebGL로 플랫폼 전환.
-3. `Assets/Scenes/GamePlay.unity`에서 개발 시작.
+## 데이터 개요
 
-## GitHub Actions
+- 건물 데이터: `Assets/Data/Buildings`
+- 건물 DB: `Assets/Data/BuildingDatabase.asset`
+- 경제 설정: `Assets/Data/Economy/EconomyConfig.asset`
 
-`main` 브랜치에 push 시 WebGL 빌드가 자동으로 실행됩니다.
-빌드 결과물은 Actions 탭 → Artifacts에서 다운로드할 수 있습니다.
+현재 등록 건물은 총 25종이다.
 
-### 빌드 Secret 설정 (필요 시)
+- 주거 6
+- 상업 9
+- 공업 4
+- 공공 3
+- 유틸 3
 
-Repository Settings → Secrets에 다음을 추가:
+## 문서
 
-- `UNITY_LICENSE`
-- `UNITY_EMAIL`
-- `UNITY_PASSWORD`
+- 확정 기획서(v1.1): `MINI_SIMCITY_PLAN.md`
+- 장기 로드맵(참고): `ROADMAP.md`
+
+## 실행 방법
+
+1. Unity Hub에서 Unity 6으로 프로젝트를 연다.
+2. `File -> Build Profiles`에서 WebGL 프로파일을 선택한다.
+3. `Assets/Scenes/Entry.unity`를 열고 Play한다.
+
+## 개발 원칙
+
+- 자동 개발(구역 기반 자동 건설) 금지
+- 건물은 수동 배치만 허용
+- 변경 전 기획 고정, 이후 코드 구현
 
 ## 라이선스
 
