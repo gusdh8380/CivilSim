@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using TMPro;
 using CivilSim.Core;
+using CivilSim.UI;
 
 public class ReportPanelUI : MonoBehaviour
 {
@@ -70,6 +71,7 @@ public class ReportPanelUI : MonoBehaviour
 
     private void OnEnable()
     {
+        PanelOpenCoordinator.PanelOpened += OnOtherPanelOpened;
         GameEventBus.Subscribe<BudgetReportEvent>(OnBudgetReport);
         GameEventBus.Subscribe<GoalProgressEvent>(OnGoalProgress);
         GameEventBus.Subscribe<GameWonEvent>(OnGameWon);
@@ -79,6 +81,7 @@ public class ReportPanelUI : MonoBehaviour
 
     private void OnDisable()
     {
+        PanelOpenCoordinator.PanelOpened -= OnOtherPanelOpened;
         GameEventBus.Unsubscribe<BudgetReportEvent>(OnBudgetReport);
         GameEventBus.Unsubscribe<GoalProgressEvent>(OnGoalProgress);
         GameEventBus.Unsubscribe<GameWonEvent>(OnGameWon);
@@ -110,9 +113,13 @@ public class ReportPanelUI : MonoBehaviour
 
     private void SetVisible(bool visible)
     {
+        bool changed = _isOpen != visible;
         _isOpen = visible;
         if (_panel != null)
             _panel.SetActive(visible);
+
+        if (visible && changed)
+            PanelOpenCoordinator.NotifyOpened(this);
 
         if (visible)
         {
@@ -122,6 +129,12 @@ public class ReportPanelUI : MonoBehaviour
 
         if (visible)
             GameManager.Instance?.CancelAllModes();
+    }
+
+    private void OnOtherPanelOpened(object panelOwner)
+    {
+        if (ReferenceEquals(panelOwner, this)) return;
+        if (_isOpen) Hide();
     }
 
     private void OnBudgetReport(BudgetReportEvent e)

@@ -55,6 +55,16 @@ namespace CivilSim.UI
             UpdateSpeedLabel(initSpeed);
         }
 
+        private void OnEnable()
+        {
+            PanelOpenCoordinator.PanelOpened += OnOtherPanelOpened;
+        }
+
+        private void OnDisable()
+        {
+            PanelOpenCoordinator.PanelOpened -= OnOtherPanelOpened;
+        }
+
         private void Update()
         {
             var kb = Keyboard.current;
@@ -96,15 +106,25 @@ namespace CivilSim.UI
 
         private void SetVisible(bool visible)
         {
+            bool changed = _isOpen != visible;
             _isOpen = visible;
             if (_panel != null)
                 _panel.SetActive(visible);
+
+            if (visible && changed)
+                PanelOpenCoordinator.NotifyOpened(this);
 
             if (visible)
                 GameManager.Instance?.CancelAllModes();
 
             if (_camCtrl != null)
                 _camCtrl.InputLocked = visible;
+        }
+
+        private void OnOtherPanelOpened(object panelOwner)
+        {
+            if (ReferenceEquals(panelOwner, this)) return;
+            if (_isOpen) Hide();
         }
 
         private void AutoBindButtons()
