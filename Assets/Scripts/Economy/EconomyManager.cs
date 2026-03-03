@@ -1,6 +1,7 @@
 using UnityEngine;
 using CivilSim.Core;
 using CivilSim.Buildings;
+using CivilSim.Grid;
 
 namespace CivilSim.Economy
 {
@@ -27,12 +28,14 @@ namespace CivilSim.Economy
 
         // -- 내부 참조 --
         private BuildingManager _buildings;
+        private GridSystem _grid;
         private int _resDemand;
         private int _comDemand;
         private int _indDemand;
         private int _deficitStreakMonths;
         private int _residentTaxPerMonth;
         private int _jobTaxPerMonth;
+        private int _lastDisconnectedBuildingCount = -1;
 
         // -- Unity --
 
@@ -48,6 +51,7 @@ namespace CivilSim.Economy
         private void Start()
         {
             _buildings = GameManager.Instance.Buildings;
+            _grid = GameManager.Instance.Grid;
 
             if (_config == null)
             {
@@ -122,8 +126,12 @@ namespace CivilSim.Economy
         {
             if (_config == null || _buildings == null) return;
 
-            int baseIncome  = 0;
+            int baseIncome = 0;
+            int roadAdjustedBaseIncome = 0;
             int expenditure = 0;
+            int connectedBuildings = 0;
+            int disconnectedBuildings = 0;
+            float disconnectedIncomeMultiplier = ResolveDisconnectedIncomeMultiplier();
 
             foreach (var kv in _buildings.GetAll())
             {
@@ -132,8 +140,22 @@ namespace CivilSim.Economy
                 var data = inst.Data;
 
                 // 수입: 거주자 세금 + 고용자 세금
-                baseIncome += data.ResidentCapacity * _residentTaxPerMonth;
-                baseIncome += data.JobCapacity      * _jobTaxPerMonth;
+                int buildingIncome =
+                    data.ResidentCapacity * _residentTaxPerMonth +
+                    data.JobCapacity * _jobTaxPerMonth;
+
+                baseIncome += buildingIncome;
+
+                if (IsBuildingRoadConnected(inst))
+                {
+                    connectedBuildings++;
+                    roadAdjustedBaseIncome += buildingIncome;
+                }
+                else
+                {
+                    disconnectedBuildings++;
+                    roadAdjustedBaseIncome += Mathf.RoundToInt(buildingIncome * disconnectedIncomeMultiplier);
+                }
 
                 // 지출: 유지비
                 expenditure += data.MaintenanceCostPerMonth;
@@ -146,7 +168,7 @@ namespace CivilSim.Economy
                 _config.MinIncomeMultiplier,
                 _config.MaxIncomeMultiplier);
 
-            int income = Mathf.RoundToInt(baseIncome * incomeMultiplier);
+            int income = Mathf.RoundToInt(roadAdjustedBaseIncome * incomeMultiplier);
             int net = income - expenditure;
             Money  += net;
 
@@ -154,16 +176,19 @@ namespace CivilSim.Economy
             GameEventBus.Publish(new BudgetReportEvent
             {
                 BaseIncome  = baseIncome,
+                RoadAdjustedBaseIncome = roadAdjustedBaseIncome,
                 Income      = income,
                 Expenditure = expenditure,
                 Balance     = Money,
                 Month       = e.Month,
                 Year        = e.Year,
                 IncomeMultiplier = incomeMultiplier,
+                ConnectedBuildings = connectedBuildings,
+                DisconnectedBuildings = disconnectedBuildings,
             });
 
             PublishMoneyChanged(net);
-            HandleOperationalAlerts(net);
+            HandleOperationalAlerts(net, disconnectedBuildings);
 
             // 파산 체크
             if (!IsBankrupt && _config != null && Money < _config.BankruptcyThreshold)
@@ -177,7 +202,7 @@ namespace CivilSim.Economy
                 Debug.LogWarning("[EconomyManager] 파산!");
             }
 
-            Debug.Log($"[Economy] {e.Year}/{e.Month} 기본수입:{baseIncome:N0} 배율:{incomeMultiplier:F2} 수입:{income:N0} 지출:{expenditure:N0} 잔액:{Money:N0}");
+            Debug.Log($"[Economy] {e.Year}/{e.Month} 기본수입:{baseIncome:N0} 도로반영:{roadAdjustedBaseIncome:N0} 배율:{incomeMultiplier:F2} 수입:{income:N0} 지출:{expenditure:N0} 잔액:{Money:N0}");
         }
 
         // -- 내부 --
@@ -198,7 +223,7 @@ namespace CivilSim.Economy
             });
         }
 
-        private void HandleOperationalAlerts(int monthlyNet)
+        private void HandleOperationalAlerts(int monthlyNet, int disconnectedBuildings)
         {
             if (monthlyNet < 0) _deficitStreakMonths++;
             else _deficitStreakMonths = 0;
@@ -226,6 +251,54 @@ namespace CivilSim.Economy
                     Type = NotificationType.Warning
                 });
             }
+
+            if (disconnectedBuildings != _lastDisconnectedBuildingCount)
+            {
+                if (disconnectedBuildings > 0)
+                {
+                    GameEventBus.Publish(new NotificationEvent
+                    {
+                        Message = $"도로 미연결 건물 {disconnectedBuildings}개: 수입 페널티 적용",
+                        Type = NotificationType.Warning
+                    });
+                }
+                else if (_lastDisconnectedBuildingCount > 0)
+                {
+                    GameEventBus.Publish(new NotificationEvent
+                    {
+                        Message = "도로 미연결 건물 해소",
+                        Type = NotificationType.Info
+                    });
+                }
+
+                _lastDisconnectedBuildingCount = disconnectedBuildings;
+            }
+        }
+
+        private float ResolveDisconnectedIncomeMultiplier()
+        {
+            if (_config == null) return 0.4f;
+            if (_config.DisconnectedBuildingIncomeMultiplier < 0f || _config.DisconnectedBuildingIncomeMultiplier > 1f)
+                return 0.4f;
+            return _config.DisconnectedBuildingIncomeMultiplier;
+        }
+
+        private bool IsBuildingRoadConnected(BuildingInstance instance)
+        {
+            if (instance == null || _grid == null) return true;
+
+            Vector2Int origin = instance.GridOrigin;
+            Vector2Int size = instance.EffectiveSize;
+            for (int dx = 0; dx < size.x; dx++)
+            {
+                for (int dz = 0; dz < size.y; dz++)
+                {
+                    if (_grid.HasAdjacentRoad(new Vector2Int(origin.x + dx, origin.y + dz)))
+                        return true;
+                }
+            }
+
+            return false;
         }
     }
 }

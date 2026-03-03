@@ -27,6 +27,10 @@ namespace CivilSim.Economy
         [Tooltip("수요 반영 후 월 수입 최대 배율")]
         public float MaxIncomeMultiplier = 1.3f;
 
+        [Header("도로 연결 페널티")]
+        [Tooltip("도로 미연결 건물의 세수 반영 비율. 1 = 페널티 없음, 0.4 = 60% 감소")]
+        [Range(0f, 1f)] public float DisconnectedBuildingIncomeMultiplier = 0.4f;
+
         [Header("운영 경고")]
         [Tooltip("순손실이 연속 N개월이면 경고")]
         public int DeficitAlertAfterMonths = 3;

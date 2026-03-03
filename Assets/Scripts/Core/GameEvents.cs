@@ -45,12 +45,15 @@ namespace CivilSim.Core
     public struct BudgetReportEvent
     {
         public int BaseIncome;
+        public int RoadAdjustedBaseIncome;
         public int Income;
         public int Expenditure;
         public int Balance;
         public int Month;
         public int Year;
         public float IncomeMultiplier;
+        public int ConnectedBuildings;
+        public int DisconnectedBuildings;
     }
 
     public struct GoalProgressEvent
