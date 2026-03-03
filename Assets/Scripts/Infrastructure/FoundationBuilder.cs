@@ -47,10 +47,10 @@ namespace CivilSim.Infrastructure
         private void Start()
         {
             _grid = GameManager.Instance.Grid;
-            if (_grid == null) _grid = FindObjectOfType<GridSystem>();
+            if (_grid == null) _grid = FindFirstObjectByType<GridSystem>();
 
             _foundation = GameManager.Instance.Foundation;
-            if (_foundation == null) _foundation = FindObjectOfType<FoundationManager>();
+            if (_foundation == null) _foundation = FindFirstObjectByType<FoundationManager>();
 
             EnsureMaterials();
         }

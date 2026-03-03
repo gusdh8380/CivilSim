@@ -67,7 +67,7 @@ namespace CivilSim.World
             if (_gridSystem == null && GameManager.Instance != null)
                 _gridSystem = GameManager.Instance.Grid;
             if (_gridSystem == null)
-                _gridSystem = FindObjectOfType<GridSystem>();
+                _gridSystem = FindFirstObjectByType<GridSystem>();
 
             Generate();
         }

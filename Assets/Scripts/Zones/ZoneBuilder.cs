@@ -50,10 +50,10 @@ namespace CivilSim.Zones
         private void Start()
         {
             _grid = GameManager.Instance?.Grid;
-            if (_grid == null) _grid = FindObjectOfType<GridSystem>();
+            if (_grid == null) _grid = FindFirstObjectByType<GridSystem>();
 
             _zoneManager = GameManager.Instance?.Zone;
-            if (_zoneManager == null) _zoneManager = FindObjectOfType<ZoneManager>();
+            if (_zoneManager == null) _zoneManager = FindFirstObjectByType<ZoneManager>();
 
             if (_grid == null) Debug.LogError("[ZoneBuilder] GridSystem을 찾을 수 없습니다.");
             if (_zoneManager == null) Debug.LogError("[ZoneBuilder] ZoneManager를 찾을 수 없습니다.");

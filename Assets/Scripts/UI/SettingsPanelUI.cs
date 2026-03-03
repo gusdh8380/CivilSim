@@ -4,78 +4,37 @@ using UnityEngine.InputSystem;
 using TMPro;
 using CivilSim.CameraSystem;
 using CivilSim.Core;
-using CivilSim.Economy;
-using CivilSim.Population;
 
 namespace CivilSim.UI
 {
     /// <summary>
-    /// 게임 설정 패널 (카메라 이동 속도 등 런타임 조정).
-    ///
-    /// 권장 씬 구성:
-    ///   Canvas
-    ///   -- SettingsPanelRoot (이 스크립트 — 항상 Active)
-    ///       -- SettingsPanel (Image/Panel) ← _panel
-    ///           ├-- Title (TMP_Text)  "Settings 설정"
-    ///           ├-- CamSpeedRow
-    ///              ├-- Label (TMP_Text) "카메라 이동 속도"
-    ///              ├-- CamSpeedSlider (Slider) ← _cameraPanSlider
-    ///              -- CamSpeedValue (TMP_Text) ← _cameraPanLabel
-    ///           -- CloseButton (Button) -> onClick: SettingsPanelUI.Toggle()
-    ///
-    /// 열기/닫기:
-    ///   - HUD의 Settings 버튼 -> Toggle() 연결
-    ///   - 코드: GameManager.Instance?.Settings?.Toggle()
+    /// 게임 환경 설정 패널 (카메라 이동 속도 등) 런타임 조정.
+    /// 정책(세율/수요계수) 설정은 PolicyPanelUI로 분리한다.
     /// </summary>
     public class SettingsPanelUI : MonoBehaviour
     {
-        // -- 인스펙터 --
-        [Header("패널 루트 (자식 오브젝트를 할당)")]
+        [Header("패널 루트 (자식 오브젝트)")]
         [SerializeField] private GameObject _panel;
 
-        [Header("버튼 (미할당 시 자동 탐색)")]
+        [Header("열기/닫기 버튼 (미할당 시 자동 탐색)")]
         [SerializeField] private Button _openButton;
         [SerializeField] private Button _closeButton;
 
-        [Header("카메라 이동 속도 슬라이더")]
-        [SerializeField] private Slider          _cameraPanSlider;
+        [Header("카메라 이동 속도")]
+        [SerializeField] private Slider _cameraPanSlider;
         [SerializeField] private TextMeshProUGUI _cameraPanLabel;
 
-        [Header("슬라이더 범위")]
-        [SerializeField, Range(0.05f, 0.5f)]  private float _minPanSpeed = 0.05f;
-        [SerializeField, Range(0.5f,  3f)]    private float _maxPanSpeed = 2f;
-        [Tooltip("RTSCameraController._keyPanSpeed 와 동일한 기본값")]
-        [SerializeField, Range(0.05f, 3f)]    private float _defaultPanSpeed = 0.4f;
+        [Header("카메라 속도 범위")]
+        [SerializeField, Range(0.05f, 0.5f)] private float _minPanSpeed = 0.05f;
+        [SerializeField, Range(0.5f, 3f)] private float _maxPanSpeed = 2f;
+        [SerializeField, Range(0.05f, 3f)] private float _defaultPanSpeed = 0.4f;
 
-        [Header("정책 슬라이더 (선택)")]
-        [SerializeField] private Slider _residentTaxSlider;
-        [SerializeField] private TextMeshProUGUI _residentTaxLabel;
-        [SerializeField] private Slider _jobTaxSlider;
-        [SerializeField] private TextMeshProUGUI _jobTaxLabel;
-        [SerializeField] private Slider _commercialDemandFactorSlider;
-        [SerializeField] private TextMeshProUGUI _commercialDemandFactorLabel;
-        [SerializeField] private Slider _industrialDemandFactorSlider;
-        [SerializeField] private TextMeshProUGUI _industrialDemandFactorLabel;
-
-        [Header("정책 범위")]
-        [SerializeField, Range(0, 500)] private int _minResidentTax = 0;
-        [SerializeField, Range(50, 1000)] private int _maxResidentTax = 300;
-        [SerializeField, Range(0, 500)] private int _minJobTax = 0;
-        [SerializeField, Range(50, 1000)] private int _maxJobTax = 300;
-        [SerializeField, Range(0.05f, 1.0f)] private float _minDemandFactor = 0.05f;
-        [SerializeField, Range(0.05f, 1.0f)] private float _maxDemandFactor = 1.0f;
-
-        // -- 내부 상태 --
         private RTSCameraController _camCtrl;
-        private EconomyManager _economy;
-        private CityDemandSystem _demand;
-        private bool                _isOpen;
-
-        // -- Unity --
+        private bool _isOpen;
 
         private void Awake()
         {
-            _camCtrl = FindObjectOfType<RTSCameraController>();
+            _camCtrl = FindFirstObjectByType<RTSCameraController>();
             AutoBindButtons();
             BindButtonListeners();
             SetVisible(false);
@@ -89,12 +48,11 @@ namespace CivilSim.UI
             {
                 _cameraPanSlider.minValue = _minPanSpeed;
                 _cameraPanSlider.maxValue = _maxPanSpeed;
-                _cameraPanSlider.value    = initSpeed;
+                _cameraPanSlider.value = initSpeed;
                 _cameraPanSlider.onValueChanged.AddListener(OnCameraSpeedChanged);
             }
 
             UpdateSpeedLabel(initSpeed);
-            InitializePolicyControls();
         }
 
         private void Update()
@@ -111,15 +69,6 @@ namespace CivilSim.UI
             if (_cameraPanSlider != null)
                 _cameraPanSlider.onValueChanged.RemoveListener(OnCameraSpeedChanged);
 
-            if (_residentTaxSlider != null)
-                _residentTaxSlider.onValueChanged.RemoveListener(OnResidentTaxChanged);
-            if (_jobTaxSlider != null)
-                _jobTaxSlider.onValueChanged.RemoveListener(OnJobTaxChanged);
-            if (_commercialDemandFactorSlider != null)
-                _commercialDemandFactorSlider.onValueChanged.RemoveListener(OnCommercialDemandFactorChanged);
-            if (_industrialDemandFactorSlider != null)
-                _industrialDemandFactorSlider.onValueChanged.RemoveListener(OnIndustrialDemandFactorChanged);
-
             if (_openButton != null)
                 _openButton.onClick.RemoveListener(Show);
 
@@ -127,14 +76,10 @@ namespace CivilSim.UI
                 _closeButton.onClick.RemoveListener(Hide);
         }
 
-        // -- 공개 API --
-
-        public void Toggle()  => SetVisible(!_isOpen);
-        public void Show()    => SetVisible(true);
-        public void Hide()    => SetVisible(false);
-        public bool IsOpen    => _isOpen;
-
-        // -- 슬라이더 콜백 --
+        public void Toggle() => SetVisible(!_isOpen);
+        public void Show() => SetVisible(true);
+        public void Hide() => SetVisible(false);
+        public bool IsOpen => _isOpen;
 
         private void OnCameraSpeedChanged(float value)
         {
@@ -149,111 +94,12 @@ namespace CivilSim.UI
                 _cameraPanLabel.text = $"{value:F2}x";
         }
 
-        private void InitializePolicyControls()
-        {
-            _economy = GameManager.Instance?.Economy;
-            _demand = GameManager.Instance?.Demand;
-
-            if (_residentTaxSlider != null)
-            {
-                _residentTaxSlider.minValue = _minResidentTax;
-                _residentTaxSlider.maxValue = _maxResidentTax;
-                _residentTaxSlider.value = _economy != null ? _economy.ResidentTaxPerMonth : _minResidentTax;
-                _residentTaxSlider.onValueChanged.AddListener(OnResidentTaxChanged);
-                UpdateResidentTaxLabel(Mathf.RoundToInt(_residentTaxSlider.value));
-            }
-
-            if (_jobTaxSlider != null)
-            {
-                _jobTaxSlider.minValue = _minJobTax;
-                _jobTaxSlider.maxValue = _maxJobTax;
-                _jobTaxSlider.value = _economy != null ? _economy.JobTaxPerMonth : _minJobTax;
-                _jobTaxSlider.onValueChanged.AddListener(OnJobTaxChanged);
-                UpdateJobTaxLabel(Mathf.RoundToInt(_jobTaxSlider.value));
-            }
-
-            if (_commercialDemandFactorSlider != null)
-            {
-                _commercialDemandFactorSlider.minValue = _minDemandFactor;
-                _commercialDemandFactorSlider.maxValue = _maxDemandFactor;
-                _commercialDemandFactorSlider.value = _demand != null ? _demand.CommercialDemandFactor : _minDemandFactor;
-                _commercialDemandFactorSlider.onValueChanged.AddListener(OnCommercialDemandFactorChanged);
-                UpdateCommercialDemandFactorLabel(_commercialDemandFactorSlider.value);
-            }
-
-            if (_industrialDemandFactorSlider != null)
-            {
-                _industrialDemandFactorSlider.minValue = _minDemandFactor;
-                _industrialDemandFactorSlider.maxValue = _maxDemandFactor;
-                _industrialDemandFactorSlider.value = _demand != null ? _demand.IndustrialDemandFactor : _minDemandFactor;
-                _industrialDemandFactorSlider.onValueChanged.AddListener(OnIndustrialDemandFactorChanged);
-                UpdateIndustrialDemandFactorLabel(_industrialDemandFactorSlider.value);
-            }
-        }
-
-        private void OnResidentTaxChanged(float value)
-        {
-            int tax = Mathf.RoundToInt(value);
-            if (_economy == null) _economy = GameManager.Instance?.Economy;
-            _economy?.SetResidentTaxPerMonth(tax);
-            UpdateResidentTaxLabel(tax);
-        }
-
-        private void OnJobTaxChanged(float value)
-        {
-            int tax = Mathf.RoundToInt(value);
-            if (_economy == null) _economy = GameManager.Instance?.Economy;
-            _economy?.SetJobTaxPerMonth(tax);
-            UpdateJobTaxLabel(tax);
-        }
-
-        private void OnCommercialDemandFactorChanged(float value)
-        {
-            if (_demand == null) _demand = GameManager.Instance?.Demand;
-            _demand?.SetCommercialDemandFactor(value);
-            UpdateCommercialDemandFactorLabel(value);
-        }
-
-        private void OnIndustrialDemandFactorChanged(float value)
-        {
-            if (_demand == null) _demand = GameManager.Instance?.Demand;
-            _demand?.SetIndustrialDemandFactor(value);
-            UpdateIndustrialDemandFactorLabel(value);
-        }
-
-        private void UpdateResidentTaxLabel(int value)
-        {
-            if (_residentTaxLabel != null)
-                _residentTaxLabel.text = $"거주세 {value}";
-        }
-
-        private void UpdateJobTaxLabel(int value)
-        {
-            if (_jobTaxLabel != null)
-                _jobTaxLabel.text = $"고용세 {value}";
-        }
-
-        private void UpdateCommercialDemandFactorLabel(float value)
-        {
-            if (_commercialDemandFactorLabel != null)
-                _commercialDemandFactorLabel.text = $"상업계수 {value:F2}";
-        }
-
-        private void UpdateIndustrialDemandFactorLabel(float value)
-        {
-            if (_industrialDemandFactorLabel != null)
-                _industrialDemandFactorLabel.text = $"공업계수 {value:F2}";
-        }
-
-        // -- 내부 --
-
         private void SetVisible(bool visible)
         {
             _isOpen = visible;
             if (_panel != null)
                 _panel.SetActive(visible);
 
-            // 설정창이 열리면 배치 모드/카메라 입력 잠금
             if (visible)
                 GameManager.Instance?.CancelAllModes();
 
@@ -303,7 +149,7 @@ namespace CivilSim.UI
 
         private static Button FindButtonByContains(string textLower)
         {
-            var buttons = FindObjectsOfType<Button>(true);
+            var buttons = FindObjectsByType<Button>(FindObjectsInactive.Include, FindObjectsSortMode.None);
             foreach (var button in buttons)
             {
                 if (button == null || button.gameObject == null) continue;

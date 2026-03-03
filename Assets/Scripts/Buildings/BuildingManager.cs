@@ -36,7 +36,7 @@ namespace CivilSim.Buildings
         private void Start()
         {
             _grid = GameManager.Instance.Grid;
-            if (_grid == null) _grid = FindObjectOfType<GridSystem>();
+            if (_grid == null) _grid = FindFirstObjectByType<GridSystem>();
         }
 
         // -- 배치 --

@@ -39,7 +39,6 @@ namespace CivilSim.CameraSystem
         [SerializeField] private float _minHeight    = 20f;
         [Tooltip("카메라 최고 높이 (가장 먼 줌)")]
         [SerializeField] private float _maxHeight    = 300f;
-        [SerializeField] private float _zoomSmooth   = 10f;
         [Tooltip("씬 시작 시 카메라 높이. 0이면 현재 트랜스폼 Y 사용.")]
         [SerializeField] private float _startHeight  = 80f;
 

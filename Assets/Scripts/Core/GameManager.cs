@@ -89,20 +89,20 @@ namespace CivilSim.Core
         /// </summary>
         private void AutoDiscoverSystems()
         {
-            if (_gameClock       == null) _gameClock       = FindObjectOfType<GameClock>();
-            if (_tickSystem      == null) _tickSystem      = FindObjectOfType<TickSystem>();
-            if (_gridSystem      == null) _gridSystem      = FindObjectOfType<GridSystem>();
-            if (_gridVisualizer  == null) _gridVisualizer  = FindObjectOfType<GridVisualizer>();
-            if (_buildingManager == null) _buildingManager = FindObjectOfType<BuildingManager>();
-            if (_buildingPlacer  == null) _buildingPlacer  = FindObjectOfType<BuildingPlacer>();
-            if (_economyManager  == null) _economyManager  = FindObjectOfType<EconomyManager>();
-            if (_roadManager        == null) _roadManager        = FindObjectOfType<RoadManager>();
-            if (_roadBuilder        == null) _roadBuilder        = FindObjectOfType<RoadBuilder>();
-            if (_foundationManager  == null) _foundationManager  = FindObjectOfType<FoundationManager>();
-            if (_foundationBuilder  == null) _foundationBuilder  = FindObjectOfType<FoundationBuilder>();
-            if (_zoneManager        == null) _zoneManager        = FindObjectOfType<ZoneManager>();
-            if (_zoneBuilder        == null) _zoneBuilder        = FindObjectOfType<ZoneBuilder>();
-            if (_cityDemandSystem   == null) _cityDemandSystem   = FindObjectOfType<CityDemandSystem>();
+            if (_gameClock       == null) _gameClock       = FindFirstObjectByType<GameClock>();
+            if (_tickSystem      == null) _tickSystem      = FindFirstObjectByType<TickSystem>();
+            if (_gridSystem      == null) _gridSystem      = FindFirstObjectByType<GridSystem>();
+            if (_gridVisualizer  == null) _gridVisualizer  = FindFirstObjectByType<GridVisualizer>();
+            if (_buildingManager == null) _buildingManager = FindFirstObjectByType<BuildingManager>();
+            if (_buildingPlacer  == null) _buildingPlacer  = FindFirstObjectByType<BuildingPlacer>();
+            if (_economyManager  == null) _economyManager  = FindFirstObjectByType<EconomyManager>();
+            if (_roadManager        == null) _roadManager        = FindFirstObjectByType<RoadManager>();
+            if (_roadBuilder        == null) _roadBuilder        = FindFirstObjectByType<RoadBuilder>();
+            if (_foundationManager  == null) _foundationManager  = FindFirstObjectByType<FoundationManager>();
+            if (_foundationBuilder  == null) _foundationBuilder  = FindFirstObjectByType<FoundationBuilder>();
+            if (_zoneManager        == null) _zoneManager        = FindFirstObjectByType<ZoneManager>();
+            if (_zoneBuilder        == null) _zoneBuilder        = FindFirstObjectByType<ZoneBuilder>();
+            if (_cityDemandSystem   == null) _cityDemandSystem   = FindFirstObjectByType<CityDemandSystem>();
             // BuildingDatabase는 ScriptableObject라 FindObjectOfType 대상 아님 — Inspector 할당 필수
         }
 
