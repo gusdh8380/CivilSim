@@ -21,9 +21,13 @@ namespace CivilSim.Infrastructure
         [Header("씬 오브젝트 컨테이너")]
         [SerializeField] private Transform _foundationRoot;
 
+        [Header("비용")]
+        [SerializeField, Min(0)] private int _foundationCostPerTile = 180;
+
         // -- 내부 상태 --
         private GridSystem _grid;
         private readonly Dictionary<Vector2Int, GameObject> _placed = new();
+        public int FoundationCostPerTile => _foundationCostPerTile;
 
         // -- Unity --
 
@@ -87,13 +91,39 @@ namespace CivilSim.Infrastructure
             int minZ = Mathf.Min(start.y, end.y);
             int maxZ = Mathf.Max(start.y, end.y);
 
+            int placeable = 0;
+            for (int x = minX; x <= maxX; x++)
+            {
+                for (int z = minZ; z <= maxZ; z++)
+                {
+                    var pos = new Vector2Int(x, z);
+                    var cell = _grid?.GetCell(pos);
+                    if (cell != null && cell.CanPlaceFoundation && !_placed.ContainsKey(pos))
+                        placeable++;
+                }
+            }
+
+            if (placeable <= 0) return;
+
+            int totalCost = placeable * Mathf.Max(0, _foundationCostPerTile);
+            var economy = GameManager.Instance?.Economy;
+            if (economy != null && totalCost > 0 && !economy.TrySpend(totalCost))
+            {
+                GameEventBus.Publish(new NotificationEvent
+                {
+                    Message = $"자금 부족! 지반 설치에 ₩{totalCost:N0} 필요.",
+                    Type = NotificationType.Warning
+                });
+                return;
+            }
+
             int placed = 0;
             for (int x = minX; x <= maxX; x++)
                 for (int z = minZ; z <= maxZ; z++)
                     if (TryPlace(new Vector2Int(x, z))) placed++;
 
             if (placed > 0)
-                Debug.Log($"[FoundationManager] 직사각형 지반 {placed}셀 완료 ({start} ~ {end})");
+                Debug.Log($"[FoundationManager] 직사각형 지반 {placed}셀 완료 ({start} ~ {end}) 비용:{totalCost:N0}");
         }
 
         /// <summary>해당 셀에 지반 비주얼이 있는지 확인.</summary>
