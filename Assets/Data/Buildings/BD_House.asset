@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CivilSim.Buildings.BuildingData
   BuildingName: "\uC9D1"
   Category: 0
-  Description: "\uC9D1"
+  Description: "시민이 거주하는 기본 주택입니다."
   SizeX: 1
   SizeZ: 1
   BuildCost: 500

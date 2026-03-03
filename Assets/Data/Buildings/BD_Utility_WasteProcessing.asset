@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CivilSim.Buildings.BuildingData
   BuildingName: Waste Processing Center
   Category: 4
-  Description: Utility facility for waste sorting and processing
+  Description: "생활 폐기물을 분류하고 처리하는 시설입니다."
   SizeX: 1
   SizeZ: 1
   BuildCost: 5600

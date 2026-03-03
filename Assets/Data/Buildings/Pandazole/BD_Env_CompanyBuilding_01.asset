@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CivilSim.Buildings.BuildingData
   BuildingName: "\uD68C\uC0AC \uAC74\uBB3C 01"
   Category: 2
-  Description: Pandazole Env_CompanyBuilding_01
+  Description: "고용과 생산 기능을 담당하는 회사 건물 01호입니다."
   SizeX: 1
   SizeZ: 1
   BuildCost: 3000

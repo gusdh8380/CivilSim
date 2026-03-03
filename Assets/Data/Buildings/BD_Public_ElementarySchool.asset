@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CivilSim.Buildings.BuildingData
   BuildingName: Elementary School
   Category: 3
-  Description: Public education facility for local residents
+  Description: "주민 자녀의 교육을 담당하는 초등학교입니다."
   SizeX: 1
   SizeZ: 1
   BuildCost: 4200

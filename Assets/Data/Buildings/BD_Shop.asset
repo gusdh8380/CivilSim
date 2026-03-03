@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CivilSim.Buildings.BuildingData
   BuildingName: "\uC0C1\uC810"
   Category: 1
-  Description: "\uC0C1\uC810\n"
+  Description: "주민 생활 수요를 충족하는 소규모 상점입니다."
   SizeX: 1
   SizeZ: 1
   BuildCost: 800

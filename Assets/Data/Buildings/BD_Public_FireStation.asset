@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CivilSim.Buildings.BuildingData
   BuildingName: Fire Station
   Category: 3
-  Description: Emergency response center for city safety
+  Description: "화재와 재난에 대응하는 소방서입니다."
   SizeX: 1
   SizeZ: 1
   BuildCost: 4600

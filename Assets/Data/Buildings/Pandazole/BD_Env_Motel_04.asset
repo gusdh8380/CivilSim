@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CivilSim.Buildings.BuildingData
   BuildingName: "\uBAA8\uD154 04"
   Category: 1
-  Description: Pandazole Env_Motel_04
+  Description: "도시 방문객을 수용하는 숙박 시설 04호입니다."
   SizeX: 1
   SizeZ: 1
   BuildCost: 2000

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CivilSim.Buildings.BuildingData
   BuildingName: "\uACF5\uC7A5"
   Category: 2
-  Description: "\uACF5\uC7A5"
+  Description: "도시에 일자리를 제공하는 기초 공장입니다."
   SizeX: 2
   SizeZ: 2
   BuildCost: 2000

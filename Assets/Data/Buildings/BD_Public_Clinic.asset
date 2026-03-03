@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CivilSim.Buildings.BuildingData
   BuildingName: Community Clinic
   Category: 3
-  Description: Public healthcare clinic for basic treatment
+  Description: "기초 진료를 제공하는 지역 보건 클리닉입니다."
   SizeX: 1
   SizeZ: 1
   BuildCost: 3800
