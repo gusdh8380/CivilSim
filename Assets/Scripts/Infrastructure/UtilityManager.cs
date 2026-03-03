@@ -50,6 +50,7 @@ namespace CivilSim.Infrastructure
         public float ResidentMultiplier { get; private set; } = 1f;
         public float JobMultiplier { get; private set; } = 1f;
         public float MaintenanceMultiplier { get; private set; } = 1f;
+        public int DefaultServiceRadius => _defaultServiceRadius;
 
         private BuildingManager _buildings;
         private bool _wasPowerShortage;
