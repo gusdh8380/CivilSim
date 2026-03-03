@@ -15,6 +15,9 @@ namespace CivilSim.Population
         [SerializeField, Range(0.05f, 1.0f)] private float _industrialDemandFactor = 0.20f;
         [SerializeField, Range(1, 50)] private int _normalizationDivisor = 5;
 
+        [Header("디버그/확인용")]
+        [SerializeField] private bool _notifyMonthlyDemandUpdate = true;
+
         public int Residents { get; private set; }
         public int JobsTotal { get; private set; }
         public int ResidentialDemand { get; private set; }
@@ -46,7 +49,19 @@ namespace CivilSim.Population
 
         private void OnBuildingChanged(BuildingPlacedEvent e) => RecalculateAndPublish();
         private void OnBuildingChanged(BuildingRemovedEvent e) => RecalculateAndPublish();
-        private void OnMonthlyTick(MonthlyTickEvent e) => RecalculateAndPublish();
+        private void OnMonthlyTick(MonthlyTickEvent e)
+        {
+            RecalculateAndPublish();
+
+            if (_notifyMonthlyDemandUpdate)
+            {
+                GameEventBus.Publish(new NotificationEvent
+                {
+                    Message = $"[{e.Year}/{e.Month:D2}] 수요 갱신 R:{ResidentialDemand:+#;-#;0} C:{CommercialDemand:+#;-#;0} I:{IndustrialDemand:+#;-#;0}",
+                    Type = NotificationType.Info
+                });
+            }
+        }
 
         private void RecalculateAndPublish()
         {
