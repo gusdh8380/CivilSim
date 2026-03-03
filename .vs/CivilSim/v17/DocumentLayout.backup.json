@@ -1,12 +1,37 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\PJ\\CivilSim\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{DEA397C5-DA88-F066-ADFB-71CD3A1A5851}|Assembly-CSharp.csproj|c:\\pj\\civilsim\\assets\\scripts\\buildings\\buildingplacer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DEA397C5-DA88-F066-ADFB-71CD3A1A5851}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\buildings\\buildingplacer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": []
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "BuildingPlacer.cs",
+              "DocumentMoniker": "C:\\PJ\\CivilSim\\Assets\\Scripts\\Buildings\\BuildingPlacer.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Buildings\\BuildingPlacer.cs",
+              "ToolTip": "C:\\PJ\\CivilSim\\Assets\\Scripts\\Buildings\\BuildingPlacer.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Buildings\\BuildingPlacer.cs",
+              "ViewState": "AgIAABsBAAAAAAAAAAAcwBACAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-03T15:15:09.735Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
     }
   ]
 }
