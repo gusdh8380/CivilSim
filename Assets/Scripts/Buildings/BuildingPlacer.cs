@@ -386,7 +386,9 @@ namespace CivilSim.Buildings
                 return;
             }
 
-            if (_selectedData.ServiceValue <= 0 || _selectedData.ServiceKind == ServiceType.None)
+            bool hasServiceCoverage = _selectedData.ServiceValue > 0 && _selectedData.ServiceKind != ServiceType.None;
+            bool hasUtilityCoverage = _selectedData.PowerSupply > 0 || _selectedData.WaterSupply > 0;
+            if (!hasServiceCoverage && !hasUtilityCoverage)
             {
                 HideServiceRadiusPreview();
                 return;
@@ -422,7 +424,7 @@ namespace CivilSim.Buildings
             var renderer = _serviceRadiusPreview.GetComponent<Renderer>();
             if (renderer != null && _serviceRadiusRuntimeMat != null)
             {
-                _serviceRadiusRuntimeMat.color = GetServicePreviewColor(_selectedData.ServiceKind);
+                _serviceRadiusRuntimeMat.color = GetCoveragePreviewColor(_selectedData);
                 renderer.material = _serviceRadiusRuntimeMat;
             }
 
@@ -451,10 +453,23 @@ namespace CivilSim.Buildings
                 _serviceRadiusPreview.SetActive(false);
         }
 
-        private Color GetServicePreviewColor(ServiceType type)
+        private Color GetCoveragePreviewColor(BuildingData data)
         {
+            if (data == null)
+                return new Color(0.55f, 0.75f, 1f, 0.17f);
+
+            bool isPowerProvider = data.PowerSupply > 0;
+            bool isWaterProvider = data.WaterSupply > 0;
+
+            if (isPowerProvider && isWaterProvider)
+                return new Color(0.20f, 0.90f, 0.90f, 0.17f);
+            if (isPowerProvider)
+                return new Color(1.00f, 0.75f, 0.20f, 0.17f);
+            if (isWaterProvider)
+                return new Color(0.20f, 0.70f, 1.00f, 0.17f);
+
             Color color;
-            switch (type)
+            switch (data.ServiceKind)
             {
                 case ServiceType.Education:
                     color = new Color(0.20f, 0.65f, 1f, 0.17f);
