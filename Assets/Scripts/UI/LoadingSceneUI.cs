@@ -14,7 +14,7 @@ namespace CivilSim.UI
     {
         [Header("Scene")]
         [SerializeField] private string _fallbackTargetSceneName = "Game Play";
-        [SerializeField] private float _minimumLoadingSeconds = 0.35f;
+        [SerializeField] private float _minimumLoadingSeconds = 1.8f;
 
         [Header("UI")]
         [SerializeField] private Slider _progressBar;
@@ -60,17 +60,20 @@ namespace CivilSim.UI
 
             loadOp.allowSceneActivation = false;
 
+            float minimumDuration = Mathf.Max(1f, _minimumLoadingSeconds);
             float elapsed = 0f;
             float visualProgress = 0f;
             while (!loadOp.isDone)
             {
                 elapsed += Time.unscaledDeltaTime;
 
-                float targetProgress = Mathf.Clamp01(loadOp.progress / 0.9f);
+                float asyncProgress = Mathf.Clamp01(loadOp.progress / 0.9f);
+                float timeProgress = Mathf.Clamp01(elapsed / minimumDuration);
+                float targetProgress = Mathf.Min(asyncProgress, timeProgress);
                 visualProgress = Mathf.MoveTowards(visualProgress, targetProgress, Time.unscaledDeltaTime * 2.5f);
                 SetProgress(visualProgress);
 
-                if (loadOp.progress >= 0.9f && elapsed >= _minimumLoadingSeconds)
+                if (loadOp.progress >= 0.9f && elapsed >= minimumDuration)
                 {
                     SetProgress(1f);
                     SetStatus(_readyMessage);
