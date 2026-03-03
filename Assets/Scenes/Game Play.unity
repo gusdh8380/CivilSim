@@ -2546,9 +2546,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da0749da41c6e4454b37292a4800969d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CivilSim.Buildings.BuildingPlacer
-  _validMaterial: {fileID: 0}
-  _invalidMaterial: {fileID: 0}
+  _validMaterial: {fileID: 2100000, guid: 8cd0c79ec744a4d0f9e1a7250b5e2ccf, type: 2}
+  _invalidMaterial: {fileID: 2100000, guid: 96e68b98f7cd049a89accca5f4837eed, type: 2}
   _ghostYOffset: 0.2
+  _showServiceRadiusPreview: 1
+  _fallbackServiceRadius: 8
+  _servicePreviewYOffset: 0.03
+  _serviceRadiusPreviewMaterial: {fileID: 2100000, guid: b40fa2aa0bce6495e90554b55e7aea95, type: 2}
 --- !u!4 &289878029
 Transform:
   m_ObjectHideFlags: 0
@@ -8110,7 +8114,7 @@ MonoBehaviour:
   - {fileID: 7550806925339669914, guid: 1e22cd3bf4e61f848a9e7bd0efa59f61, type: 3}
   - {fileID: 1278222803980417519, guid: 5717e753587e76640b72754fab0d07c8, type: 3}
   - {fileID: 2930917204650213472, guid: 8f1adde9c9602264d93ebb6a738ef464, type: 3}
-  _gridSystem: {fileID: 0}
+  _gridSystem: {fileID: 166904379}
   _fallbackWidth: 100
   _fallbackHeight: 100
   _fallbackCellSize: 10
@@ -10441,6 +10445,9 @@ GameObject:
   - component: {fileID: 1746246695}
   - component: {fileID: 1746246694}
   - component: {fileID: 1746246693}
+  - component: {fileID: 1746246698}
+  - component: {fileID: 1746246697}
+  - component: {fileID: 1746246696}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -10472,11 +10479,12 @@ MonoBehaviour:
   _roadBuilder: {fileID: 1746246695}
   _foundationManager: {fileID: 191294580}
   _foundationBuilder: {fileID: 191294581}
+  _utilityManager: {fileID: 1746246698}
   _zoneManager: {fileID: 394713492}
   _zoneBuilder: {fileID: 394713493}
   _cityDemandSystem: {fileID: 2021584999}
-  _cityProgressionManager: {fileID: 0}
-  _saveLoadManager: {fileID: 0}
+  _cityProgressionManager: {fileID: 1746246696}
+  _saveLoadManager: {fileID: 1746246697}
 --- !u!114 &1746246689
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10573,6 +10581,66 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CivilSim.Infrastructure.RoadBuilder
   _previewValidMaterial: {fileID: 0}
   _previewRemoveMaterial: {fileID: 0}
+--- !u!114 &1746246696
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1746246687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd1701712340467893068b09d846d0ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CivilSim.Core.CityProgressionManager
+  _targetPopulation: 300
+  _useBalanceGoal: 1
+  _targetBalance: 600000
+  _maxDeficitStreakMonths: 6
+  _maxNegativeBalanceStreakMonths: 3
+  _pauseOnOutcome: 1
+  _notifyMonthlyGoalProgress: 1
+--- !u!114 &1746246697
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1746246687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e43de1a28c0c42b2a2db92b83db5776b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CivilSim.Core.SaveLoadManager
+  _defaultSlotName: quick
+  _useKeyboardShortcut: 0
+  _saveKey: 98
+  _loadKey: 102
+  _notifySuccess: 1
+--- !u!114 &1746246698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1746246687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e08365b339a3493db47e76dd91a6374a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CivilSim.Infrastructure.UtilityManager
+  _defaultServiceRadius: 8
+  _serviceValueAtFullCoverage: 60
+  _edgeCoverageFactor: 0.25
+  _minEducationMultiplier: 0.9
+  _maxEducationMultiplier: 1.1
+  _minHealthcareMultiplier: 0.9
+  _maxHealthcareMultiplier: 1.1
+  _minSafetyMultiplier: 0.9
+  _maxSafetyMultiplier: 1.1
+  _minSanitationMultiplier: 0.9
+  _maxSanitationMultiplier: 1.1
+  _notifyOnMonthlyShortage: 1
 --- !u!1 &1756418354
 GameObject:
   m_ObjectHideFlags: 0
