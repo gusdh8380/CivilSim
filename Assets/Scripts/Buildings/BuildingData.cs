@@ -63,6 +63,7 @@ namespace CivilSim.Buildings
         [Header("서비스")]
         [Min(0)] public int ServiceValue = 0;
         public ServiceType ServiceKind = ServiceType.None;
+        [Min(0)] public int ServiceRadius = 0;     // 그리드 셀 반경 (0이면 매니저 기본값 사용)
 
         // -- 시각화 --
         [Header("시각화")]

@@ -126,8 +126,9 @@ namespace CivilSim.Economy
             if (_config == null || _buildings == null) return;
             if (_utility == null) _utility = GameManager.Instance.Utility;
 
-            int baseIncome  = 0;
-            int expenditure = 0;
+            int residentBaseIncome = 0;
+            int jobBaseIncome = 0;
+            int baseExpenditure = 0;
 
             foreach (var kv in _buildings.GetAll())
             {
@@ -136,12 +137,14 @@ namespace CivilSim.Economy
                 var data = inst.Data;
 
                 // 수입: 거주자 세금 + 고용자 세금
-                baseIncome += data.ResidentCapacity * _residentTaxPerMonth;
-                baseIncome += data.JobCapacity      * _jobTaxPerMonth;
+                residentBaseIncome += data.ResidentCapacity * _residentTaxPerMonth;
+                jobBaseIncome += data.JobCapacity * _jobTaxPerMonth;
 
                 // 지출: 유지비
-                expenditure += data.MaintenanceCostPerMonth;
+                baseExpenditure += data.MaintenanceCostPerMonth;
             }
+
+            int baseIncome = residentBaseIncome + jobBaseIncome;
 
             float demandScore = (_resDemand + _comDemand + _indDemand) / 3f;
             float incomeMultiplier = 1f + demandScore * _config.IncomeMultiplierPerDemandPoint;
@@ -151,11 +154,21 @@ namespace CivilSim.Economy
                 _config.MaxIncomeMultiplier);
 
             float serviceMultiplier = _utility != null ? _utility.ServiceMultiplier : 1f;
+            float residentMultiplier = _utility != null ? _utility.ResidentMultiplier : 1f;
+            float jobMultiplier = _utility != null ? _utility.JobMultiplier : 1f;
+            float maintenanceMultiplier = _utility != null ? _utility.MaintenanceMultiplier : 1f;
+            float educationMultiplier = _utility != null ? _utility.EducationMultiplier : 1f;
+            float healthcareMultiplier = _utility != null ? _utility.HealthcareMultiplier : 1f;
+            float safetyMultiplier = _utility != null ? _utility.SafetyMultiplier : 1f;
+            float sanitationMultiplier = _utility != null ? _utility.SanitationMultiplier : 1f;
             float powerRate = _utility != null ? _utility.PowerRate : 1f;
             float waterRate = _utility != null ? _utility.WaterRate : 1f;
             float operationRate = _utility != null ? _utility.OperationRate : 1f;
 
-            int income = Mathf.RoundToInt(baseIncome * incomeMultiplier * serviceMultiplier * operationRate);
+            int residentIncome = Mathf.RoundToInt(residentBaseIncome * incomeMultiplier * residentMultiplier * operationRate);
+            int jobIncome = Mathf.RoundToInt(jobBaseIncome * incomeMultiplier * jobMultiplier * operationRate);
+            int income = residentIncome + jobIncome;
+            int expenditure = Mathf.RoundToInt(baseExpenditure * maintenanceMultiplier);
             int net = income - expenditure;
             Money  += net;
 
@@ -163,13 +176,25 @@ namespace CivilSim.Economy
             GameEventBus.Publish(new BudgetReportEvent
             {
                 BaseIncome  = baseIncome,
+                ResidentBaseIncome = residentBaseIncome,
+                JobBaseIncome = jobBaseIncome,
                 Income      = income,
+                ResidentIncome = residentIncome,
+                JobIncome = jobIncome,
+                BaseExpenditure = baseExpenditure,
                 Expenditure = expenditure,
                 Balance     = Money,
                 Month       = e.Month,
                 Year        = e.Year,
                 IncomeMultiplier = incomeMultiplier,
                 ServiceMultiplier = serviceMultiplier,
+                ResidentMultiplier = residentMultiplier,
+                JobMultiplier = jobMultiplier,
+                MaintenanceMultiplier = maintenanceMultiplier,
+                EducationMultiplier = educationMultiplier,
+                HealthcareMultiplier = healthcareMultiplier,
+                SafetyMultiplier = safetyMultiplier,
+                SanitationMultiplier = sanitationMultiplier,
                 PowerRate = powerRate,
                 WaterRate = waterRate,
                 OperationRate = operationRate,
@@ -178,6 +203,10 @@ namespace CivilSim.Economy
                 WaterDemand = _utility != null ? _utility.WaterDemand : 0,
                 WaterSupply = _utility != null ? _utility.WaterSupply : 0,
                 ServiceScore = _utility != null ? _utility.ServiceScore : 0,
+                EducationScore = _utility != null ? _utility.EducationScore : 0,
+                HealthcareScore = _utility != null ? _utility.HealthcareScore : 0,
+                SafetyScore = _utility != null ? _utility.SafetyScore : 0,
+                SanitationScore = _utility != null ? _utility.SanitationScore : 0,
             });
 
             PublishMoneyChanged(net);
@@ -195,7 +224,7 @@ namespace CivilSim.Economy
                 Debug.LogWarning("[EconomyManager] 파산!");
             }
 
-            Debug.Log($"[Economy] {e.Year}/{e.Month} 기본수입:{baseIncome:N0} 수요배율:{incomeMultiplier:F2} 서비스배율:{serviceMultiplier:F2} 운영률:{operationRate:F2} 수입:{income:N0} 지출:{expenditure:N0} 잔액:{Money:N0}");
+            Debug.Log($"[Economy] {e.Year}/{e.Month} 기본수입:{baseIncome:N0}(주민:{residentBaseIncome:N0}/고용:{jobBaseIncome:N0}) 수요배율:{incomeMultiplier:F2} 주민배율:{residentMultiplier:F2} 고용배율:{jobMultiplier:F2} 유지비배율:{maintenanceMultiplier:F2} 운영률:{operationRate:F2} 수입:{income:N0} 지출:{expenditure:N0} 잔액:{Money:N0}");
         }
 
         // -- 내부 --

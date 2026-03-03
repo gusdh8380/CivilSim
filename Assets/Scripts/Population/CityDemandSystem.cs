@@ -104,10 +104,13 @@ namespace CivilSim.Population
             }
 
             float operationRate = _utility != null ? _utility.OperationRate : 1f;
-            int residents = Mathf.RoundToInt(residentsRaw * operationRate);
-            int totalJobs = Mathf.RoundToInt(totalJobsRaw * operationRate);
-            int commercialJobs = Mathf.RoundToInt(commercialJobsRaw * operationRate);
-            int industrialJobs = Mathf.RoundToInt(industrialJobsRaw * operationRate);
+            float residentMultiplier = _utility != null ? _utility.ResidentMultiplier : 1f;
+            float jobMultiplier = _utility != null ? _utility.JobMultiplier : 1f;
+
+            int residents = Mathf.RoundToInt(residentsRaw * operationRate * residentMultiplier);
+            int totalJobs = Mathf.RoundToInt(totalJobsRaw * operationRate * jobMultiplier);
+            int commercialJobs = Mathf.RoundToInt(commercialJobsRaw * operationRate * jobMultiplier);
+            int industrialJobs = Mathf.RoundToInt(industrialJobsRaw * operationRate * jobMultiplier);
 
             Residents = residents;
             JobsTotal = totalJobs;

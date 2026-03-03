@@ -349,7 +349,9 @@ namespace CivilSim.UI
             if (_budgetReportText == null) return;
 
             int net = e.Income - e.Expenditure;
-            string utilityPart = $" | 전력 {Mathf.RoundToInt(e.PowerRate * 100f)}% | 수도 {Mathf.RoundToInt(e.WaterRate * 100f)}% | 운영 {Mathf.RoundToInt(e.OperationRate * 100f)}% | 서비스 {e.ServiceScore}%";
+            string utilityPart =
+                $" | 전력 {Mathf.RoundToInt(e.PowerRate * 100f)}% | 수도 {Mathf.RoundToInt(e.WaterRate * 100f)}% | 운영 {Mathf.RoundToInt(e.OperationRate * 100f)}%" +
+                $" | 교육 {e.EducationScore}% | 의료 {e.HealthcareScore}% | 치안 {e.SafetyScore}% | 위생 {e.SanitationScore}%";
             _budgetReportText.text =
                 $"{e.Year}년 {e.Month:D2}월 결산 | 수입 {e.Income:N0} | 지출 {e.Expenditure:N0} | 순이익 {FormatSignedWithGrouping(net)} | 잔액 {e.Balance:N0}{utilityPart}";
         }

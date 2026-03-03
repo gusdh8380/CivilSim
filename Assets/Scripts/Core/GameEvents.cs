@@ -45,13 +45,25 @@ namespace CivilSim.Core
     public struct BudgetReportEvent
     {
         public int BaseIncome;
+        public int ResidentBaseIncome;
+        public int JobBaseIncome;
         public int Income;
+        public int ResidentIncome;
+        public int JobIncome;
+        public int BaseExpenditure;
         public int Expenditure;
         public int Balance;
         public int Month;
         public int Year;
         public float IncomeMultiplier;
         public float ServiceMultiplier;
+        public float ResidentMultiplier;
+        public float JobMultiplier;
+        public float MaintenanceMultiplier;
+        public float EducationMultiplier;
+        public float HealthcareMultiplier;
+        public float SafetyMultiplier;
+        public float SanitationMultiplier;
         public float PowerRate;
         public float WaterRate;
         public float OperationRate;
@@ -60,6 +72,10 @@ namespace CivilSim.Core
         public int WaterDemand;
         public int WaterSupply;
         public int ServiceScore;
+        public int EducationScore;
+        public int HealthcareScore;
+        public int SafetyScore;
+        public int SanitationScore;
     }
 
     public struct GoalProgressEvent
@@ -134,10 +150,21 @@ namespace CivilSim.Core
         public int WaterDemand;
         public int WaterSupply;
         public int ServiceScore;
+        public int EducationScore;
+        public int HealthcareScore;
+        public int SafetyScore;
+        public int SanitationScore;
         public float PowerRate;
         public float WaterRate;
         public float OperationRate;
         public float ServiceMultiplier;
+        public float EducationMultiplier;
+        public float HealthcareMultiplier;
+        public float SafetyMultiplier;
+        public float SanitationMultiplier;
+        public float ResidentMultiplier;
+        public float JobMultiplier;
+        public float MaintenanceMultiplier;
     }
 
     // --

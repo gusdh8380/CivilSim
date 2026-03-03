@@ -142,7 +142,9 @@ namespace CivilSim.UI
         private static string BuildServiceText(BuildingData data)
         {
             if (data == null || data.ServiceValue <= 0) return string.Empty;
-            return $"서비스 {data.ServiceKind} +{data.ServiceValue}";
+            string kind = ServiceTypeToLabel(data.ServiceKind);
+            string radius = data.ServiceRadius > 0 ? data.ServiceRadius.ToString() : "기본";
+            return $"서비스 {kind} +{data.ServiceValue} (반경 {radius})";
         }
 
         private static void Set(TextMeshProUGUI label, string text)
@@ -161,6 +163,15 @@ namespace CivilSim.UI
             BuildingCategory.Utility        => "UTL 유틸리티",
             BuildingCategory.Infrastructure => "INFRA 인프라",
             _                               => ""
+        };
+
+        private static string ServiceTypeToLabel(ServiceType type) => type switch
+        {
+            ServiceType.Education => "교육",
+            ServiceType.Healthcare => "의료",
+            ServiceType.Safety => "치안",
+            ServiceType.Sanitation => "위생",
+            _ => "없음"
         };
     }
 }
