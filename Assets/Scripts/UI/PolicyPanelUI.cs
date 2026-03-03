@@ -80,6 +80,7 @@ namespace CivilSim.UI
         private EconomyManager _economy;
         private CityDemandSystem _demand;
         private bool _isOpen;
+        private bool _isApplyingPreset;
 
         private void Awake()
         {
@@ -116,7 +117,7 @@ namespace CivilSim.UI
                 _industrialDemandFactorSlider.onValueChanged.RemoveListener(OnIndustrialDemandFactorChanged);
 
             if (_openButton != null)
-                _openButton.onClick.RemoveListener(Show);
+                _openButton.onClick.RemoveListener(Toggle);
             if (_closeButton != null)
                 _closeButton.onClick.RemoveListener(Hide);
             if (_balancedPresetButton != null)
@@ -182,6 +183,7 @@ namespace CivilSim.UI
             if (_economy == null) _economy = GameManager.Instance?.Economy;
             _economy?.SetResidentTaxPerMonth(tax);
             UpdateResidentTaxLabel(tax);
+            if (!_isApplyingPreset) UpdatePresetStateLabel("사용자 정의");
         }
 
         private void OnJobTaxChanged(float value)
@@ -190,6 +192,7 @@ namespace CivilSim.UI
             if (_economy == null) _economy = GameManager.Instance?.Economy;
             _economy?.SetJobTaxPerMonth(tax);
             UpdateJobTaxLabel(tax);
+            if (!_isApplyingPreset) UpdatePresetStateLabel("사용자 정의");
         }
 
         private void OnCommercialDemandFactorChanged(float value)
@@ -197,6 +200,7 @@ namespace CivilSim.UI
             if (_demand == null) _demand = GameManager.Instance?.Demand;
             _demand?.SetCommercialDemandFactor(value);
             UpdateCommercialDemandFactorLabel(value);
+            if (!_isApplyingPreset) UpdatePresetStateLabel("사용자 정의");
         }
 
         private void OnIndustrialDemandFactorChanged(float value)
@@ -204,6 +208,7 @@ namespace CivilSim.UI
             if (_demand == null) _demand = GameManager.Instance?.Demand;
             _demand?.SetIndustrialDemandFactor(value);
             UpdateIndustrialDemandFactorLabel(value);
+            if (!_isApplyingPreset) UpdatePresetStateLabel("사용자 정의");
         }
 
         private void UpdateResidentTaxLabel(int value)
@@ -257,6 +262,8 @@ namespace CivilSim.UI
 
         private void ApplyPreset(string presetName, PolicyPreset preset)
         {
+            _isApplyingPreset = true;
+
             int residentTax = Mathf.Clamp(preset.ResidentTax, _minResidentTax, _maxResidentTax);
             int jobTax = Mathf.Clamp(preset.JobTax, _minJobTax, _maxJobTax);
             float commercialFactor = Mathf.Clamp(preset.CommercialDemandFactor, _minDemandFactor, _maxDemandFactor);
@@ -276,6 +283,7 @@ namespace CivilSim.UI
             OnCommercialDemandFactorChanged(commercialFactor);
             OnIndustrialDemandFactorChanged(industrialFactor);
 
+            _isApplyingPreset = false;
             UpdatePresetStateLabel(presetName);
             GameEventBus.Publish(new NotificationEvent
             {
@@ -332,8 +340,8 @@ namespace CivilSim.UI
         {
             if (_openButton != null)
             {
-                _openButton.onClick.RemoveListener(Show);
-                _openButton.onClick.AddListener(Show);
+                _openButton.onClick.RemoveListener(Toggle);
+                _openButton.onClick.AddListener(Toggle);
             }
 
             if (_closeButton != null)
@@ -367,7 +375,7 @@ namespace CivilSim.UI
         private void UpdatePresetStateLabel(string presetName)
         {
             if (_presetStateLabel != null)
-                _presetStateLabel.text = $"프리셋 {presetName}";
+                _presetStateLabel.text = presetName;
         }
 
         private static Button FindButtonByName(string objName)

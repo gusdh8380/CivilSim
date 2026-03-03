@@ -98,7 +98,7 @@ public class ReportPanelUI : MonoBehaviour
     private void OnDestroy()
     {
         if (_openButton != null)
-            _openButton.onClick.RemoveListener(Show);
+            _openButton.onClick.RemoveListener(Toggle);
         if (_closeButton != null)
             _closeButton.onClick.RemoveListener(Hide);
     }
@@ -250,8 +250,8 @@ public class ReportPanelUI : MonoBehaviour
     {
         if (_openButton != null)
         {
-            _openButton.onClick.RemoveListener(Show);
-            _openButton.onClick.AddListener(Show);
+            _openButton.onClick.RemoveListener(Toggle);
+            _openButton.onClick.AddListener(Toggle);
         }
 
         if (_closeButton != null)
