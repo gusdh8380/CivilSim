@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CivilSim.Buildings.BuildingData
   BuildingName: "\uC8FC\uAC70 \uAC74\uBB3C 04"
   Category: 0
-  Description: "주민이 생활하는 주거 건물 04호입니다."
+  Description: "\uC8FC\uBBFC\uC774 \uC0DD\uD65C\uD558\uB294 \uC8FC\uAC70 \uAC74\uBB3C
+    04\uD638\uC785\uB2C8\uB2E4."
   SizeX: 1
   SizeZ: 1
   BuildCost: 1000
@@ -26,4 +27,4 @@ MonoBehaviour:
   PowerConsumption: 5
   WaterConsumption: 8
   Prefab: {fileID: 7674863563708117942, guid: bc4c98111a1d3884f9fcec8d2c53a76b, type: 3}
-  Icon: {fileID: 0}
+  Icon: {fileID: 900592757, guid: e607b4af33a4ddf4eb43ae2660f9b26b, type: 3}

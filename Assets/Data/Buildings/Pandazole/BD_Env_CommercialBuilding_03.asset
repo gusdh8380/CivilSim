@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CivilSim.Buildings.BuildingData
   BuildingName: "\uC0C1\uC5C5 \uAC74\uBB3C 03"
   Category: 1
-  Description: "상업 활동과 소비를 담당하는 상업 건물 03호입니다."
+  Description: "\uC0C1\uC5C5 \uD65C\uB3D9\uACFC \uC18C\uBE44\uB97C \uB2F4\uB2F9\uD558\uB294
+    \uC0C1\uC5C5 \uAC74\uBB3C 03\uD638\uC785\uB2C8\uB2E4."
   SizeX: 1
   SizeZ: 1
   BuildCost: 2000
@@ -26,4 +27,4 @@ MonoBehaviour:
   PowerConsumption: 15
   WaterConsumption: 5
   Prefab: {fileID: 650591154451796056, guid: 459bf6bc825ea9845822408053e0b7aa, type: 3}
-  Icon: {fileID: 0}
+  Icon: {fileID: 1999073614, guid: 47b23e81431d8e545af5586431857cc0, type: 3}

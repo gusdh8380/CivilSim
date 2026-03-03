@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CivilSim.Buildings.BuildingData
   BuildingName: Waste Processing Center
   Category: 4
-  Description: "생활 폐기물을 분류하고 처리하는 시설입니다."
+  Description: "\uC0DD\uD65C \uD3D0\uAE30\uBB3C\uC744 \uBD84\uB958\uD558\uACE0 \uCC98\uB9AC\uD558\uB294
+    \uC2DC\uC124\uC785\uB2C8\uB2E4."
   SizeX: 1
   SizeZ: 1
   BuildCost: 5600
@@ -26,4 +27,4 @@ MonoBehaviour:
   PowerConsumption: 35
   WaterConsumption: 18
   Prefab: {fileID: 366980482748411765, guid: faa2dda313fb030449c71cd8213b654e, type: 3}
-  Icon: {fileID: 0}
+  Icon: {fileID: -369367966, guid: 221adf80cd158b6469dc8da9c808d68f, type: 3}

@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CivilSim.Buildings.BuildingData
   BuildingName: "\uBAA8\uD154 01"
   Category: 1
-  Description: "도시 방문객을 수용하는 숙박 시설 01호입니다."
+  Description: "\uB3C4\uC2DC \uBC29\uBB38\uAC1D\uC744 \uC218\uC6A9\uD558\uB294 \uC219\uBC15
+    \uC2DC\uC124 01\uD638\uC785\uB2C8\uB2E4."
   SizeX: 1
   SizeZ: 1
   BuildCost: 2000
@@ -26,4 +27,4 @@ MonoBehaviour:
   PowerConsumption: 15
   WaterConsumption: 5
   Prefab: {fileID: 1078515718066926502, guid: 8dfab16e28084cd4da4a4346447d9663, type: 3}
-  Icon: {fileID: 0}
+  Icon: {fileID: -428319271, guid: 47b23e81431d8e545af5586431857cc0, type: 3}

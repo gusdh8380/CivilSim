@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CivilSim.Buildings.BuildingData
   BuildingName: Water Pump Station
   Category: 4
-  Description: "상수도 압력과 공급을 담당하는 펌프장입니다."
+  Description: "\uC0C1\uC218\uB3C4 \uC555\uB825\uACFC \uACF5\uAE09\uC744 \uB2F4\uB2F9\uD558\uB294
+    \uD38C\uD504\uC7A5\uC785\uB2C8\uB2E4."
   SizeX: 1
   SizeZ: 1
   BuildCost: 5000
@@ -26,4 +27,4 @@ MonoBehaviour:
   PowerConsumption: 25
   WaterConsumption: 0
   Prefab: {fileID: 1805269126570203252, guid: cab431cd2a680084693f2afc089d81fa, type: 3}
-  Icon: {fileID: 0}
+  Icon: {fileID: -125248624, guid: 221adf80cd158b6469dc8da9c808d68f, type: 3}

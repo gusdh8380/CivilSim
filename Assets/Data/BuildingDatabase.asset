@@ -13,9 +13,6 @@ MonoBehaviour:
   m_Name: BuildingDatabase
   m_EditorClassIdentifier: Assembly-CSharp::CivilSim.Buildings.BuildingDatabase
   _buildings:
-  - {fileID: 11400000, guid: d9fdccf5b1c27364e989ccf23454f3d5, type: 2}
-  - {fileID: 11400000, guid: db62c71d76fe85c44bb481b557f53429, type: 2}
-  - {fileID: 11400000, guid: 23c8d41b916dff7459a5898b494fe7b1, type: 2}
   - {fileID: 11400000, guid: f1e68ff90e6092e4faf4106a52005b87, type: 2}
   - {fileID: 11400000, guid: 357fd28ba9ce4e1488ff01bbe8e8ea5f, type: 2}
   - {fileID: 11400000, guid: ba5ba289e2c9fbc40ab14eefebb82d9f, type: 2}

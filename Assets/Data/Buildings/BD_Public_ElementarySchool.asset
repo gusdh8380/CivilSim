@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CivilSim.Buildings.BuildingData
   BuildingName: Elementary School
   Category: 3
-  Description: "주민 자녀의 교육을 담당하는 초등학교입니다."
+  Description: "\uC8FC\uBBFC \uC790\uB140\uC758 \uAD50\uC721\uC744 \uB2F4\uB2F9\uD558\uB294
+    \uCD08\uB4F1\uD559\uAD50\uC785\uB2C8\uB2E4."
   SizeX: 1
   SizeZ: 1
   BuildCost: 4200
@@ -26,4 +27,4 @@ MonoBehaviour:
   PowerConsumption: 18
   WaterConsumption: 14
   Prefab: {fileID: 5571536447997674746, guid: 32e1e79f6605c1242a465efad631fc8a, type: 3}
-  Icon: {fileID: 0}
+  Icon: {fileID: -859559181, guid: 221adf80cd158b6469dc8da9c808d68f, type: 3}
