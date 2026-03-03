@@ -21,17 +21,17 @@ namespace CivilSim.Infrastructure
     /// 도로 타입 6종(isolated / end / straight / corner / tJunction / cross)에
     /// 프리팹을 매핑하는 ScriptableObject.
     ///
-    /// Assets ▸ Create ▸ CivilSim ▸ Infrastructure ▸ RoadTileDatabase
+    /// Assets > Create > CivilSim > Infrastructure > RoadTileDatabase
     ///
-    /// ┌──────────────────────────────────────────────────────────────────┐
-    /// │  Pandazole 권장 매핑                                              │
-    /// │  isolated   → Env_Road_Free                                              │
-    /// │  end        → Env_Road_End_01  (메시 기본: +X(동) 열림 → offset 270°)  │
-    /// │  straight   → Env_Road_Straight_02  (메시 기본: 동서 → offset 270°)    │
-    /// │  corner     → Env_Road_Cornor_01    (메시 기본: 북+동 열림 → offset 0°)│
-    /// │  tJunction  → Env_Road_Side_03      (기본: 북·동·서 열림 → offset 0°)  │
-    /// │  cross      → Env_Road_Cross_01     (대칭 → offset 0°)                 │
-    /// └──────────────────────────────────────────────────────────────────┘
+    /// --
+    ///   Pandazole 권장 매핑                                              
+    ///   isolated   -> Env_Road_Free                                              
+    ///   end        -> Env_Road_End_01  (메시 기본: +X(동) 열림 -> offset 270°)  
+    ///   straight   -> Env_Road_Straight_02  (메시 기본: 동서 -> offset 270°)    
+    ///   corner     -> Env_Road_Cornor_01    (메시 기본: 북+동 열림 -> offset 0°)
+    ///   tJunction  -> Env_Road_Side_03      (기본: 북·동·서 열림 -> offset 0°)  
+    ///   cross      -> Env_Road_Cross_01     (대칭 -> offset 0°)                 
+    /// --
     /// </summary>
     [CreateAssetMenu(
         menuName = "CivilSim/Infrastructure/RoadTileDatabase",

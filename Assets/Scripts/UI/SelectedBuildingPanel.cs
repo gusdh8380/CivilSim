@@ -11,16 +11,16 @@ namespace CivilSim.UI
     ///
     /// 씬 구성 예시:
     ///   Canvas
-    ///   └── SelectedBuildingPanel (이 컴포넌트)
-    ///       ├── NameText       (TMP_Text)
-    ///       ├── CategoryText   (TMP_Text)
-    ///       ├── StatusText     (TMP_Text)
-    ///       ├── PositionText   (TMP_Text)
-    ///       └── RemoveButton   (Button) ← 철거 버튼
+    ///   -- SelectedBuildingPanel (이 컴포넌트)
+    ///       ├-- NameText       (TMP_Text)
+    ///       ├-- CategoryText   (TMP_Text)
+    ///       ├-- StatusText     (TMP_Text)
+    ///       ├-- PositionText   (TMP_Text)
+    ///       -- RemoveButton   (Button) ← 철거 버튼
     /// </summary>
     public class SelectedBuildingPanel : MonoBehaviour
     {
-        // ── 인스펙터 ──────────────────────────────────────────
+        // -- 인스펙터 --
         [Header("UI 요소")]
         [SerializeField] private GameObject      _panel;
         [SerializeField] private TextMeshProUGUI _nameText;
@@ -29,10 +29,10 @@ namespace CivilSim.UI
         [SerializeField] private TextMeshProUGUI _positionText;
         [SerializeField] private Button          _removeButton;
 
-        // ── 내부 상태 ─────────────────────────────────────────
+        // -- 내부 상태 --
         private BuildingInstance _current;
 
-        // ── Unity ────────────────────────────────────────────
+        // -- Unity --
 
         private void Awake()
         {
@@ -40,7 +40,7 @@ namespace CivilSim.UI
             _panel?.SetActive(false);
         }
 
-        // ── 공개 API ─────────────────────────────────────────
+        // -- 공개 API --
 
         public void Show(BuildingInstance instance)
         {
@@ -64,19 +64,19 @@ namespace CivilSim.UI
             if (_nameText     != null) _nameText.text     = data.BuildingName;
             if (_categoryText != null) _categoryText.text = CategoryLabel(data.Category);
             if (_positionText != null) _positionText.text =
-                $"위치 ({_current.GridOrigin.x}, {_current.GridOrigin.y})  크기 {data.SizeX}×{data.SizeZ}";
+                $"위치 ({_current.GridOrigin.x}, {_current.GridOrigin.y})  크기 {data.SizeX}x{data.SizeZ}";
 
             // 운영 상태
             if (_statusText != null)
             {
                 if (_current.IsOperational)
                 {
-                    _statusText.text  = "✅ 운영 중";
+                    _statusText.text  = "[OK] 운영 중";
                     _statusText.color = Color.green;
                 }
                 else
                 {
-                    string warn = "⚠️ ";
+                    string warn = "WARN ";
                     if (data.RequiresPower && !_current.IsPowered) warn += "전기 없음  ";
                     if (data.RequiresWater && !_current.IsWatered) warn += "수도 없음";
                     _statusText.text  = warn.Trim();
@@ -85,7 +85,7 @@ namespace CivilSim.UI
             }
         }
 
-        // ── 내부 ─────────────────────────────────────────────
+        // -- 내부 --
 
         private void OnRemoveClicked()
         {

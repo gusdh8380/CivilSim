@@ -12,7 +12,7 @@ namespace CivilSim.Core
 
     /// <summary>
     /// 게임 내 시간 흐름을 담당한다.
-    /// 실제 5초 = 게임 1일 (Normal 기준). 일→월→년 자동 진행.
+    /// 실제 5초 = 게임 1일 (Normal 기준). 일->월->년 자동 진행.
     /// </summary>
     public class GameClock : MonoBehaviour
     {
@@ -20,7 +20,7 @@ namespace CivilSim.Core
         [SerializeField, Tooltip("Normal 속도 기준 1게임일 = 몇 초")]
         private float _dayDurationSeconds = 5f;
 
-        // ── 공개 상태 ───────────────────────────────────────
+        // -- 공개 상태 --
         public int Day   { get; private set; } = 1;
         public int Month { get; private set; } = 1;
         public int Year  { get; private set; } = 2025;
@@ -28,14 +28,14 @@ namespace CivilSim.Core
 
         public string DateString => $"{Year}년 {Month:D2}월 {Day:D2}일";
 
-        // ── 내부 ────────────────────────────────────────────
+        // -- 내부 --
         private static readonly float[] SpeedMultipliers = { 0f, 1f, 2f, 4f };
         private float _timer;
 
         private const int DaysPerMonth = 30;
         private const int MonthsPerYear = 12;
 
-        // ── Unity ───────────────────────────────────────────
+        // -- Unity --
 
         private void Update()
         {
@@ -51,7 +51,7 @@ namespace CivilSim.Core
             }
         }
 
-        // ── 공개 API ─────────────────────────────────────────
+        // -- 공개 API --
 
         public void SetSpeed(TimeSpeed speed)
         {
@@ -64,7 +64,7 @@ namespace CivilSim.Core
             SetSpeed(CurrentSpeed == TimeSpeed.Paused ? TimeSpeed.Normal : TimeSpeed.Paused);
         }
 
-        // ── 내부 ────────────────────────────────────────────
+        // -- 내부 --
 
         private void AdvanceDay()
         {

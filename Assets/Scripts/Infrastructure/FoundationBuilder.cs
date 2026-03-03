@@ -11,7 +11,7 @@ namespace CivilSim.Infrastructure
     ///
     /// 조작:
     ///   G        : 지반 모드 토글
-    ///   LMB 드래그 : 직사각형 영역 지반 설치 (press→drag→release)
+    ///   LMB 드래그 : 직사각형 영역 지반 설치 (press->drag->release)
     ///   RMB / Esc : 모드 취소
     ///
     /// 미리보기:
@@ -19,7 +19,7 @@ namespace CivilSim.Infrastructure
     /// </summary>
     public class FoundationBuilder : MonoBehaviour
     {
-        // ── 내부 상태 ─────────────────────────────────────────
+        // -- 내부 상태 --
         private GridSystem         _grid;
         private FoundationManager  _foundation;
         private UnityEngine.Camera _cam;
@@ -37,7 +37,7 @@ namespace CivilSim.Infrastructure
 
         public bool IsActive => _isActive;
 
-        // ── Unity ────────────────────────────────────────────
+        // -- Unity --
 
         private void Awake()
         {
@@ -60,7 +60,7 @@ namespace CivilSim.Infrastructure
             var kb    = Keyboard.current;
             var mouse = Mouse.current;
 
-            // ── G키: 모드 토글 ───────────────────────────────
+            // -- G키: 모드 토글 --
             if (kb != null && kb.gKey.wasPressedThisFrame)
             {
                 if (_isActive) Deactivate();
@@ -70,7 +70,7 @@ namespace CivilSim.Infrastructure
 
             if (!_isActive) return;
 
-            // ── 취소 ─────────────────────────────────────────
+            // -- 취소 --
             if ((kb != null && kb.escapeKey.wasPressedThisFrame) ||
                 (mouse != null && mouse.rightButton.wasPressedThisFrame))
             {
@@ -80,14 +80,14 @@ namespace CivilSim.Infrastructure
 
             Vector2Int hover = ScreenToGrid();
 
-            // ── LMB Press: 드래그 시작 ───────────────────────
+            // -- LMB Press: 드래그 시작 --
             if (mouse != null && mouse.leftButton.wasPressedThisFrame)
             {
                 _dragStart  = hover;
                 _isDragging = true;
             }
 
-            // ── 드래그 중: 직사각형 미리보기 갱신 ─────────────
+            // -- 드래그 중: 직사각형 미리보기 갱신 --
             if (_isDragging)
             {
                 if (hover != _lastDragEnd || hover != _lastHover)
@@ -107,7 +107,7 @@ namespace CivilSim.Infrastructure
                 }
             }
 
-            // ── LMB Release: 실제 배치 ────────────────────────
+            // -- LMB Release: 실제 배치 --
             if (mouse != null && mouse.leftButton.wasReleasedThisFrame && _isDragging)
             {
                 _foundation.PlaceRect(_dragStart, hover);
@@ -118,7 +118,7 @@ namespace CivilSim.Infrastructure
             }
         }
 
-        // ── 공개 API ──────────────────────────────────────────
+        // -- 공개 API --
 
         public void Activate()
         {
@@ -138,7 +138,7 @@ namespace CivilSim.Infrastructure
             ClearPreviews();
         }
 
-        // ── 미리보기 ─────────────────────────────────────────
+        // -- 미리보기 --
 
         private void UpdateSinglePreview(Vector2Int pos)
         {
@@ -216,7 +216,7 @@ namespace CivilSim.Infrastructure
             _previews.Clear();
         }
 
-        // ── 유틸 ─────────────────────────────────────────────
+        // -- 유틸 --
 
         private Vector2Int ScreenToGrid()
         {

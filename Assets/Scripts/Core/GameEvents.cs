@@ -3,9 +3,9 @@ using CivilSim.Grid;
 
 namespace CivilSim.Core
 {
-    // ──────────────────────────────────────────
+    // --
     // 시간 / 틱
-    // ──────────────────────────────────────────
+    // --
 
     public struct TickEvent
     {
@@ -32,9 +32,9 @@ namespace CivilSim.Core
         public TimeSpeed Speed;
     }
 
-    // ──────────────────────────────────────────
+    // --
     // 경제
-    // ──────────────────────────────────────────
+    // --
 
     public struct MoneyChangedEvent
     {
@@ -51,9 +51,9 @@ namespace CivilSim.Core
         public int Year;
     }
 
-    // ──────────────────────────────────────────
+    // --
     // 인구
-    // ──────────────────────────────────────────
+    // --
 
     public struct PopulationChangedEvent
     {
@@ -73,9 +73,9 @@ namespace CivilSim.Core
         public int IndustrialDemand;  // -100 ~ 100
     }
 
-    // ──────────────────────────────────────────
+    // --
     // 건물
-    // ──────────────────────────────────────────
+    // --
 
     public struct BuildingPlacedEvent
     {
@@ -89,9 +89,9 @@ namespace CivilSim.Core
         public int BuildingDataId;
     }
 
-    // ──────────────────────────────────────────
+    // --
     // 도로
-    // ──────────────────────────────────────────
+    // --
 
     public struct RoadBuiltEvent
     {
@@ -103,9 +103,9 @@ namespace CivilSim.Core
         public Vector2Int GridPosition;
     }
 
-    // ──────────────────────────────────────────
+    // --
     // 구역
-    // ──────────────────────────────────────────
+    // --
 
     public struct ZonedEvent
     {
@@ -113,9 +113,9 @@ namespace CivilSim.Core
         public ZoneType ZoneType;
     }
 
-    // ──────────────────────────────────────────
+    // --
     // 알림
-    // ──────────────────────────────────────────
+    // --
 
     public enum NotificationType { Info, Warning, Alert }
 
@@ -125,9 +125,9 @@ namespace CivilSim.Core
         public NotificationType Type;
     }
 
-    // ──────────────────────────────────────────
+    // --
     // 게임 상태
-    // ──────────────────────────────────────────
+    // --
 
     public struct GameStartedEvent { }
     public struct GamePausedEvent { }

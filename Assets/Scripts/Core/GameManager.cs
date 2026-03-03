@@ -15,10 +15,10 @@ namespace CivilSim.Core
     /// </summary>
     public class GameManager : MonoBehaviour
     {
-        // ── 싱글턴 ──────────────────────────────────────────
+        // -- 싱글턴 --
         public static GameManager Instance { get; private set; }
 
-        // ── 서브시스템 참조 (Inspector에서 할당) ─────────────
+        // -- 서브시스템 참조 (Inspector에서 할당) --
         [Header("Core Systems")]
         [SerializeField] private GameClock  _gameClock;
         [SerializeField] private TickSystem _tickSystem;
@@ -48,7 +48,7 @@ namespace CivilSim.Core
         [Header("Population")]
         [SerializeField] private CityDemandSystem _cityDemandSystem;
 
-        // ── 공개 접근자 ──────────────────────────────────────
+        // -- 공개 접근자 --
         public GameClock        Clock           => _gameClock;
         public TickSystem       Tick            => _tickSystem;
         public GridSystem       Grid            => _gridSystem;
@@ -65,7 +65,7 @@ namespace CivilSim.Core
         public ZoneBuilder      ZoneBuild       => _zoneBuilder;
         public CityDemandSystem Demand          => _cityDemandSystem;
 
-        // ── Unity ───────────────────────────────────────────
+        // -- Unity --
 
         private void Awake()
         {
@@ -115,7 +115,7 @@ namespace CivilSim.Core
             }
         }
 
-        // ── 내부 ────────────────────────────────────────────
+        // -- 내부 --
 
         private void ValidateSystems()
         {
@@ -135,7 +135,7 @@ namespace CivilSim.Core
             if (_cityDemandSystem  == null) Debug.LogWarning("[GameManager] CityDemandSystem이 할당되지 않았습니다.");
         }
 
-        // ── 편의 메서드 ──────────────────────────────────────
+        // -- 편의 메서드 --
 
         public void SetTimeSpeed(TimeSpeed speed) => _gameClock?.SetSpeed(speed);
         public void TogglePause()                 => _gameClock?.TogglePause();

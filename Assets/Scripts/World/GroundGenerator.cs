@@ -20,32 +20,32 @@ namespace CivilSim.World
     /// </summary>
     public class GroundGenerator : MonoBehaviour
     {
-        // ── Ground Prefabs ─────────────────────────────────────
+        // -- Ground Prefabs --
         [Header("Ground Prefabs (3~4개, CellSize에 맞는 평지 타일)")]
-        [Tooltip("Pandazole 사용 시: 10×0.2×10 평지 타일 프리팹 3~4종.\n" +
-                 "직접 제작 시: 1×1×1 큐브에 머티리얼 적용 후 할당.")]
+        [Tooltip("Pandazole 사용 시: 10x0.2x10 평지 타일 프리팹 3~4종.\n" +
+                 "직접 제작 시: 1x1x1 큐브에 머티리얼 적용 후 할당.")]
         [SerializeField] private GameObject[] _groundPrefabs;
 
-        // ── GridSystem 참조 ────────────────────────────────────
+        // -- GridSystem 참조 --
         [Header("Grid System (미할당 시 자동 탐색)")]
         [Tooltip("할당하지 않으면 GameManager.Instance.Grid 또는 FindObjectOfType 으로 자동 탐색.")]
         [SerializeField] private GridSystem _gridSystem;
 
-        // ── Fallback 설정 ──────────────────────────────────────
+        // -- Fallback 설정 --
         [Header("Fallback (GridSystem 없을 때만 사용)")]
         [Tooltip("GridSystem 을 찾지 못한 경우에만 사용합니다.")]
         [SerializeField] private int   _fallbackWidth  = 100;
         [SerializeField] private int   _fallbackHeight = 100;
         [SerializeField] private float _fallbackCellSize = 10f;
 
-        // ── 지면 Y 오프셋 ─────────────────────────────────────
+        // -- 지면 Y 오프셋 --
         [Header("Ground Y")]
         [Tooltip("타일 중심의 Y 위치.\n" +
                  "Pandazole 평지 타일(두께 ~0.2): -0.1 권장 (윗면이 y=0)\n" +
-                 "1×1×1 큐브 폴백: -0.5")]
+                 "1x1x1 큐브 폴백: -0.5")]
         [SerializeField] private float _groundY = -0.1f;
 
-        // ── Noise / 클러스터 설정 ──────────────────────────────
+        // -- Noise / 클러스터 설정 --
         [Header("Noise / Cluster 설정")]
         [Tooltip("값이 작을수록 같은 타입 클러스터가 넓어짐. (0.05~0.15 권장)")]
         [SerializeField] private float _primaryScale    = 0.07f;
@@ -56,10 +56,10 @@ namespace CivilSim.World
         [SerializeField] private float _secondaryWeight = 0.20f;
         [SerializeField] private int   _seed            = 42;
 
-        // ── 내부 ──────────────────────────────────────────────
+        // -- 내부 --
         private Transform _container;
 
-        // ── Unity ─────────────────────────────────────────────
+        // -- Unity --
 
         private void Start()
         {
@@ -72,7 +72,7 @@ namespace CivilSim.World
             Generate();
         }
 
-        // ── 공개 API ──────────────────────────────────────────
+        // -- 공개 API --
 
         [ContextMenu("Regenerate")]
         public void Generate()
@@ -104,14 +104,14 @@ namespace CivilSim.World
             {
                 for (int z = 0; z < gridH; z++)
                 {
-                    // ─ Perlin Noise 두 옥타브 합성 ─
+                    // -- Perlin Noise 두 옥타브 합성 --
                     float n1 = Mathf.PerlinNoise((x + ox) * _primaryScale,
                                                  (z + oz) * _primaryScale);
                     float n2 = Mathf.PerlinNoise((x + ox + 200f) * _secondaryScale,
                                                  (z + oz + 200f) * _secondaryScale);
                     float noise = Mathf.Lerp(n1, n2, _secondaryWeight);
 
-                    // noise [0,1] → prefab index
+                    // noise [0,1] -> prefab index
                     int idx = Mathf.Clamp(
                         Mathf.FloorToInt(noise * variantCount),
                         0, variantCount - 1);

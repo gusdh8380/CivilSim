@@ -9,17 +9,17 @@ namespace CivilSim.Infrastructure
     /// 도로 배치·철거·스마트 Auto-Tiling을 담당한다.
     /// GameManager.Instance.Roads 로 접근.
     ///
-    /// ── Auto-Tiling 비트마스크 ────────────────────────────
+    /// -- Auto-Tiling 비트마스크 --
     ///   N=bit0(1), E=bit1(2), S=bit2(4), W=bit3(8)
-    ///   조합 16가지 → isolated/end/straight/corner/tJunction/cross
+    ///   조합 16가지 -> isolated/end/straight/corner/tJunction/cross
     ///   + 각 방향에 맞는 Y 회전 자동 적용
     ///
-    /// ── 비용 ─────────────────────────────────────────────
+    /// -- 비용 --
     ///   RoadCostPerTile (기본 500) — RoadBuilder 에서 사전 지불
     /// </summary>
     public class RoadManager : MonoBehaviour
     {
-        // ── 인스펙터 ──────────────────────────────────────────
+        // -- 인스펙터 --
         [Header("도로 타일 데이터베이스 (Auto-Tiling)")]
         [SerializeField] private RoadTileDatabase _tileDatabase;
 
@@ -30,7 +30,7 @@ namespace CivilSim.Infrastructure
         [Tooltip("프리팹의 피벗이 중심(0.1)이 아닌 바닥(0)이면 0, 중심이면 -0.1 등 조정")]
         [SerializeField] private float _roadHeightOffset = 0f;
 
-        // ── 내부 상태 ─────────────────────────────────────────
+        // -- 내부 상태 --
         private GridSystem _grid;
         private Transform  _roadRoot;
         private Material   _fallbackMaterial;
@@ -40,35 +40,35 @@ namespace CivilSim.Infrastructure
         public int Count           => _roadObjects.Count;
         public int RoadCostPerTile => _roadCostPerTile;
 
-        // ── 비트마스크 조회 테이블 ────────────────────────────
+        // -- 비트마스크 조회 테이블 --
         // 인덱스 = 비트마스크 (0~15)
         // 값     = (typeIdx, extraYRot)
         //   typeIdx: 0=isolated, 1=end, 2=corner, 3=straight, 4=tJunction, 5=cross
         //
-        // ── 실제 Pandazole 프리팹 기본 방향 (yRotationOffset = 0 일 때) ──
-        //   end       → 열림 방향 = +X (동, E)   ★ yRotationOffset=270 으로 보정
-        //   straight  → +X ↔ -X (동서, E-W)      ★ yRotationOffset=270 으로 보정
-        //   corner    → 북(N,+Z) + 동(E,+X) 가 열림  ← 보정 불필요
-        //   tJunction → 남(S)이 닫힘, 북·동·서(N·E·W) 열림  (비트마스크 11)
-        //   cross     → 방향 무관
+        // -- 실제 Pandazole 프리팹 기본 방향 (yRotationOffset = 0 일 때) --
+        //   end       -> 열림 방향 = +X (동, E)   ★ yRotationOffset=270 으로 보정
+        //   straight  -> +X ↔ -X (동서, E-W)      ★ yRotationOffset=270 으로 보정
+        //   corner    -> 북(N,+Z) + 동(E,+X) 가 열림  ← 보정 불필요
+        //   tJunction -> 남(S)이 닫힘, 북·동·서(N·E·W) 열림  (비트마스크 11)
+        //   cross     -> 방향 무관
         private static readonly (int type, float rot)[] _bitmaskTable =
         {
-            (0,   0f),   //  0: (없음)   → isolated
-            (1,   0f),   //  1: N        → end,      열림: N (0°)
-            (1,  90f),   //  2: E        → end,      열림: E (90°)
-            (2,   0f),   //  3: N+E      → corner,   N·E (0°)
-            (1, 180f),   //  4: S        → end,      열림: S (180°)
-            (3,   0f),   //  5: N+S      → straight, 남북 (0°)
-            (2,  90f),   //  6: E+S      → corner,   E·S (90°)
-            (4,  90f),   //  7: N+E+S    → tJunction W 닫힘 (90°)
-            (1, 270f),   //  8: W        → end,      열림: W (270°)
-            (2, 270f),   //  9: N+W      → corner,   N·W (270°)
-            (3,  90f),   // 10: E+W      → straight, 동서 (90°)
-            (4,   0f),   // 11: N+E+W    → tJunction S 닫힘 (0°)
-            (2, 180f),   // 12: S+W      → corner,   S·W (180°)
-            (4, 270f),   // 13: N+S+W    → tJunction E 닫힘 (270°)
-            (4, 180f),   // 14: E+S+W    → tJunction N 닫힘 (180°)
-            (5,   0f),   // 15: N+E+S+W  → cross
+            (0,   0f),   //  0: (없음)   -> isolated
+            (1,   0f),   //  1: N        -> end,      열림: N (0°)
+            (1,  90f),   //  2: E        -> end,      열림: E (90°)
+            (2,   0f),   //  3: N+E      -> corner,   N·E (0°)
+            (1, 180f),   //  4: S        -> end,      열림: S (180°)
+            (3,   0f),   //  5: N+S      -> straight, 남북 (0°)
+            (2,  90f),   //  6: E+S      -> corner,   E·S (90°)
+            (4,  90f),   //  7: N+E+S    -> tJunction W 닫힘 (90°)
+            (1, 270f),   //  8: W        -> end,      열림: W (270°)
+            (2, 270f),   //  9: N+W      -> corner,   N·W (270°)
+            (3,  90f),   // 10: E+W      -> straight, 동서 (90°)
+            (4,   0f),   // 11: N+E+W    -> tJunction S 닫힘 (0°)
+            (2, 180f),   // 12: S+W      -> corner,   S·W (180°)
+            (4, 270f),   // 13: N+S+W    -> tJunction E 닫힘 (270°)
+            (4, 180f),   // 14: E+S+W    -> tJunction N 닫힘 (180°)
+            (5,   0f),   // 15: N+E+S+W  -> cross
         };
 
         // 4방향 오프셋 (N, E, S, W 순서 — 비트와 일치)
@@ -80,7 +80,7 @@ namespace CivilSim.Infrastructure
             new(-1,  0),   // W (bit 3)
         };
 
-        // ── Unity ────────────────────────────────────────────
+        // -- Unity --
 
         private void Awake()
         {
@@ -105,7 +105,7 @@ namespace CivilSim.Infrastructure
             if (_fallbackMaterial != null) Destroy(_fallbackMaterial);
         }
 
-        // ── 공개 API ──────────────────────────────────────────
+        // -- 공개 API --
 
         /// <summary>단일 타일 도로 배치. 성공 시 true.</summary>
         public bool TryPlaceRoad(Vector2Int pos)
@@ -172,7 +172,7 @@ namespace CivilSim.Infrastructure
             return cells;
         }
 
-        // ── Auto-Tiling 내부 ──────────────────────────────────
+        // -- Auto-Tiling 내부 --
 
         /// <summary>
         /// 지정 셀의 비주얼을 비트마스크에 따라 갱신한다.
@@ -247,7 +247,7 @@ namespace CivilSim.Infrastructure
             return mask;
         }
 
-        /// <summary>typeIdx → RoadTileEntry 반환. 데이터베이스 미설정 시 폴백 엔트리.</summary>
+        /// <summary>typeIdx -> RoadTileEntry 반환. 데이터베이스 미설정 시 폴백 엔트리.</summary>
         private RoadTileEntry GetEntry(int typeIdx)
         {
             if (_tileDatabase == null) return new RoadTileEntry();

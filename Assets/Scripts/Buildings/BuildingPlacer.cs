@@ -19,7 +19,7 @@ namespace CivilSim.Buildings
     /// </summary>
     public class BuildingPlacer : MonoBehaviour
     {
-        // ── 인스펙터 ──────────────────────────────────────────
+        // -- 인스펙터 --
         [Header("Ghost Materials (미할당 시 자동 생성)")]
         [SerializeField] private Material _validMaterial;
         [SerializeField] private Material _invalidMaterial;
@@ -28,7 +28,7 @@ namespace CivilSim.Buildings
         [Tooltip("BuildingManager._buildingYOffset 과 맞춰야 한다. Pandazole 기본: 0.2")]
         [SerializeField] private float _ghostYOffset = 0.2f;
 
-        // ── 내부 상태 ─────────────────────────────────────────
+        // -- 내부 상태 --
         private GridSystem         _grid;
         private BuildingManager    _manager;
         private UnityEngine.Camera _cam;
@@ -43,13 +43,13 @@ namespace CivilSim.Buildings
 
         private Vector2Int _lastGridPos = new(-999, -999);
         private bool       _isValid;
-        private int        _rotation;   // 0,1,2,3 → 0°,90°,180°,270°
+        private int        _rotation;   // 0,1,2,3 -> 0°,90°,180°,270°
         private float      _lastWarningTime = -10f;   // 경고 쿨다운용
         private const float WarningCooldown = 2f;
 
         public PlacerMode Mode { get; private set; } = PlacerMode.None;
 
-        // ── Unity ────────────────────────────────────────────
+        // -- Unity --
 
         private void Awake()
         {
@@ -71,7 +71,7 @@ namespace CivilSim.Buildings
             var kb    = Keyboard.current;
             var mouse = Mouse.current;
 
-            // ── 취소 ────────────────────────────────────────
+            // -- 취소 --
             if ((kb != null && kb.escapeKey.wasPressedThisFrame) ||
                 (mouse != null && mouse.rightButton.wasPressedThisFrame))
             {
@@ -79,11 +79,11 @@ namespace CivilSim.Buildings
                 return;
             }
 
-            // ── 회전 (Placing 모드에서만) ────────────────────
+            // -- 회전 (Placing 모드에서만) --
             if (Mode == PlacerMode.Placing && kb != null && kb.rKey.wasPressedThisFrame)
                 Rotate();
 
-            // ── 고스트 위치 갱신 ─────────────────────────────
+            // -- 고스트 위치 갱신 --
             Vector2Int gridPos = ScreenToGrid();
             bool posChanged    = gridPos != _lastGridPos;
 
@@ -93,7 +93,7 @@ namespace CivilSim.Buildings
                 UpdateGhost(gridPos);
             }
 
-            // ── 클릭 실행 ────────────────────────────────────
+            // -- 클릭 실행 --
             if (mouse != null && mouse.leftButton.wasPressedThisFrame)
             {
                 if (Mode == PlacerMode.Placing)
@@ -108,7 +108,7 @@ namespace CivilSim.Buildings
             }
         }
 
-        // ── 공개 API ──────────────────────────────────────────
+        // -- 공개 API --
 
         public void StartPlacing(BuildingData data)
         {
@@ -138,7 +138,7 @@ namespace CivilSim.Buildings
             Mode          = PlacerMode.None;
         }
 
-        // ── 실행 ─────────────────────────────────────────────
+        // -- 실행 --
 
         private void ExecutePlace(Vector2Int pos)
         {
@@ -204,7 +204,7 @@ namespace CivilSim.Buildings
             GameEventBus.Publish(new NotificationEvent { Message = msg, Type = NotificationType.Warning });
         }
 
-        // ── 고스트 ───────────────────────────────────────────
+        // -- 고스트 --
 
         private void CreateGhost()
         {
@@ -225,7 +225,7 @@ namespace CivilSim.Buildings
                 int   sizeX = _rotation % 2 == 0 ? _selectedData.SizeX : _selectedData.SizeZ;
                 int   sizeZ = _rotation % 2 == 0 ? _selectedData.SizeZ : _selectedData.SizeX;
                 float cs    = _grid != null ? _grid.CellSize : 10f;
-                // ★ CellSize 반영 (이전: sizeX * 0.9f → sizeX * cs * 0.9f)
+                // ★ CellSize 반영 (이전: sizeX * 0.9f -> sizeX * cs * 0.9f)
                 _ghost.transform.localScale = new Vector3(sizeX * cs * 0.9f, cs, sizeZ * cs * 0.9f);
             }
 
@@ -300,7 +300,7 @@ namespace CivilSim.Buildings
                 r.material = mat;
         }
 
-        // ── 셀 지시자 ─────────────────────────────────────────
+        // -- 셀 지시자 --
 
         /// <summary>
         /// 배치 예정 셀마다 얇은 오버레이 타일을 생성·갱신한다.
@@ -363,7 +363,7 @@ namespace CivilSim.Buildings
             _cellIndicators.Clear();
         }
 
-        // ── 유틸 ─────────────────────────────────────────────
+        // -- 유틸 --
 
         private Vector2Int ScreenToGrid()
         {

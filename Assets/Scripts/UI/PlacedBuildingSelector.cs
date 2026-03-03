@@ -13,20 +13,20 @@ namespace CivilSim.UI
     /// </summary>
     public class PlacedBuildingSelector : MonoBehaviour
     {
-        // ── 인스펙터 ──────────────────────────────────────────
+        // -- 인스펙터 --
         [Header("하이라이트 색상")]
         [SerializeField] private Color _highlightColor = new Color(1f, 0.95f, 0.3f);
 
         [Header("연결 패널")]
         [SerializeField] private SelectedBuildingPanel _infoPanel;
 
-        // ── 내부 상태 ─────────────────────────────────────────
+        // -- 내부 상태 --
         private UnityEngine.Camera  _cam;
         private BuildingInstance    _selected;
         private Renderer            _selectedRenderer;
         private Color               _originalColor;
 
-        // ── Unity ────────────────────────────────────────────
+        // -- Unity --
 
         private void Awake()
         {
@@ -55,7 +55,7 @@ namespace CivilSim.UI
                 var instance = hit.collider.GetComponentInParent<BuildingInstance>();
                 if (instance != null)
                 {
-                    // 같은 건물 재클릭 → 해제
+                    // 같은 건물 재클릭 -> 해제
                     if (instance == _selected) { Deselect(); return; }
                     Select(instance);
                     return;
@@ -65,7 +65,7 @@ namespace CivilSim.UI
             Deselect();
         }
 
-        // ── 선택 / 해제 ───────────────────────────────────────
+        // -- 선택 / 해제 --
 
         private void Select(BuildingInstance instance)
         {

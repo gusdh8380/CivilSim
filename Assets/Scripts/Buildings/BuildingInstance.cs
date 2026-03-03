@@ -8,14 +8,14 @@ namespace CivilSim.Buildings
     /// </summary>
     public class BuildingInstance : MonoBehaviour
     {
-        // ── 식별 정보 ─────────────────────────────────────────
+        // -- 식별 정보 --
         public int          InstanceId { get; private set; }
         public BuildingData Data       { get; private set; }
         public UnityEngine.Vector2Int GridOrigin { get; private set; }
         /// 배치 시 회전값 (0=0°, 1=90°, 2=180°, 3=270°)
         public int Rotation { get; private set; }
 
-        // ── 유틸리티 상태 ─────────────────────────────────────
+        // -- 유틸리티 상태 --
         public bool IsPowered { get; set; } = false;
         public bool IsWatered { get; set; } = false;
 
@@ -24,7 +24,7 @@ namespace CivilSim.Buildings
             (!Data.RequiresPower || IsPowered) &&
             (!Data.RequiresWater || IsWatered);
 
-        // ── 초기화 ───────────────────────────────────────────
+        // -- 초기화 --
 
         public void Initialize(int id, BuildingData data, UnityEngine.Vector2Int gridOrigin, int rotation = 0)
         {
@@ -40,7 +40,7 @@ namespace CivilSim.Buildings
             ? new UnityEngine.Vector2Int(Data.SizeX, Data.SizeZ)
             : new UnityEngine.Vector2Int(Data.SizeZ, Data.SizeX);
 
-        // ── 공개 API ─────────────────────────────────────────
+        // -- 공개 API --
 
         /// 운영 상태 변경 시 비주얼 업데이트 트리거 (추후 구현)
         public void RefreshVisual()

@@ -4,7 +4,7 @@ namespace CivilSim.Economy
 {
     /// <summary>
     /// 경제 시스템 초기값 및 세율 설정.
-    /// Project → Create → CivilSim → Economy → EconomyConfig
+    /// Project -> Create -> CivilSim -> Economy -> EconomyConfig
     /// </summary>
     [CreateAssetMenu(menuName = "CivilSim/Economy/EconomyConfig", fileName = "EconomyConfig")]
     public class EconomyConfig : ScriptableObject

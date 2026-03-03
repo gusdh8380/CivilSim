@@ -6,17 +6,17 @@ namespace CivilSim.Buildings
     /// <summary>
     /// 게임에 등록된 모든 BuildingData의 목록을 보관하는 ScriptableObject.
     /// GameManager Inspector에서 할당한다.
-    /// Project → Create → CivilSim → Buildings → BuildingDatabase
+    /// Project -> Create -> CivilSim -> Buildings -> BuildingDatabase
     /// </summary>
     [CreateAssetMenu(menuName = "CivilSim/Buildings/BuildingDatabase", fileName = "BuildingDatabase")]
     public class BuildingDatabase : ScriptableObject
     {
         [SerializeField] private List<BuildingData> _buildings = new();
 
-        // ── 캐시 ────────────────────────────────────────────
+        // -- 캐시 --
         private Dictionary<string, BuildingData> _nameCache;
 
-        // ── 공개 API ─────────────────────────────────────────
+        // -- 공개 API --
 
         public IReadOnlyList<BuildingData> All => _buildings;
 
@@ -43,7 +43,7 @@ namespace CivilSim.Buildings
 
         public int Count => _buildings.Count;
 
-        // ── 내부 ─────────────────────────────────────────────
+        // -- 내부 --
 
         private void BuildCache()
         {

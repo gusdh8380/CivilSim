@@ -30,7 +30,7 @@ namespace CivilSim.Grid
         public int Col { get; }
         public int Row { get; }
 
-        // ── 상태 ──────────────────────────────────────────
+        // -- 상태 --
         public CellState State    { get; set; } = CellState.Empty;
         public ZoneType  Zone     { get; set; } = ZoneType.None;
 
@@ -41,7 +41,7 @@ namespace CivilSim.Grid
         public bool HasPower { get; set; } = false;
         public bool HasWater { get; set; } = false;
 
-        // ── 파생 프로퍼티 ──────────────────────────────────
+        // -- 파생 프로퍼티 --
         public bool IsEmpty           => State == CellState.Empty;
         public bool HasBuilding       => State == CellState.Building;
         public bool HasRoad           => State == CellState.Road;
@@ -54,14 +54,14 @@ namespace CivilSim.Grid
 
         public Vector2Int Position => new Vector2Int(Col, Row);
 
-        // ── 생성자 ────────────────────────────────────────
+        // -- 생성자 --
         public GridCell(int col, int row)
         {
             Col = col;
             Row = row;
         }
 
-        // ── 조작 ──────────────────────────────────────────
+        // -- 조작 --
         public void Clear()
         {
             State      = CellState.Empty;

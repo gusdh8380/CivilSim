@@ -14,18 +14,18 @@ namespace CivilSim.UI
     ///
     /// 씬 구성:
     ///   Canvas
-    ///   └── BuildingPanelRoot (이 컴포넌트 — 항상 Active)
-    ///       └── PanelVisual (Image) ← _panel에 할당 (CanvasGroup 자동 추가됨)
-    ///           ├── TabContainer  (HorizontalLayoutGroup)
-    ///           └── ButtonScrollView
-    ///               └── Content   (GridLayoutGroup) ← _buttonContainer
+    ///   -- BuildingPanelRoot (이 컴포넌트 — 항상 Active)
+    ///       -- PanelVisual (Image) ← _panel에 할당 (CanvasGroup 자동 추가됨)
+    ///           ├-- TabContainer  (HorizontalLayoutGroup)
+    ///           -- ButtonScrollView
+    ///               -- Content   (GridLayoutGroup) ← _buttonContainer
     ///
-    /// ⚠️ _panel 은 반드시 이 스크립트보다 아래(자식)의 GameObject 이어야 합니다.
+    /// WARN _panel 은 반드시 이 스크립트보다 아래(자식)의 GameObject 이어야 합니다.
     ///    같은 오브젝트에 할당하면 B 키가 작동하지 않습니다.
     /// </summary>
     public class BuildingPanelUI : MonoBehaviour
     {
-        // ── 인스펙터 ──────────────────────────────────────────
+        // -- 인스펙터 --
         [Header("패널 루트 (자식 오브젝트를 할당 — 이 스크립트와 다른 오브젝트!)")]
         [SerializeField] private GameObject _panel;          // 시각적 패널 (자식)
 
@@ -41,7 +41,7 @@ namespace CivilSim.UI
         [SerializeField] private Color _activeTabColor   = new Color(0.25f, 0.75f, 0.40f);
         [SerializeField] private Color _inactiveTabColor = new Color(0.22f, 0.22f, 0.22f);
 
-        // ── 내부 상태 ─────────────────────────────────────────
+        // -- 내부 상태 --
         private BuildingDatabase         _db;
         private BuildingCategory?        _currentCategory;
         private readonly List<BuildingButtonUI> _buttons = new();
@@ -59,7 +59,7 @@ namespace CivilSim.UI
             ("유틸",  BuildingCategory.Utility),
         };
 
-        // ── Unity ────────────────────────────────────────────
+        // -- Unity --
 
         private void Awake()
         {
@@ -94,7 +94,7 @@ namespace CivilSim.UI
                 Toggle();
         }
 
-        // ── 탭 생성 ───────────────────────────────────────────
+        // -- 탭 생성 --
 
         private void BuildTabs()
         {
@@ -150,7 +150,7 @@ namespace CivilSim.UI
             RefreshButtons();
         }
 
-        // ── 버튼 목록 갱신 ────────────────────────────────────
+        // -- 버튼 목록 갱신 --
 
         private void RefreshButtons()
         {
@@ -176,7 +176,7 @@ namespace CivilSim.UI
             }
         }
 
-        // ── 공개 API ──────────────────────────────────────────
+        // -- 공개 API --
 
         /// <summary>B 키 또는 외부에서 패널 토글</summary>
         public void Toggle() => SetVisible(!_isVisible);

@@ -13,7 +13,7 @@ namespace CivilSim.Infrastructure
     /// </summary>
     public class FoundationManager : MonoBehaviour
     {
-        // ── 인스펙터 ─────────────────────────────────────────
+        // -- 인스펙터 --
         [Header("지반 프리팹")]
         [Tooltip("Pandazole Env_Road_Free.prefab 을 할당한다.")]
         [SerializeField] private GameObject _foundationPrefab;
@@ -21,11 +21,11 @@ namespace CivilSim.Infrastructure
         [Header("씬 오브젝트 컨테이너")]
         [SerializeField] private Transform _foundationRoot;
 
-        // ── 내부 상태 ─────────────────────────────────────────
+        // -- 내부 상태 --
         private GridSystem _grid;
         private readonly Dictionary<Vector2Int, GameObject> _placed = new();
 
-        // ── Unity ────────────────────────────────────────────
+        // -- Unity --
 
         private void Awake()
         {
@@ -39,7 +39,7 @@ namespace CivilSim.Infrastructure
             if (_grid == null) _grid = FindObjectOfType<GridSystem>();
         }
 
-        // ── 공개 API ──────────────────────────────────────────
+        // -- 공개 API --
 
         /// <summary>단일 셀에 지반을 설치한다. 성공 시 true 반환.</summary>
         public bool TryPlace(Vector2Int pos)
@@ -101,7 +101,7 @@ namespace CivilSim.Infrastructure
 
         public int Count => _placed.Count;
 
-        // ── 내부 ─────────────────────────────────────────────
+        // -- 내부 --
 
         private GameObject SpawnFoundation(Vector3 worldPos)
         {

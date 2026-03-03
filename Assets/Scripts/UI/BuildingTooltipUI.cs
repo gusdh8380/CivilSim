@@ -10,15 +10,15 @@ namespace CivilSim.UI
     ///
     /// 씬 구성 (왼쪽 고정 레이아웃):
     ///   Canvas
-    ///   └── Tooltip (이 컴포넌트)
-    ///       └── Panel (Image) ← _panel
-    ///           ├── Name         (TMP_Text) ← _nameText
-    ///           ├── Category     (TMP_Text) ← _categoryText
-    ///           ├── Size         (TMP_Text) ← _sizeText
-    ///           ├── Cost         (TMP_Text) ← _costText
-    ///           ├── Maintenance  (TMP_Text) ← _maintenanceText
-    ///           ├── Population   (TMP_Text) ← _populationText
-    ///           └── Description  (TMP_Text) ← _descriptionText
+    ///   -- Tooltip (이 컴포넌트)
+    ///       -- Panel (Image) ← _panel
+    ///           ├-- Name         (TMP_Text) ← _nameText
+    ///           ├-- Category     (TMP_Text) ← _categoryText
+    ///           ├-- Size         (TMP_Text) ← _sizeText
+    ///           ├-- Cost         (TMP_Text) ← _costText
+    ///           ├-- Maintenance  (TMP_Text) ← _maintenanceText
+    ///           ├-- Population   (TMP_Text) ← _populationText
+    ///           -- Description  (TMP_Text) ← _descriptionText
     ///
     /// RectTransform 설정 (화면 왼쪽 중앙 고정):
     ///   - Anchor : Left-Middle  (anchorMin: 0,0.5 / anchorMax: 0,0.5)
@@ -29,7 +29,7 @@ namespace CivilSim.UI
     /// </summary>
     public class BuildingTooltipUI : MonoBehaviour
     {
-        // ── 인스펙터 ──────────────────────────────────────────
+        // -- 인스펙터 --
         [Header("UI 요소")]
         [SerializeField] private GameObject         _panel;
         [SerializeField] private TextMeshProUGUI    _nameText;
@@ -40,10 +40,10 @@ namespace CivilSim.UI
         [SerializeField] private TextMeshProUGUI    _populationText;
         [SerializeField] private TextMeshProUGUI    _descriptionText;
 
-        // ── 내부 ─────────────────────────────────────────────
+        // -- 내부 --
         private static BuildingTooltipUI _instance;
 
-        // ── Unity ────────────────────────────────────────────
+        // -- Unity --
 
         private void Awake()
         {
@@ -56,7 +56,7 @@ namespace CivilSim.UI
             if (_instance == this) _instance = null;
         }
 
-        // ── 정적 API (BuildingButtonUI에서 호출) ──────────────
+        // -- 정적 API (BuildingButtonUI에서 호출) --
 
         /// <summary>건물 버튼 호버 시 호출 — 왼쪽 고정 위치에 정보 표시</summary>
         public static void Show(BuildingData data)
@@ -73,13 +73,13 @@ namespace CivilSim.UI
             _instance._panel?.SetActive(false);
         }
 
-        // ── 내부 ─────────────────────────────────────────────
+        // -- 내부 --
 
         private void Populate(BuildingData data)
         {
             Set(_nameText,        data.BuildingName);
             Set(_categoryText,    CategoryLabel(data.Category));
-            Set(_sizeText,        $"{data.SizeX}×{data.SizeZ} 타일");
+            Set(_sizeText,        $"{data.SizeX}x{data.SizeZ} 타일");
             Set(_costText,        $"건설: ₩{data.BuildCost:N0}");
             Set(_maintenanceText, $"유지: ₩{data.MaintenanceCostPerMonth:N0}/월");
             Set(_descriptionText, data.Description);
@@ -104,12 +104,12 @@ namespace CivilSim.UI
 
         private static string CategoryLabel(BuildingCategory cat) => cat switch
         {
-            BuildingCategory.Residential    => "🏠 주거",
-            BuildingCategory.Commercial     => "🏪 상업",
-            BuildingCategory.Industrial     => "🏭 공업",
-            BuildingCategory.Public         => "🏥 공공시설",
-            BuildingCategory.Utility        => "⚡ 유틸리티",
-            BuildingCategory.Infrastructure => "🛣️ 인프라",
+            BuildingCategory.Residential    => "RES 주거",
+            BuildingCategory.Commercial     => "COM 상업",
+            BuildingCategory.Industrial     => "IND 공업",
+            BuildingCategory.Public         => "PUB 공공시설",
+            BuildingCategory.Utility        => "UTL 유틸리티",
+            BuildingCategory.Infrastructure => "INFRA 인프라",
             _                               => ""
         };
     }

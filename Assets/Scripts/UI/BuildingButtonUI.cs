@@ -13,15 +13,15 @@ namespace CivilSim.UI
     ///
     /// Prefab 구조 예시:
     ///   BuildingButton (Button + BuildingButtonUI)
-    ///   ├── Background (Image)     ← _background
-    ///   ├── Icon       (Image)     ← _icon
-    ///   ├── Name       (TMP_Text)  ← _nameText
-    ///   └── Cost       (TMP_Text)  ← _costText
+    ///   ├-- Background (Image)     ← _background
+    ///   ├-- Icon       (Image)     ← _icon
+    ///   ├-- Name       (TMP_Text)  ← _nameText
+    ///   -- Cost       (TMP_Text)  ← _costText
     /// </summary>
     public class BuildingButtonUI : MonoBehaviour,
         IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
     {
-        // ── 인스펙터 ──────────────────────────────────────────
+        // -- 인스펙터 --
         [Header("UI 요소")]
         [SerializeField] private Image              _icon;
         [SerializeField] private Image              _background;
@@ -33,13 +33,13 @@ namespace CivilSim.UI
         [SerializeField] private Color _hoverColor    = new Color(0.28f, 0.45f, 0.28f);
         [SerializeField] private Color _selectedColor = new Color(0.20f, 0.65f, 0.25f);
 
-        // ── 내부 상태 ─────────────────────────────────────────
+        // -- 내부 상태 --
         private BuildingData _data;
 
         // 현재 선택된 버튼 (static으로 한 번에 하나만 선택)
         private static BuildingButtonUI _current;
 
-        // ── 초기화 ───────────────────────────────────────────
+        // -- 초기화 --
 
         public void Setup(BuildingData data)
         {
@@ -51,7 +51,7 @@ namespace CivilSim.UI
             if (_background != null) _background.color = _normalColor;
         }
 
-        // ── 이벤트 핸들러 ─────────────────────────────────────
+        // -- 이벤트 핸들러 --
 
         public void OnPointerEnter(PointerEventData eventData)
         {
@@ -71,7 +71,7 @@ namespace CivilSim.UI
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            // 이미 선택된 버튼 재클릭 → 배치 취소
+            // 이미 선택된 버튼 재클릭 -> 배치 취소
             if (_current == this)
             {
                 Deselect();
@@ -90,7 +90,7 @@ namespace CivilSim.UI
             GameManager.Instance.StartPlacing(_data);
         }
 
-        // ── 공개 API ─────────────────────────────────────────
+        // -- 공개 API --
 
         public void Deselect()
         {

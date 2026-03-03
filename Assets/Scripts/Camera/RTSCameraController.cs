@@ -17,7 +17,7 @@ namespace CivilSim.CameraSystem
     /// </summary>
     public class RTSCameraController : MonoBehaviour
     {
-        // ── 인스펙터 ────────────────────────────────────────
+        // -- 인스펙터 --
 
         [Header("Pan")]
         [Tooltip("수평 이동 기본 속도 (높이에 따라 자동 스케일됨). SettingsPanelUI의 슬라이더로 런타임 조정 가능.")]
@@ -56,7 +56,7 @@ namespace CivilSim.CameraSystem
         [SerializeField] private Vector2 _minBounds = new Vector2(0f,    0f);
         [SerializeField] private Vector2 _maxBounds = new Vector2(1000f, 1000f);
 
-        // ── 내부 상태 ────────────────────────────────────────
+        // -- 내부 상태 --
         private UnityEngine.Camera _cam;
         private bool _inputLocked;
 
@@ -75,7 +75,7 @@ namespace CivilSim.CameraSystem
         private float _pitch;
         private bool  _isOrbiting;
 
-        // ── Unity ───────────────────────────────────────────
+        // -- Unity --
 
         private void Awake()
         {
@@ -124,7 +124,7 @@ namespace CivilSim.CameraSystem
             ApplySmoothing();
         }
 
-        // ── Pan ─────────────────────────────────────────────
+        // -- Pan --
 
         private void HandleKeyboardPan()
         {
@@ -191,7 +191,7 @@ namespace CivilSim.CameraSystem
             _targetPos     += new Vector3(delta.x, 0f, delta.z);
         }
 
-        // ── Zoom (Height) ─────────────────────────────────────
+        // -- Zoom (Height) --
 
         private void HandleZoom()
         {
@@ -206,7 +206,7 @@ namespace CivilSim.CameraSystem
             _targetHeight  = Mathf.Clamp(_targetHeight, _minHeight, _maxHeight);
         }
 
-        // ── Orbit ────────────────────────────────────────────
+        // -- Orbit --
 
         private void HandleOrbit()
         {
@@ -226,7 +226,7 @@ namespace CivilSim.CameraSystem
             _pitch  = Mathf.Clamp(_pitch, _minPitch, _maxPitch);
         }
 
-        // ── Apply ─────────────────────────────────────────────
+        // -- Apply --
 
         private void ClampTargetPos()
         {
@@ -250,7 +250,7 @@ namespace CivilSim.CameraSystem
             transform.rotation = Quaternion.Euler(_pitch, _yaw, 0f);
         }
 
-        // ── 유틸 ─────────────────────────────────────────────
+        // -- 유틸 --
 
         private Vector3 RaycastGround(Vector2 screenPos)
         {
@@ -261,7 +261,7 @@ namespace CivilSim.CameraSystem
             return _targetPos;
         }
 
-        // ── 공개 API ─────────────────────────────────────────
+        // -- 공개 API --
 
         public void SetBoundsFromGrid(Vector2 gridMin, Vector2 gridMax)
         {

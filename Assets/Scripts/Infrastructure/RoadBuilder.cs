@@ -21,12 +21,12 @@ namespace CivilSim.Infrastructure
     /// </summary>
     public class RoadBuilder : MonoBehaviour
     {
-        // ── 인스펙터 ──────────────────────────────────────────
+        // -- 인스펙터 --
         [Header("미리보기 머티리얼 (미할당 시 자동 생성)")]
         [SerializeField] private Material _previewValidMaterial;
         [SerializeField] private Material _previewRemoveMaterial;
 
-        // ── 내부 상태 ─────────────────────────────────────────
+        // -- 내부 상태 --
         private GridSystem   _grid;
         private RoadManager  _roads;
         private UnityEngine.Camera _cam;
@@ -39,7 +39,7 @@ namespace CivilSim.Infrastructure
 
         public RoadBuilderMode Mode { get; private set; } = RoadBuilderMode.None;
 
-        // ── Unity ────────────────────────────────────────────
+        // -- Unity --
 
         private void Awake()
         {
@@ -110,7 +110,7 @@ namespace CivilSim.Infrastructure
             }
         }
 
-        // ── 공개 API ──────────────────────────────────────────
+        // -- 공개 API --
 
         public void StartBuilding()
         {
@@ -137,7 +137,7 @@ namespace CivilSim.Infrastructure
             Mode = RoadBuilderMode.None;
         }
 
-        // ── 실행 ─────────────────────────────────────────────
+        // -- 실행 --
 
         private void ExecuteAction(Vector2Int start, Vector2Int end)
         {
@@ -149,7 +149,7 @@ namespace CivilSim.Infrastructure
 
             if (Mode == RoadBuilderMode.Building)
             {
-                // 자금 체크: 라인 셀 수 × 타일 비용
+                // 자금 체크: 라인 셀 수 x 타일 비용
                 var cells    = RoadManager.GetLineCells(start, end);
                 int totalCost = cells.Count * _roads.RoadCostPerTile;
 
@@ -176,7 +176,7 @@ namespace CivilSim.Infrastructure
             }
         }
 
-        // ── 미리보기 ──────────────────────────────────────────
+        // -- 미리보기 --
 
         private void UpdatePreview(List<Vector2Int> cells)
         {
@@ -226,7 +226,7 @@ namespace CivilSim.Infrastructure
             return go;
         }
 
-        // ── 유틸 ─────────────────────────────────────────────
+        // -- 유틸 --
 
         private Vector2Int ScreenToGrid()
         {

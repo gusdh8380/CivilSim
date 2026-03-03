@@ -11,7 +11,7 @@ namespace CivilSim.Buildings
     /// </summary>
     public class BuildingManager : MonoBehaviour
     {
-        // ── 인스펙터 ─────────────────────────────────────────
+        // -- 인스펙터 --
         [Header("씬 오브젝트 컨테이너")]
         [SerializeField, Tooltip("배치된 건물 오브젝트의 부모 Transform (없으면 자동 생성)")]
         private Transform _buildingRoot;
@@ -20,12 +20,12 @@ namespace CivilSim.Buildings
         [Tooltip("지반 타일(두께 ~0.2) 위에 건물이 놓이도록 조정. Pandazole 기본: 0.2")]
         [SerializeField] private float _buildingYOffset = 0.2f;
 
-        // ── 내부 상태 ─────────────────────────────────────────
+        // -- 내부 상태 --
         private GridSystem _grid;
         private readonly Dictionary<int, BuildingInstance> _buildings = new();
         private int _nextId;
 
-        // ── Unity ────────────────────────────────────────────
+        // -- Unity --
 
         private void Awake()
         {
@@ -39,7 +39,7 @@ namespace CivilSim.Buildings
             if (_grid == null) _grid = FindObjectOfType<GridSystem>();
         }
 
-        // ── 배치 ─────────────────────────────────────────────
+        // -- 배치 --
 
         /// <summary>
         /// pos를 원점으로 data 크기만큼 건물을 배치한다. rotation(0~3) 적용.
@@ -86,7 +86,7 @@ namespace CivilSim.Buildings
             return true;
         }
 
-        // ── 철거 ─────────────────────────────────────────────
+        // -- 철거 --
 
         /// <summary>pos에 있는 건물을 철거한다. 성공 시 true 반환.</summary>
         public bool TryRemove(Vector2Int pos)
@@ -101,7 +101,7 @@ namespace CivilSim.Buildings
             var origin = instance.GridOrigin;
             var sz     = instance.EffectiveSize;   // 회전 반영된 크기
 
-            // 그리드 셀 해제 (RemoveBuilding → State = Foundation 으로 복원)
+            // 그리드 셀 해제 (RemoveBuilding -> State = Foundation 으로 복원)
             for (int dx = 0; dx < sz.x; dx++)
                 for (int dz = 0; dz < sz.y; dz++)
                     _grid.RemoveBuilding(new Vector2Int(origin.x + dx, origin.y + dz));
@@ -118,7 +118,7 @@ namespace CivilSim.Buildings
             return true;
         }
 
-        // ── 조회 ─────────────────────────────────────────────
+        // -- 조회 --
 
         public BuildingInstance GetBuilding(int id)
             => _buildings.TryGetValue(id, out var b) ? b : null;
@@ -127,7 +127,7 @@ namespace CivilSim.Buildings
 
         public IReadOnlyDictionary<int, BuildingInstance> GetAll() => _buildings;
 
-        // ── 내부 ─────────────────────────────────────────────
+        // -- 내부 --
 
         private GameObject SpawnBuilding(BuildingData data, Vector3 center, int sizeX, int sizeZ, int rotation)
         {

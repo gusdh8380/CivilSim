@@ -18,12 +18,12 @@ namespace CivilSim.Grid
         [SerializeField, Tooltip("카메라 높이(Y)가 이 값 이상이면 그리드를 숨김 (너무 멀면 선이 보이지 않음)")]
         private float _hideAboveHeight = 250f;
 
-        // ── 내부 ─────────────────────────────────────────────
+        // -- 내부 --
         private GridSystem _grid;
         private Material   _lineMaterial;
         private UnityEngine.Camera _cam;
 
-        // ── Unity ─────────────────────────────────────────────
+        // -- Unity --
 
         private void Awake()
         {
@@ -43,12 +43,12 @@ namespace CivilSim.Grid
             DrawGrid();
         }
 
-        // ── 공개 API ─────────────────────────────────────────
+        // -- 공개 API --
 
         public void SetVisible(bool visible)  => _showGrid = visible;
         public void ToggleVisible()           => _showGrid = !_showGrid;
 
-        // ── 내부 ─────────────────────────────────────────────
+        // -- 내부 --
 
         private void DrawGrid()
         {

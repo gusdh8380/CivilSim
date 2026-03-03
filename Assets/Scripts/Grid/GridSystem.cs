@@ -9,7 +9,7 @@ namespace CivilSim.Grid
     /// </summary>
     public class GridSystem : MonoBehaviour
     {
-        // ── 인스펙터 ────────────────────────────────────────
+        // -- 인스펙터 --
         [Header("Grid Size")]
         [SerializeField, Range(10, 200)] private int _width  = 100;
         [SerializeField, Range(10, 200)] private int _height = 100;
@@ -23,7 +23,7 @@ namespace CivilSim.Grid
         [Header("Origin")]
         [SerializeField] private Vector3 _originOffset = Vector3.zero;
 
-        // ── 공개 프로퍼티 ────────────────────────────────────
+        // -- 공개 프로퍼티 --
         public int   Width    => _width;
         public int   Height   => _height;
         public float CellSize => _cellSize;
@@ -32,10 +32,10 @@ namespace CivilSim.Grid
         /// 그리드 중심 월드 좌표
         public Vector3 Center => _originOffset + new Vector3(_width * _cellSize * 0.5f, 0f, _height * _cellSize * 0.5f);
 
-        // ── 내부 ─────────────────────────────────────────────
+        // -- 내부 --
         private GridCell[,] _cells;
 
-        // ── Unity ─────────────────────────────────────────────
+        // -- Unity --
 
         private void Awake()
         {
@@ -56,7 +56,7 @@ namespace CivilSim.Grid
             InitializeGrid();
         }
 
-        // ── 초기화 ────────────────────────────────────────────
+        // -- 초기화 --
 
         private void InitializeGrid()
         {
@@ -65,19 +65,19 @@ namespace CivilSim.Grid
                 for (int row = 0; row < _height; row++)
                     _cells[col, row] = new GridCell(col, row);
 
-            Debug.Log($"[GridSystem] {_width}×{_height} 그리드 초기화 완료. 총 {_width * _height}셀");
+            Debug.Log($"[GridSystem] {_width}x{_height} 그리드 초기화 완료. 총 {_width * _height}셀");
         }
 
-        // ── 좌표 변환 ─────────────────────────────────────────
+        // -- 좌표 변환 --
 
-        /// 그리드 좌표 → 월드 좌표 (셀 중심)
+        /// 그리드 좌표 -> 월드 좌표 (셀 중심)
         public Vector3 GridToWorld(int col, int row)
             => _originOffset + new Vector3(col * _cellSize + _cellSize * 0.5f, 0f, row * _cellSize + _cellSize * 0.5f);
 
         public Vector3 GridToWorld(Vector2Int pos)
             => GridToWorld(pos.x, pos.y);
 
-        /// 월드 좌표 → 그리드 좌표 (클램프 없음, 범위 밖일 수 있음)
+        /// 월드 좌표 -> 그리드 좌표 (클램프 없음, 범위 밖일 수 있음)
         public Vector2Int WorldToGrid(Vector3 worldPos)
         {
             Vector3 local = worldPos - _originOffset;
@@ -86,7 +86,7 @@ namespace CivilSim.Grid
             return new Vector2Int(col, row);
         }
 
-        /// 월드 좌표 → 그리드 좌표 (그리드 범위로 클램프)
+        /// 월드 좌표 -> 그리드 좌표 (그리드 범위로 클램프)
         public Vector2Int WorldToGridClamped(Vector3 worldPos)
         {
             Vector2Int pos = WorldToGrid(worldPos);
@@ -95,7 +95,7 @@ namespace CivilSim.Grid
             return pos;
         }
 
-        // ── 유효성 검사 ───────────────────────────────────────
+        // -- 유효성 검사 --
 
         public bool IsValid(int col, int row)
             => col >= 0 && col < _width && row >= 0 && row < _height;
@@ -103,7 +103,7 @@ namespace CivilSim.Grid
         public bool IsValid(Vector2Int pos)
             => IsValid(pos.x, pos.y);
 
-        /// 멀티셀 건물(size×size)이 배치 가능한지 검사
+        /// 멀티셀 건물(sizexsize)이 배치 가능한지 검사
         public bool IsValidArea(Vector2Int origin, int sizeCol, int sizeRow)
         {
             for (int dc = 0; dc < sizeCol; dc++)
@@ -113,7 +113,7 @@ namespace CivilSim.Grid
             return true;
         }
 
-        // ── 셀 접근 ───────────────────────────────────────────
+        // -- 셀 접근 --
 
         public GridCell GetCell(int col, int row)
             => IsValid(col, row) ? _cells[col, row] : null;
@@ -124,7 +124,7 @@ namespace CivilSim.Grid
         public GridCell GetCellFromWorld(Vector3 worldPos)
             => GetCell(WorldToGrid(worldPos));
 
-        // ── 셀 상태 쿼리 ──────────────────────────────────────
+        // -- 셀 상태 쿼리 --
 
         public bool IsEmpty(Vector2Int pos)
         {
@@ -149,7 +149,7 @@ namespace CivilSim.Grid
             return true;
         }
 
-        // ── 셀 수정 ───────────────────────────────────────────
+        // -- 셀 수정 --
 
         public void SetState(Vector2Int pos, CellState state)
         {
@@ -178,7 +178,7 @@ namespace CivilSim.Grid
         {
             var cell = GetCell(pos);
             if (cell == null) return;
-            // 철거 후 지반은 유지 (Foundation → 재건 가능)
+            // 철거 후 지반은 유지 (Foundation -> 재건 가능)
             cell.State      = CellState.Foundation;
             cell.BuildingId = -1;
         }
@@ -222,7 +222,7 @@ namespace CivilSim.Grid
             cell.State = CellState.Empty;
         }
 
-        // ── 이웃 셀 ───────────────────────────────────────────
+        // -- 이웃 셀 --
 
         private static readonly Vector2Int[] _neighbors4 =
         {
@@ -266,7 +266,7 @@ namespace CivilSim.Grid
             return false;
         }
 
-        // ── 프리팹 크기 자동 감지 ─────────────────────────────
+        // -- 프리팹 크기 자동 감지 --
 
         /// <summary>
         /// 도로 프리팹의 MeshFilter.sharedMesh bounds 합산으로 XZ 타일 크기를 반환.
