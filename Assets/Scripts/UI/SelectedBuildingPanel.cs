@@ -40,6 +40,16 @@ namespace CivilSim.UI
             _panel?.SetActive(false);
         }
 
+        private void OnEnable()
+        {
+            Core.GameEventBus.Subscribe<Core.UtilityStatusChangedEvent>(OnUtilityStatusChanged);
+        }
+
+        private void OnDisable()
+        {
+            Core.GameEventBus.Unsubscribe<Core.UtilityStatusChangedEvent>(OnUtilityStatusChanged);
+        }
+
         // -- 공개 API --
 
         public void Show(BuildingInstance instance)
@@ -92,6 +102,12 @@ namespace CivilSim.UI
             if (_current == null) return;
             Core.GameManager.Instance.Buildings.TryRemove(_current.GridOrigin);
             Hide();
+        }
+
+        private void OnUtilityStatusChanged(Core.UtilityStatusChangedEvent e)
+        {
+            if (_current == null || _panel == null || !_panel.activeSelf) return;
+            Refresh();
         }
 
         private static string CategoryLabel(BuildingCategory cat) => cat switch

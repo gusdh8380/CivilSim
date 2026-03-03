@@ -121,6 +121,7 @@ namespace CivilSim.Infrastructure
             PowerRate = totalPowerDemand <= 0 ? 1f : Mathf.Clamp01((float)totalPowerSupply / totalPowerDemand);
             WaterRate = totalWaterDemand <= 0 ? 1f : Mathf.Clamp01((float)totalWaterSupply / totalWaterDemand);
             OperationRate = Mathf.Min(PowerRate, WaterRate);
+            UpdateBuildingUtilityStates();
 
             EducationScore = CalculateServiceScore(ServiceType.Education);
             HealthcareScore = CalculateServiceScore(ServiceType.Healthcare);
@@ -323,6 +324,52 @@ namespace CivilSim.Infrastructure
         private static float ScoreToMultiplier(int score, float min, float max)
         {
             return Mathf.Lerp(min, max, Mathf.Clamp01(score / 100f));
+        }
+
+        private void UpdateBuildingUtilityStates()
+        {
+            float powerRate = Mathf.Clamp01(PowerRate);
+            float waterRate = Mathf.Clamp01(WaterRate);
+
+            for (int i = 0; i < _targetCache.Count; i++)
+            {
+                BuildingInstance inst = _targetCache[i];
+                BuildingData data = inst?.Data;
+                if (inst == null || data == null) continue;
+
+                if (data.RequiresPower)
+                    inst.IsPowered = IsSuppliedByRate(inst.InstanceId, powerRate, 19349663);
+                else
+                    inst.IsPowered = true;
+
+                if (data.RequiresWater)
+                    inst.IsWatered = IsSuppliedByRate(inst.InstanceId, waterRate, 83492791);
+                else
+                    inst.IsWatered = true;
+            }
+        }
+
+        private static bool IsSuppliedByRate(int instanceId, float rate, int salt)
+        {
+            if (rate >= 0.999f) return true;
+            if (rate <= 0.001f) return false;
+
+            float h = Hash01(instanceId, salt);
+            return h <= rate;
+        }
+
+        private static float Hash01(int value, int salt)
+        {
+            unchecked
+            {
+                uint x = (uint)(value * 1103515245 + salt);
+                x ^= x >> 16;
+                x *= 2246822519u;
+                x ^= x >> 13;
+                x *= 3266489917u;
+                x ^= x >> 16;
+                return (x & 0x00FFFFFFu) / 16777215f;
+            }
         }
     }
 }
