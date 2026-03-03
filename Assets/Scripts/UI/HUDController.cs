@@ -35,6 +35,17 @@ namespace CivilSim.UI
         [SerializeField] private TextMeshProUGUI _comDemandText;
         [SerializeField] private TextMeshProUGUI _indDemandText;
 
+        [Header("월말 리포트/목표 (선택)")]
+        [SerializeField] private TextMeshProUGUI _budgetReportText;
+        [SerializeField] private TextMeshProUGUI _goalText;
+        [SerializeField] private TextMeshProUGUI _resultText;
+        [SerializeField] private TextMeshProUGUI _notificationText;
+
+        [Header("알림 색상")]
+        [SerializeField] private Color _infoColor = new Color(0.8f, 0.9f, 1f);
+        [SerializeField] private Color _warningColor = new Color(1.0f, 0.85f, 0.3f);
+        [SerializeField] private Color _alertColor = new Color(1.0f, 0.45f, 0.45f);
+
         [Header("시간 배속 버튼")]
         [SerializeField] private Button _pauseButton;
         [SerializeField] private Button _speed1Button;
@@ -49,6 +60,10 @@ namespace CivilSim.UI
         private int _currentDay = 1;
         private int _currentMonth = 1;
         private int _currentYear = 1;
+        private int _targetPopulation;
+        private int _targetBalance;
+        private int _currentBalance;
+        private bool _useBalanceGoal;
 
         private void Start()
         {
@@ -66,6 +81,11 @@ namespace CivilSim.UI
             GameEventBus.Subscribe<TimeSpeedChangedEvent>(OnTimeSpeedChanged);
             GameEventBus.Subscribe<PopulationChangedEvent>(OnPopulationChanged);
             GameEventBus.Subscribe<DemandChangedEvent>(OnDemandChanged);
+            GameEventBus.Subscribe<BudgetReportEvent>(OnBudgetReport);
+            GameEventBus.Subscribe<GoalProgressEvent>(OnGoalProgress);
+            GameEventBus.Subscribe<GameWonEvent>(OnGameWon);
+            GameEventBus.Subscribe<GameLostEvent>(OnGameLost);
+            GameEventBus.Subscribe<NotificationEvent>(OnNotification);
 
             RefreshAll();
         }
@@ -84,6 +104,11 @@ namespace CivilSim.UI
             GameEventBus.Unsubscribe<TimeSpeedChangedEvent>(OnTimeSpeedChanged);
             GameEventBus.Unsubscribe<PopulationChangedEvent>(OnPopulationChanged);
             GameEventBus.Unsubscribe<DemandChangedEvent>(OnDemandChanged);
+            GameEventBus.Unsubscribe<BudgetReportEvent>(OnBudgetReport);
+            GameEventBus.Unsubscribe<GoalProgressEvent>(OnGoalProgress);
+            GameEventBus.Unsubscribe<GameWonEvent>(OnGameWon);
+            GameEventBus.Unsubscribe<GameLostEvent>(OnGameLost);
+            GameEventBus.Unsubscribe<NotificationEvent>(OnNotification);
         }
 
         private void OnMoneyChanged(MoneyChangedEvent e) => UpdateMoneyUI(e.NewAmount);
@@ -121,6 +146,32 @@ namespace CivilSim.UI
 
         private void OnDemandChanged(DemandChangedEvent e)
             => UpdateDemandUI(e.ResidentialDemand, e.CommercialDemand, e.IndustrialDemand);
+
+        private void OnBudgetReport(BudgetReportEvent e)
+        {
+            _currentBalance = e.Balance;
+            UpdateBudgetReportUI(e);
+            UpdateGoalUI();
+        }
+
+        private void OnGoalProgress(GoalProgressEvent e)
+        {
+            _targetPopulation = e.TargetPopulation;
+            _targetBalance = e.TargetBalance;
+            _population = e.CurrentPopulation;
+            _currentBalance = e.CurrentBalance;
+            _useBalanceGoal = e.UseBalanceGoal;
+            UpdateGoalUI();
+        }
+
+        private void OnGameWon(GameWonEvent e)
+            => UpdateResultUI($"승리 - {e.Year}년 {e.Month}월 - {e.Reason}", _moneyPositiveColor);
+
+        private void OnGameLost(GameLostEvent e)
+            => UpdateResultUI($"패배 - {e.Year}년 {e.Month}월 - {e.Reason}", _moneyNegativeColor);
+
+        private void OnNotification(NotificationEvent e)
+            => UpdateNotificationUI(e.Message, e.Type);
 
         private void UpdateMoneyUI(int amount)
         {
@@ -165,15 +216,27 @@ namespace CivilSim.UI
         private void RefreshAll()
         {
             var economy = GameManager.Instance.Economy;
-            if (economy != null) UpdateMoneyUI(economy.Money);
-            else UpdateMoneyUI(0);
+            _currentBalance = economy != null ? economy.Money : 0;
+            UpdateMoneyUI(_currentBalance);
 
             RecalculatePopulation();
+
+            var progression = GameManager.Instance.Progression;
+            if (progression != null)
+            {
+                _targetPopulation = progression.TargetPopulation;
+                _targetBalance = progression.TargetBalance;
+                _useBalanceGoal = progression.UseBalanceGoal;
+                _population = progression.CurrentPopulation;
+                _currentBalance = progression.CurrentBalance;
+            }
+
             UpdatePopulationUI();
             UpdateDateUI();
             UpdateSpeedButtonColors(TimeSpeed.Normal);
             UpdateModeUI();
             UpdateDemandUI(0, 0, 0);
+            UpdateGoalUI();
         }
 
         private void RecalculatePopulation()
@@ -254,6 +317,18 @@ namespace CivilSim.UI
                 _comDemandText = FindTextByName("ComDemandText");
             if (_indDemandText == null)
                 _indDemandText = FindTextByName("IndDemandText");
+
+            if (_budgetReportText == null)
+                _budgetReportText = FindTextByName("BudgetReportText") ?? FindTextByName("MonthlyReportText");
+
+            if (_goalText == null)
+                _goalText = FindTextByName("GoalText") ?? FindTextByName("ObjectiveText") ?? FindTextByName("GoalProgressText");
+
+            if (_resultText == null)
+                _resultText = FindTextByName("ResultText") ?? FindTextByName("OutcomeText");
+
+            if (_notificationText == null)
+                _notificationText = FindTextByName("NotificationText");
         }
 
         private void UpdateDemandUI(int res, int com, int ind)
@@ -265,6 +340,54 @@ namespace CivilSim.UI
 
         private static string FormatSigned(int value)
             => value >= 0 ? $"+{value}" : value.ToString();
+
+        private static string FormatSignedWithGrouping(int value)
+            => value >= 0 ? $"+{value:N0}" : value.ToString("N0");
+
+        private void UpdateBudgetReportUI(BudgetReportEvent e)
+        {
+            if (_budgetReportText == null) return;
+
+            int net = e.Income - e.Expenditure;
+            _budgetReportText.text =
+                $"{e.Year}년 {e.Month:D2}월 결산 | 수입 {e.Income:N0} | 지출 {e.Expenditure:N0} | 순이익 {FormatSignedWithGrouping(net)} | 잔액 {e.Balance:N0}";
+        }
+
+        private void UpdateGoalUI()
+        {
+            if (_goalText == null) return;
+            if (_targetPopulation <= 0)
+            {
+                _goalText.text = "목표: 진행 데이터 없음";
+                return;
+            }
+
+            string populationPart = $"인구 {_population:N0}/{_targetPopulation:N0}";
+            if (_useBalanceGoal)
+                _goalText.text = $"목표: {populationPart} | 자금 {_currentBalance:N0}/{_targetBalance:N0}";
+            else
+                _goalText.text = $"목표: {populationPart}";
+        }
+
+        private void UpdateResultUI(string text, Color color)
+        {
+            if (_resultText == null) return;
+            _resultText.text = text;
+            _resultText.color = color;
+        }
+
+        private void UpdateNotificationUI(string text, NotificationType type)
+        {
+            if (_notificationText == null) return;
+
+            _notificationText.text = text;
+            _notificationText.color = type switch
+            {
+                NotificationType.Info => _infoColor,
+                NotificationType.Warning => _warningColor,
+                _ => _alertColor
+            };
+        }
 
         private TextMeshProUGUI FindTextByName(string objectName)
         {

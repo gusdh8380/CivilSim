@@ -53,6 +53,15 @@ namespace CivilSim.Core
         public float IncomeMultiplier;
     }
 
+    public struct GoalProgressEvent
+    {
+        public int TargetPopulation;
+        public int CurrentPopulation;
+        public int TargetBalance;
+        public int CurrentBalance;
+        public bool UseBalanceGoal;
+    }
+
     // --
     // 인구
     // --
@@ -135,4 +144,18 @@ namespace CivilSim.Core
     public struct GamePausedEvent { }
     public struct GameSavedEvent { public string SlotName; }
     public struct GameLoadedEvent { public string SlotName; }
+
+    public struct GameWonEvent
+    {
+        public string Reason;
+        public int Month;
+        public int Year;
+    }
+
+    public struct GameLostEvent
+    {
+        public string Reason;
+        public int Month;
+        public int Year;
+    }
 }

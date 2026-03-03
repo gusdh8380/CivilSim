@@ -48,6 +48,9 @@ namespace CivilSim.Core
         [Header("Population")]
         [SerializeField] private CityDemandSystem _cityDemandSystem;
 
+        [Header("Progression")]
+        [SerializeField] private CityProgressionManager _cityProgressionManager;
+
         // -- 공개 접근자 --
         public GameClock        Clock           => _gameClock;
         public TickSystem       Tick            => _tickSystem;
@@ -64,6 +67,7 @@ namespace CivilSim.Core
         public ZoneManager      Zone            => _zoneManager;
         public ZoneBuilder      ZoneBuild       => _zoneBuilder;
         public CityDemandSystem Demand          => _cityDemandSystem;
+        public CityProgressionManager Progression => _cityProgressionManager;
 
         // -- Unity --
 
@@ -103,6 +107,9 @@ namespace CivilSim.Core
             if (_zoneManager        == null) _zoneManager        = FindFirstObjectByType<ZoneManager>();
             if (_zoneBuilder        == null) _zoneBuilder        = FindFirstObjectByType<ZoneBuilder>();
             if (_cityDemandSystem   == null) _cityDemandSystem   = FindFirstObjectByType<CityDemandSystem>();
+            if (_cityProgressionManager == null) _cityProgressionManager = FindFirstObjectByType<CityProgressionManager>();
+            if (_cityProgressionManager == null)
+                _cityProgressionManager = gameObject.AddComponent<CityProgressionManager>();
             // BuildingDatabase는 ScriptableObject라 FindObjectOfType 대상 아님 — Inspector 할당 필수
         }
 
@@ -133,6 +140,7 @@ namespace CivilSim.Core
             if (_zoneManager       == null) Debug.LogWarning("[GameManager] ZoneManager가 할당되지 않았습니다.");
             if (_zoneBuilder       == null) Debug.LogWarning("[GameManager] ZoneBuilder가 할당되지 않았습니다.");
             if (_cityDemandSystem  == null) Debug.LogWarning("[GameManager] CityDemandSystem이 할당되지 않았습니다.");
+            if (_cityProgressionManager == null) Debug.LogWarning("[GameManager] CityProgressionManager가 할당되지 않았습니다.");
         }
 
         // -- 편의 메서드 --
