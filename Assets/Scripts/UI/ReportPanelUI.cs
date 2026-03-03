@@ -189,8 +189,9 @@ public class ReportPanelUI : MonoBehaviour
     {
         if (_budgetText == null) return;
         int net = e.Income - e.Expenditure;
+        string utilityPart = $" | 전력 {Mathf.RoundToInt(e.PowerRate * 100f)}% | 수도 {Mathf.RoundToInt(e.WaterRate * 100f)}% | 운영 {Mathf.RoundToInt(e.OperationRate * 100f)}% | 서비스 {e.ServiceScore}%";
         _budgetText.text =
-            $"{e.Year}년 {e.Month:D2}월 결산 |수입 {e.Income:N0} | 지출 {e.Expenditure:N0} | 순이익 {FormatSigned(net)}| 잔액 {e.Balance:N0}";
+            $"{e.Year}년 {e.Month:D2}월 결산 |수입 {e.Income:N0} | 지출 {e.Expenditure:N0} | 순이익 {FormatSigned(net)}| 잔액 {e.Balance:N0}{utilityPart}";
     }
 
     private void UpdateGoalText(GoalProgressEvent e)

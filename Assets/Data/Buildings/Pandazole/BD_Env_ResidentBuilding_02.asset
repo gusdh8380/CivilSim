@@ -18,8 +18,8 @@ MonoBehaviour:
     02\uD638\uC785\uB2C8\uB2E4."
   SizeX: 1
   SizeZ: 1
-  BuildCost: 1000
-  MaintenanceCostPerMonth: 30
+  BuildCost: 1500
+  MaintenanceCostPerMonth: 45
   ResidentCapacity: 4
   JobCapacity: 0
   RequiresPower: 1

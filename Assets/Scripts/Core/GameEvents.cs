@@ -51,6 +51,15 @@ namespace CivilSim.Core
         public int Month;
         public int Year;
         public float IncomeMultiplier;
+        public float ServiceMultiplier;
+        public float PowerRate;
+        public float WaterRate;
+        public float OperationRate;
+        public int PowerDemand;
+        public int PowerSupply;
+        public int WaterDemand;
+        public int WaterSupply;
+        public int ServiceScore;
     }
 
     public struct GoalProgressEvent
@@ -112,6 +121,23 @@ namespace CivilSim.Core
     public struct RoadRemovedEvent
     {
         public Vector2Int GridPosition;
+    }
+
+    // --
+    // 유틸리티
+    // --
+
+    public struct UtilityStatusChangedEvent
+    {
+        public int PowerDemand;
+        public int PowerSupply;
+        public int WaterDemand;
+        public int WaterSupply;
+        public int ServiceScore;
+        public float PowerRate;
+        public float WaterRate;
+        public float OperationRate;
+        public float ServiceMultiplier;
     }
 
     // --

@@ -17,13 +17,17 @@ MonoBehaviour:
   Description: "\uD654\uC7AC\uC640 \uC7AC\uB09C\uC5D0 \uB300\uC751\uD558\uB294 \uC18C\uBC29\uC11C\uC785\uB2C8\uB2E4."
   SizeX: 1
   SizeZ: 1
-  BuildCost: 4600
-  MaintenanceCostPerMonth: 150
+  BuildCost: 8400
+  MaintenanceCostPerMonth: 280
   ResidentCapacity: 0
-  JobCapacity: 14
+  JobCapacity: 10
   RequiresPower: 1
   RequiresWater: 1
   PowerConsumption: 20
   WaterConsumption: 12
+  PowerSupply: 0
+  WaterSupply: 0
+  ServiceValue: 20
+  ServiceKind: 3
   Prefab: {fileID: 8585650954766913903, guid: 5c06f3174e1062d44b9caa19b044b217, type: 3}
   Icon: {fileID: 1353274061, guid: 221adf80cd158b6469dc8da9c808d68f, type: 3}

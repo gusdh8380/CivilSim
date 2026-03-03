@@ -1,6 +1,7 @@
 using UnityEngine;
 using CivilSim.Core;
 using CivilSim.Buildings;
+using CivilSim.Infrastructure;
 
 namespace CivilSim.Economy
 {
@@ -27,6 +28,7 @@ namespace CivilSim.Economy
 
         // -- 내부 참조 --
         private BuildingManager _buildings;
+        private UtilityManager _utility;
         private int _resDemand;
         private int _comDemand;
         private int _indDemand;
@@ -48,6 +50,7 @@ namespace CivilSim.Economy
         private void Start()
         {
             _buildings = GameManager.Instance.Buildings;
+            _utility = GameManager.Instance.Utility;
 
             if (_config == null)
             {
@@ -121,6 +124,7 @@ namespace CivilSim.Economy
         private void OnMonthlyTick(MonthlyTickEvent e)
         {
             if (_config == null || _buildings == null) return;
+            if (_utility == null) _utility = GameManager.Instance.Utility;
 
             int baseIncome  = 0;
             int expenditure = 0;
@@ -146,7 +150,12 @@ namespace CivilSim.Economy
                 _config.MinIncomeMultiplier,
                 _config.MaxIncomeMultiplier);
 
-            int income = Mathf.RoundToInt(baseIncome * incomeMultiplier);
+            float serviceMultiplier = _utility != null ? _utility.ServiceMultiplier : 1f;
+            float powerRate = _utility != null ? _utility.PowerRate : 1f;
+            float waterRate = _utility != null ? _utility.WaterRate : 1f;
+            float operationRate = _utility != null ? _utility.OperationRate : 1f;
+
+            int income = Mathf.RoundToInt(baseIncome * incomeMultiplier * serviceMultiplier * operationRate);
             int net = income - expenditure;
             Money  += net;
 
@@ -160,6 +169,15 @@ namespace CivilSim.Economy
                 Month       = e.Month,
                 Year        = e.Year,
                 IncomeMultiplier = incomeMultiplier,
+                ServiceMultiplier = serviceMultiplier,
+                PowerRate = powerRate,
+                WaterRate = waterRate,
+                OperationRate = operationRate,
+                PowerDemand = _utility != null ? _utility.PowerDemand : 0,
+                PowerSupply = _utility != null ? _utility.PowerSupply : 0,
+                WaterDemand = _utility != null ? _utility.WaterDemand : 0,
+                WaterSupply = _utility != null ? _utility.WaterSupply : 0,
+                ServiceScore = _utility != null ? _utility.ServiceScore : 0,
             });
 
             PublishMoneyChanged(net);
@@ -177,7 +195,7 @@ namespace CivilSim.Economy
                 Debug.LogWarning("[EconomyManager] 파산!");
             }
 
-            Debug.Log($"[Economy] {e.Year}/{e.Month} 기본수입:{baseIncome:N0} 배율:{incomeMultiplier:F2} 수입:{income:N0} 지출:{expenditure:N0} 잔액:{Money:N0}");
+            Debug.Log($"[Economy] {e.Year}/{e.Month} 기본수입:{baseIncome:N0} 수요배율:{incomeMultiplier:F2} 서비스배율:{serviceMultiplier:F2} 운영률:{operationRate:F2} 수입:{income:N0} 지출:{expenditure:N0} 잔액:{Money:N0}");
         }
 
         // -- 내부 --

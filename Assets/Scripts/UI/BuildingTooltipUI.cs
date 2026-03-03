@@ -82,7 +82,7 @@ namespace CivilSim.UI
             Set(_sizeText,        $"{data.SizeX}x{data.SizeZ} 타일");
             Set(_costText,        $"건설: ₩{data.BuildCost:N0}");
             Set(_maintenanceText, $"유지: ₩{data.MaintenanceCostPerMonth:N0}/월");
-            Set(_descriptionText, data.Description);
+            Set(_descriptionText, BuildDescriptionText(data));
 
             // 인구 / 고용
             string pop = "";
@@ -93,6 +93,56 @@ namespace CivilSim.UI
                 pop += $"고용 {data.JobCapacity}명";
             }
             Set(_populationText, pop);
+        }
+
+        private static string BuildDescriptionText(BuildingData data)
+        {
+            if (data == null) return string.Empty;
+
+            string utilityText = BuildUtilityText(data);
+            string serviceText = BuildServiceText(data);
+
+            if (string.IsNullOrEmpty(utilityText) && string.IsNullOrEmpty(serviceText))
+                return data.Description;
+
+            if (string.IsNullOrEmpty(data.Description))
+                return $"{utilityText}\n{serviceText}".Trim();
+
+            string extra = $"{utilityText}\n{serviceText}".Trim();
+            return string.IsNullOrEmpty(extra) ? data.Description : $"{data.Description}\n{extra}";
+        }
+
+        private static string BuildUtilityText(BuildingData data)
+        {
+            if (data == null) return string.Empty;
+
+            string supply = "";
+            if (data.PowerSupply > 0) supply += $"전력공급 {data.PowerSupply}";
+            if (data.WaterSupply > 0)
+            {
+                if (!string.IsNullOrEmpty(supply)) supply += " | ";
+                supply += $"수도공급 {data.WaterSupply}";
+            }
+
+            string demand = "";
+            if (data.RequiresPower && data.PowerConsumption > 0) demand += $"전력소비 {data.PowerConsumption}";
+            if (data.RequiresWater && data.WaterConsumption > 0)
+            {
+                if (!string.IsNullOrEmpty(demand)) demand += " | ";
+                demand += $"수도소비 {data.WaterConsumption}";
+            }
+
+            if (string.IsNullOrEmpty(supply) && string.IsNullOrEmpty(demand))
+                return string.Empty;
+            if (string.IsNullOrEmpty(supply)) return demand;
+            if (string.IsNullOrEmpty(demand)) return supply;
+            return $"{supply} / {demand}";
+        }
+
+        private static string BuildServiceText(BuildingData data)
+        {
+            if (data == null || data.ServiceValue <= 0) return string.Empty;
+            return $"서비스 {data.ServiceKind} +{data.ServiceValue}";
         }
 
         private static void Set(TextMeshProUGUI label, string text)

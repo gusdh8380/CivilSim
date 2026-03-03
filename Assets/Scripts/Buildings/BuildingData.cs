@@ -12,6 +12,15 @@ namespace CivilSim.Buildings
         Infrastructure  // 인프라 (도로, 교량) — 추후 확장
     }
 
+    public enum ServiceType
+    {
+        None,
+        Education,
+        Healthcare,
+        Safety,
+        Sanitation
+    }
+
     /// <summary>
     /// 건물의 정적 데이터 정의. ScriptableObject로 에셋화.
     /// Project -> Create -> CivilSim -> Buildings -> BuildingData
@@ -47,6 +56,13 @@ namespace CivilSim.Buildings
         public bool RequiresWater = true;
         [Min(0)] public int PowerConsumption = 10; // kW/월
         [Min(0)] public int WaterConsumption = 10; // L/월
+        [Min(0)] public int PowerSupply = 0;       // kW/월
+        [Min(0)] public int WaterSupply = 0;       // L/월
+
+        // -- 서비스 --
+        [Header("서비스")]
+        [Min(0)] public int ServiceValue = 0;
+        public ServiceType ServiceKind = ServiceType.None;
 
         // -- 시각화 --
         [Header("시각화")]
@@ -59,5 +75,7 @@ namespace CivilSim.Buildings
 
         /// 이 건물이 정상 운영되기 위해 전기가 필요한지
         public bool NeedsUtility => RequiresPower || RequiresWater;
+        public bool IsUtilityProvider => PowerSupply > 0 || WaterSupply > 0;
+        public bool ProvidesService => ServiceValue > 0;
     }
 }

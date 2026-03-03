@@ -1,6 +1,7 @@
 using UnityEngine;
 using CivilSim.Buildings;
 using CivilSim.Core;
+using CivilSim.Infrastructure;
 
 namespace CivilSim.Population
 {
@@ -27,6 +28,7 @@ namespace CivilSim.Population
         public float IndustrialDemandFactor => _industrialDemandFactorRuntime;
 
         private BuildingManager _buildings;
+        private UtilityManager _utility;
         private int _lastPopulation;
         private float _commercialDemandFactorRuntime;
         private float _industrialDemandFactorRuntime;
@@ -40,6 +42,7 @@ namespace CivilSim.Population
         private void Start()
         {
             _buildings = GameManager.Instance?.Buildings;
+            _utility = GameManager.Instance?.Utility;
             RecalculateAndPublish();
         }
 
@@ -78,10 +81,12 @@ namespace CivilSim.Population
             if (_buildings == null) _buildings = GameManager.Instance?.Buildings;
             if (_buildings == null) return;
 
-            int residents = 0;
-            int commercialJobs = 0;
-            int industrialJobs = 0;
-            int totalJobs = 0;
+            if (_utility == null) _utility = GameManager.Instance?.Utility;
+
+            int residentsRaw = 0;
+            int commercialJobsRaw = 0;
+            int industrialJobsRaw = 0;
+            int totalJobsRaw = 0;
 
             foreach (var kv in _buildings.GetAll())
             {
@@ -89,14 +94,20 @@ namespace CivilSim.Population
                 var data = inst?.Data;
                 if (data == null) continue;
 
-                residents += data.ResidentCapacity;
-                totalJobs += data.JobCapacity;
+                residentsRaw += data.ResidentCapacity;
+                totalJobsRaw += data.JobCapacity;
 
                 if (data.Category == BuildingCategory.Commercial)
-                    commercialJobs += data.JobCapacity;
+                    commercialJobsRaw += data.JobCapacity;
                 else if (data.Category == BuildingCategory.Industrial)
-                    industrialJobs += data.JobCapacity;
+                    industrialJobsRaw += data.JobCapacity;
             }
+
+            float operationRate = _utility != null ? _utility.OperationRate : 1f;
+            int residents = Mathf.RoundToInt(residentsRaw * operationRate);
+            int totalJobs = Mathf.RoundToInt(totalJobsRaw * operationRate);
+            int commercialJobs = Mathf.RoundToInt(commercialJobsRaw * operationRate);
+            int industrialJobs = Mathf.RoundToInt(industrialJobsRaw * operationRate);
 
             Residents = residents;
             JobsTotal = totalJobs;

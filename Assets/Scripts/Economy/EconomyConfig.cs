@@ -11,13 +11,13 @@ namespace CivilSim.Economy
     {
         [Header("초기 예산")]
         [Tooltip("게임 시작 시 보유 자금")]
-        public int InitialBudget = 500_000;
+        public int InitialBudget = 80_000;
 
         [Header("세율 (월별 1인당 수입)")]
         [Tooltip("주거 건물 거주자 1인당 월 세금")]
-        public int TaxPerResidentPerMonth = 100;
+        public int TaxPerResidentPerMonth = 35;
         [Tooltip("상업/공업 건물 고용자 1인당 월 세금")]
-        public int TaxPerJobPerMonth = 80;
+        public int TaxPerJobPerMonth = 30;
 
         [Header("수요 반영")]
         [Tooltip("수요 1포인트당 수입 배율 변화량. 예: 0.002 = 0.2%")]
@@ -35,6 +35,6 @@ namespace CivilSim.Economy
 
         [Header("파산")]
         [Tooltip("이 금액 미만이면 파산 처리")]
-        public int BankruptcyThreshold = -50_000;
+        public int BankruptcyThreshold = -20_000;
     }
 }

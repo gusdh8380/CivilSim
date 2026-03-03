@@ -40,6 +40,7 @@ namespace CivilSim.Core
         [SerializeField] private RoadBuilder       _roadBuilder;
         [SerializeField] private FoundationManager _foundationManager;
         [SerializeField] private FoundationBuilder _foundationBuilder;
+        [SerializeField] private UtilityManager    _utilityManager;
 
         [Header("Zones")]
         [SerializeField] private ZoneManager _zoneManager;
@@ -67,6 +68,7 @@ namespace CivilSim.Core
         public RoadBuilder      RoadBuild       => _roadBuilder;
         public FoundationManager Foundation     => _foundationManager;
         public FoundationBuilder FoundationBuild => _foundationBuilder;
+        public UtilityManager   Utility         => _utilityManager;
         public ZoneManager      Zone            => _zoneManager;
         public ZoneBuilder      ZoneBuild       => _zoneBuilder;
         public CityDemandSystem Demand          => _cityDemandSystem;
@@ -108,6 +110,7 @@ namespace CivilSim.Core
             if (_roadBuilder        == null) _roadBuilder        = FindFirstObjectByType<RoadBuilder>();
             if (_foundationManager  == null) _foundationManager  = FindFirstObjectByType<FoundationManager>();
             if (_foundationBuilder  == null) _foundationBuilder  = FindFirstObjectByType<FoundationBuilder>();
+            if (_utilityManager     == null) _utilityManager     = FindFirstObjectByType<UtilityManager>();
             if (_zoneManager        == null) _zoneManager        = FindFirstObjectByType<ZoneManager>();
             if (_zoneBuilder        == null) _zoneBuilder        = FindFirstObjectByType<ZoneBuilder>();
             if (_cityDemandSystem   == null) _cityDemandSystem   = FindFirstObjectByType<CityDemandSystem>();
@@ -117,6 +120,8 @@ namespace CivilSim.Core
                 _cityProgressionManager = gameObject.AddComponent<CityProgressionManager>();
             if (_saveLoadManager == null)
                 _saveLoadManager = gameObject.AddComponent<SaveLoadManager>();
+            if (_utilityManager == null)
+                _utilityManager = gameObject.AddComponent<UtilityManager>();
             // BuildingDatabase는 ScriptableObject라 FindObjectOfType 대상 아님 — Inspector 할당 필수
         }
 
@@ -144,6 +149,7 @@ namespace CivilSim.Core
             if (_roadBuilder       == null) Debug.LogWarning("[GameManager] RoadBuilder가 할당되지 않았습니다.");
             if (_foundationManager == null) Debug.LogWarning("[GameManager] FoundationManager가 할당되지 않았습니다.");
             if (_foundationBuilder == null) Debug.LogWarning("[GameManager] FoundationBuilder가 할당되지 않았습니다.");
+            if (_utilityManager    == null) Debug.LogWarning("[GameManager] UtilityManager가 할당되지 않았습니다.");
             if (_zoneManager       == null) Debug.LogWarning("[GameManager] ZoneManager가 할당되지 않았습니다.");
             if (_zoneBuilder       == null) Debug.LogWarning("[GameManager] ZoneBuilder가 할당되지 않았습니다.");
             if (_cityDemandSystem  == null) Debug.LogWarning("[GameManager] CityDemandSystem이 할당되지 않았습니다.");
