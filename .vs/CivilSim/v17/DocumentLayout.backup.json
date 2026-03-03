@@ -3,8 +3,8 @@
   "WorkspaceRootPath": "C:\\PJ\\CivilSim\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{DEA397C5-DA88-F066-ADFB-71CD3A1A5851}|Assembly-CSharp.csproj|c:\\pj\\civilsim\\assets\\scripts\\world\\groundgenerator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{DEA397C5-DA88-F066-ADFB-71CD3A1A5851}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\world\\groundgenerator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{DEA397C5-DA88-F066-ADFB-71CD3A1A5851}|Assembly-CSharp.csproj|c:\\pj\\civilsim\\assets\\scripts\\ui\\policypanelui.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DEA397C5-DA88-F066-ADFB-71CD3A1A5851}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\ui\\policypanelui.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -19,14 +19,14 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "GroundGenerator.cs",
-              "DocumentMoniker": "C:\\PJ\\CivilSim\\Assets\\Scripts\\World\\GroundGenerator.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\World\\GroundGenerator.cs",
-              "ToolTip": "C:\\PJ\\CivilSim\\Assets\\Scripts\\World\\GroundGenerator.cs",
-              "RelativeToolTip": "Assets\\Scripts\\World\\GroundGenerator.cs",
-              "ViewState": "AgIAAHsAAAAAAAAAAAAIwF4AAAAWAAAAAAAAAA==",
+              "Title": "PolicyPanelUI.cs",
+              "DocumentMoniker": "C:\\PJ\\CivilSim\\Assets\\Scripts\\UI\\PolicyPanelUI.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\UI\\PolicyPanelUI.cs",
+              "ToolTip": "C:\\PJ\\CivilSim\\Assets\\Scripts\\UI\\PolicyPanelUI.cs",
+              "RelativeToolTip": "Assets\\Scripts\\UI\\PolicyPanelUI.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-28T12:10:35.054Z",
+              "WhenOpened": "2026-03-03T10:04:32.522Z",
               "EditorCaption": ""
             }
           ]
