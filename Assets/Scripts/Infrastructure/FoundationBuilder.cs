@@ -35,6 +35,13 @@ namespace CivilSim.Infrastructure
         private Material _previewValidMat;
         private Material _previewInvalidMat;
 
+        [Header("비용 프리뷰")]
+        [SerializeField] private bool _showCostPreview = true;
+        [SerializeField] private Vector2 _costPreviewOffset = new Vector2(16f, 16f);
+
+        private int _previewPlaceableCells;
+        private GUIStyle _costPreviewStyle;
+
         public bool IsActive => _isActive;
 
         // -- Unity --
@@ -114,6 +121,7 @@ namespace CivilSim.Infrastructure
                 _isDragging  = false;
                 _lastHover   = new(-999, -999);
                 _lastDragEnd = new(-999, -999);
+                _previewPlaceableCells = 0;
                 ClearPreviews();
             }
         }
@@ -135,6 +143,7 @@ namespace CivilSim.Infrastructure
             _isDragging = false;
             _lastHover   = new(-999, -999);
             _lastDragEnd = new(-999, -999);
+            _previewPlaceableCells = 0;
             ClearPreviews();
         }
 
@@ -145,6 +154,7 @@ namespace CivilSim.Infrastructure
             SetPreviewCount(1);
             var cell = _grid?.GetCell(pos);
             bool ok  = cell != null && cell.CanPlaceFoundation;
+            _previewPlaceableCells = ok ? 1 : 0;
             PositionTile(0, pos, ok);
         }
 
@@ -159,6 +169,7 @@ namespace CivilSim.Infrastructure
             SetPreviewCount(count);
 
             int idx = 0;
+            int placeable = 0;
             for (int x = minX; x <= maxX; x++)
             {
                 for (int z = minZ; z <= maxZ; z++)
@@ -166,10 +177,12 @@ namespace CivilSim.Infrastructure
                     var cellPos = new Vector2Int(x, z);
                     var cell    = _grid?.GetCell(cellPos);
                     bool ok     = cell != null && cell.CanPlaceFoundation;
+                    if (ok) placeable++;
                     PositionTile(idx, cellPos, ok);
                     idx++;
                 }
             }
+            _previewPlaceableCells = placeable;
         }
 
         private void SetPreviewCount(int needed)
@@ -252,6 +265,38 @@ namespace CivilSim.Infrastructure
             mat.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
             mat.renderQueue = 3000;
             return mat;
+        }
+
+        private void OnGUI()
+        {
+            if (!_showCostPreview || !_isActive) return;
+
+            int unitCost = _foundation != null ? Mathf.Max(0, _foundation.FoundationCostPerTile) : 0;
+            int totalCost = _previewPlaceableCells * unitCost;
+
+            EnsureCostPreviewStyle();
+
+            Vector2 guiPos = new Vector2(18f, 18f);
+            var mouse = Mouse.current;
+            if (mouse != null)
+            {
+                Vector2 m = mouse.position.ReadValue();
+                guiPos.x = Mathf.Clamp(m.x + _costPreviewOffset.x, 8f, Screen.width - 320f);
+                guiPos.y = Mathf.Clamp(Screen.height - m.y + _costPreviewOffset.y, 8f, Screen.height - 40f);
+            }
+
+            string text = $"지반 예상 비용: ₩{totalCost:N0} ({_previewPlaceableCells}셀 x ₩{unitCost:N0})";
+            GUI.Label(new Rect(guiPos.x, guiPos.y, 320f, 24f), text, _costPreviewStyle);
+        }
+
+        private void EnsureCostPreviewStyle()
+        {
+            if (_costPreviewStyle != null) return;
+            _costPreviewStyle = new GUIStyle(GUI.skin.label)
+            {
+                fontSize = 14,
+                normal = { textColor = new Color(1f, 0.95f, 0.55f, 1f) }
+            };
         }
 
         private void OnDestroy()
