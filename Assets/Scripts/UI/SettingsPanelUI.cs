@@ -20,6 +20,9 @@ namespace CivilSim.UI
         [SerializeField] private Button _openButton;
         [SerializeField] private Button _closeButton;
 
+        [Header("저장 버튼 (선택)")]
+        [SerializeField] private Button _saveGameButton;
+
         [Header("카메라 이동 속도")]
         [SerializeField] private Slider _cameraPanSlider;
         [SerializeField] private TextMeshProUGUI _cameraPanLabel;
@@ -84,6 +87,9 @@ namespace CivilSim.UI
 
             if (_closeButton != null)
                 _closeButton.onClick.RemoveListener(Hide);
+
+            if (_saveGameButton != null)
+                _saveGameButton.onClick.RemoveListener(OnClickSaveGame);
         }
 
         public void Toggle() => SetVisible(!_isOpen);
@@ -121,6 +127,22 @@ namespace CivilSim.UI
                 _camCtrl.InputLocked = visible;
         }
 
+        private void OnClickSaveGame()
+        {
+            var saveLoad = GameManager.Instance?.SaveLoad;
+            if (saveLoad == null)
+            {
+                GameEventBus.Publish(new NotificationEvent
+                {
+                    Message = "저장 시스템을 찾을 수 없습니다.",
+                    Type = NotificationType.Warning
+                });
+                return;
+            }
+
+            saveLoad.Save();
+        }
+
         private void OnOtherPanelOpened(object panelOwner)
         {
             if (ReferenceEquals(panelOwner, this)) return;
@@ -144,6 +166,14 @@ namespace CivilSim.UI
                     ?? FindButtonInChildrenByContains(_panel.transform, "exit")
                     ?? FindButtonInChildrenByContains(_panel.transform, "close");
             }
+
+            if (_saveGameButton == null && _panel != null)
+            {
+                _saveGameButton = FindButtonInChildrenByName(_panel.transform, "SaveGameButton")
+                    ?? FindButtonInChildrenByName(_panel.transform, "SaveButton")
+                    ?? FindButtonInChildrenByName(_panel.transform, "QuickSaveButton")
+                    ?? FindButtonInChildrenByContains(_panel.transform, "save");
+            }
         }
 
         private void BindButtonListeners()
@@ -158,6 +188,12 @@ namespace CivilSim.UI
             {
                 _closeButton.onClick.RemoveListener(Hide);
                 _closeButton.onClick.AddListener(Hide);
+            }
+
+            if (_saveGameButton != null)
+            {
+                _saveGameButton.onClick.RemoveListener(OnClickSaveGame);
+                _saveGameButton.onClick.AddListener(OnClickSaveGame);
             }
         }
 

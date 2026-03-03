@@ -34,7 +34,7 @@ namespace CivilSim.Core
         [SerializeField] private string _defaultSlotName = "quick";
 
         [Header("단축키")]
-        [SerializeField] private bool _useKeyboardShortcut = true;
+        [SerializeField] private bool _useKeyboardShortcut = false;
         [SerializeField] private Key _saveKey = Key.F5;
         [SerializeField] private Key _loadKey = Key.F9;
 
