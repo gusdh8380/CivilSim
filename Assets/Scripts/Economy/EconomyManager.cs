@@ -22,6 +22,8 @@ namespace CivilSim.Economy
         // -- 공개 상태 --
         public int  Money        { get; private set; }
         public bool IsBankrupt   { get; private set; }
+        public int ResidentTaxPerMonth => _residentTaxPerMonth;
+        public int JobTaxPerMonth => _jobTaxPerMonth;
 
         // -- 내부 참조 --
         private BuildingManager _buildings;
@@ -29,8 +31,19 @@ namespace CivilSim.Economy
         private int _comDemand;
         private int _indDemand;
         private int _deficitStreakMonths;
+        private int _residentTaxPerMonth;
+        private int _jobTaxPerMonth;
 
         // -- Unity --
+
+        private void Awake()
+        {
+            if (_config != null)
+            {
+                _residentTaxPerMonth = Mathf.Max(0, _config.TaxPerResidentPerMonth);
+                _jobTaxPerMonth = Mathf.Max(0, _config.TaxPerJobPerMonth);
+            }
+        }
 
         private void Start()
         {
@@ -41,6 +54,9 @@ namespace CivilSim.Economy
                 Debug.LogError("[EconomyManager] EconomyConfig이 할당되지 않았습니다!");
                 return;
             }
+
+            _residentTaxPerMonth = Mathf.Max(0, _config.TaxPerResidentPerMonth);
+            _jobTaxPerMonth = Mathf.Max(0, _config.TaxPerJobPerMonth);
 
             Money = _config.InitialBudget;
             PublishMoneyChanged(0);
@@ -78,6 +94,16 @@ namespace CivilSim.Economy
             PublishMoneyChanged(amount);
         }
 
+        public void SetResidentTaxPerMonth(int value)
+        {
+            _residentTaxPerMonth = Mathf.Max(0, value);
+        }
+
+        public void SetJobTaxPerMonth(int value)
+        {
+            _jobTaxPerMonth = Mathf.Max(0, value);
+        }
+
         // -- 월별 정산 --
 
         private void OnMonthlyTick(MonthlyTickEvent e)
@@ -94,8 +120,8 @@ namespace CivilSim.Economy
                 var data = inst.Data;
 
                 // 수입: 거주자 세금 + 고용자 세금
-                baseIncome += data.ResidentCapacity * _config.TaxPerResidentPerMonth;
-                baseIncome += data.JobCapacity      * _config.TaxPerJobPerMonth;
+                baseIncome += data.ResidentCapacity * _residentTaxPerMonth;
+                baseIncome += data.JobCapacity      * _jobTaxPerMonth;
 
                 // 지출: 유지비
                 expenditure += data.MaintenanceCostPerMonth;

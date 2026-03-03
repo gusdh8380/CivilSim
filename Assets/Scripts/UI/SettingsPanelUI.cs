@@ -4,6 +4,8 @@ using UnityEngine.InputSystem;
 using TMPro;
 using CivilSim.CameraSystem;
 using CivilSim.Core;
+using CivilSim.Economy;
+using CivilSim.Population;
 
 namespace CivilSim.UI
 {
@@ -45,8 +47,28 @@ namespace CivilSim.UI
         [Tooltip("RTSCameraController._keyPanSpeed 와 동일한 기본값")]
         [SerializeField, Range(0.05f, 3f)]    private float _defaultPanSpeed = 0.4f;
 
+        [Header("정책 슬라이더 (선택)")]
+        [SerializeField] private Slider _residentTaxSlider;
+        [SerializeField] private TextMeshProUGUI _residentTaxLabel;
+        [SerializeField] private Slider _jobTaxSlider;
+        [SerializeField] private TextMeshProUGUI _jobTaxLabel;
+        [SerializeField] private Slider _commercialDemandFactorSlider;
+        [SerializeField] private TextMeshProUGUI _commercialDemandFactorLabel;
+        [SerializeField] private Slider _industrialDemandFactorSlider;
+        [SerializeField] private TextMeshProUGUI _industrialDemandFactorLabel;
+
+        [Header("정책 범위")]
+        [SerializeField, Range(0, 500)] private int _minResidentTax = 0;
+        [SerializeField, Range(50, 1000)] private int _maxResidentTax = 300;
+        [SerializeField, Range(0, 500)] private int _minJobTax = 0;
+        [SerializeField, Range(50, 1000)] private int _maxJobTax = 300;
+        [SerializeField, Range(0.05f, 1.0f)] private float _minDemandFactor = 0.05f;
+        [SerializeField, Range(0.05f, 1.0f)] private float _maxDemandFactor = 1.0f;
+
         // -- 내부 상태 --
         private RTSCameraController _camCtrl;
+        private EconomyManager _economy;
+        private CityDemandSystem _demand;
         private bool                _isOpen;
 
         // -- Unity --
@@ -72,6 +94,7 @@ namespace CivilSim.UI
             }
 
             UpdateSpeedLabel(initSpeed);
+            InitializePolicyControls();
         }
 
         private void Update()
@@ -87,6 +110,15 @@ namespace CivilSim.UI
         {
             if (_cameraPanSlider != null)
                 _cameraPanSlider.onValueChanged.RemoveListener(OnCameraSpeedChanged);
+
+            if (_residentTaxSlider != null)
+                _residentTaxSlider.onValueChanged.RemoveListener(OnResidentTaxChanged);
+            if (_jobTaxSlider != null)
+                _jobTaxSlider.onValueChanged.RemoveListener(OnJobTaxChanged);
+            if (_commercialDemandFactorSlider != null)
+                _commercialDemandFactorSlider.onValueChanged.RemoveListener(OnCommercialDemandFactorChanged);
+            if (_industrialDemandFactorSlider != null)
+                _industrialDemandFactorSlider.onValueChanged.RemoveListener(OnIndustrialDemandFactorChanged);
 
             if (_openButton != null)
                 _openButton.onClick.RemoveListener(Show);
@@ -115,6 +147,102 @@ namespace CivilSim.UI
         {
             if (_cameraPanLabel != null)
                 _cameraPanLabel.text = $"{value:F2}x";
+        }
+
+        private void InitializePolicyControls()
+        {
+            _economy = GameManager.Instance?.Economy;
+            _demand = GameManager.Instance?.Demand;
+
+            if (_residentTaxSlider != null)
+            {
+                _residentTaxSlider.minValue = _minResidentTax;
+                _residentTaxSlider.maxValue = _maxResidentTax;
+                _residentTaxSlider.value = _economy != null ? _economy.ResidentTaxPerMonth : _minResidentTax;
+                _residentTaxSlider.onValueChanged.AddListener(OnResidentTaxChanged);
+                UpdateResidentTaxLabel(Mathf.RoundToInt(_residentTaxSlider.value));
+            }
+
+            if (_jobTaxSlider != null)
+            {
+                _jobTaxSlider.minValue = _minJobTax;
+                _jobTaxSlider.maxValue = _maxJobTax;
+                _jobTaxSlider.value = _economy != null ? _economy.JobTaxPerMonth : _minJobTax;
+                _jobTaxSlider.onValueChanged.AddListener(OnJobTaxChanged);
+                UpdateJobTaxLabel(Mathf.RoundToInt(_jobTaxSlider.value));
+            }
+
+            if (_commercialDemandFactorSlider != null)
+            {
+                _commercialDemandFactorSlider.minValue = _minDemandFactor;
+                _commercialDemandFactorSlider.maxValue = _maxDemandFactor;
+                _commercialDemandFactorSlider.value = _demand != null ? _demand.CommercialDemandFactor : _minDemandFactor;
+                _commercialDemandFactorSlider.onValueChanged.AddListener(OnCommercialDemandFactorChanged);
+                UpdateCommercialDemandFactorLabel(_commercialDemandFactorSlider.value);
+            }
+
+            if (_industrialDemandFactorSlider != null)
+            {
+                _industrialDemandFactorSlider.minValue = _minDemandFactor;
+                _industrialDemandFactorSlider.maxValue = _maxDemandFactor;
+                _industrialDemandFactorSlider.value = _demand != null ? _demand.IndustrialDemandFactor : _minDemandFactor;
+                _industrialDemandFactorSlider.onValueChanged.AddListener(OnIndustrialDemandFactorChanged);
+                UpdateIndustrialDemandFactorLabel(_industrialDemandFactorSlider.value);
+            }
+        }
+
+        private void OnResidentTaxChanged(float value)
+        {
+            int tax = Mathf.RoundToInt(value);
+            if (_economy == null) _economy = GameManager.Instance?.Economy;
+            _economy?.SetResidentTaxPerMonth(tax);
+            UpdateResidentTaxLabel(tax);
+        }
+
+        private void OnJobTaxChanged(float value)
+        {
+            int tax = Mathf.RoundToInt(value);
+            if (_economy == null) _economy = GameManager.Instance?.Economy;
+            _economy?.SetJobTaxPerMonth(tax);
+            UpdateJobTaxLabel(tax);
+        }
+
+        private void OnCommercialDemandFactorChanged(float value)
+        {
+            if (_demand == null) _demand = GameManager.Instance?.Demand;
+            _demand?.SetCommercialDemandFactor(value);
+            UpdateCommercialDemandFactorLabel(value);
+        }
+
+        private void OnIndustrialDemandFactorChanged(float value)
+        {
+            if (_demand == null) _demand = GameManager.Instance?.Demand;
+            _demand?.SetIndustrialDemandFactor(value);
+            UpdateIndustrialDemandFactorLabel(value);
+        }
+
+        private void UpdateResidentTaxLabel(int value)
+        {
+            if (_residentTaxLabel != null)
+                _residentTaxLabel.text = $"거주세 {value}";
+        }
+
+        private void UpdateJobTaxLabel(int value)
+        {
+            if (_jobTaxLabel != null)
+                _jobTaxLabel.text = $"고용세 {value}";
+        }
+
+        private void UpdateCommercialDemandFactorLabel(float value)
+        {
+            if (_commercialDemandFactorLabel != null)
+                _commercialDemandFactorLabel.text = $"상업계수 {value:F2}";
+        }
+
+        private void UpdateIndustrialDemandFactorLabel(float value)
+        {
+            if (_industrialDemandFactorLabel != null)
+                _industrialDemandFactorLabel.text = $"공업계수 {value:F2}";
         }
 
         // -- 내부 --

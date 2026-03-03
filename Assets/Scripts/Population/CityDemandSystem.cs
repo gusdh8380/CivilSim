@@ -23,9 +23,19 @@ namespace CivilSim.Population
         public int ResidentialDemand { get; private set; }
         public int CommercialDemand { get; private set; }
         public int IndustrialDemand { get; private set; }
+        public float CommercialDemandFactor => _commercialDemandFactorRuntime;
+        public float IndustrialDemandFactor => _industrialDemandFactorRuntime;
 
         private BuildingManager _buildings;
         private int _lastPopulation;
+        private float _commercialDemandFactorRuntime;
+        private float _industrialDemandFactorRuntime;
+
+        private void Awake()
+        {
+            _commercialDemandFactorRuntime = Mathf.Clamp(_commercialDemandFactor, 0.05f, 1.0f);
+            _industrialDemandFactorRuntime = Mathf.Clamp(_industrialDemandFactor, 0.05f, 1.0f);
+        }
 
         private void Start()
         {
@@ -92,8 +102,8 @@ namespace CivilSim.Population
             JobsTotal = totalJobs;
 
             int rawResidential = totalJobs - residents;
-            int rawCommercial = Mathf.RoundToInt(residents * _commercialDemandFactor) - commercialJobs;
-            int rawIndustrial = Mathf.RoundToInt(residents * _industrialDemandFactor) - industrialJobs;
+            int rawCommercial = Mathf.RoundToInt(residents * _commercialDemandFactorRuntime) - commercialJobs;
+            int rawIndustrial = Mathf.RoundToInt(residents * _industrialDemandFactorRuntime) - industrialJobs;
 
             int div = Mathf.Max(1, _normalizationDivisor);
             ResidentialDemand = Mathf.Clamp(rawResidential / div, -100, 100);
@@ -115,6 +125,18 @@ namespace CivilSim.Population
                 CommercialDemand = CommercialDemand,
                 IndustrialDemand = IndustrialDemand
             });
+        }
+
+        public void SetCommercialDemandFactor(float value)
+        {
+            _commercialDemandFactorRuntime = Mathf.Clamp(value, 0.05f, 1.0f);
+            RecalculateAndPublish();
+        }
+
+        public void SetIndustrialDemandFactor(float value)
+        {
+            _industrialDemandFactorRuntime = Mathf.Clamp(value, 0.05f, 1.0f);
+            RecalculateAndPublish();
         }
     }
 }
