@@ -349,11 +349,8 @@ namespace CivilSim.UI
             if (_budgetReportText == null) return;
 
             int net = e.Income - e.Expenditure;
-            string disconnectedPart = e.DisconnectedBuildings > 0
-                ? $" | 도로 미연결 {e.DisconnectedBuildings}"
-                : string.Empty;
             _budgetReportText.text =
-                $"{e.Year}년 {e.Month:D2}월 결산 | 수입 {e.Income:N0} | 지출 {e.Expenditure:N0} | 순이익 {FormatSignedWithGrouping(net)} | 잔액 {e.Balance:N0}{disconnectedPart}";
+                $"{e.Year}년 {e.Month:D2}월 결산 | 수입 {e.Income:N0} | 지출 {e.Expenditure:N0} | 순이익 {FormatSignedWithGrouping(net)} | 잔액 {e.Balance:N0}";
         }
 
         private void UpdateGoalUI()
