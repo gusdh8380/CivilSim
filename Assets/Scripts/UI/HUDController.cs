@@ -30,6 +30,11 @@ namespace CivilSim.UI
         [SerializeField] private TextMeshProUGUI _modeText;
         [SerializeField] private TextMeshProUGUI _zoneTypeText;
 
+        [Header("수요 표시 (선택)")]
+        [SerializeField] private TextMeshProUGUI _resDemandText;
+        [SerializeField] private TextMeshProUGUI _comDemandText;
+        [SerializeField] private TextMeshProUGUI _indDemandText;
+
         [Header("시간 배속 버튼")]
         [SerializeField] private Button _pauseButton;
         [SerializeField] private Button _speed1Button;
@@ -59,6 +64,8 @@ namespace CivilSim.UI
             GameEventBus.Subscribe<BuildingRemovedEvent>(OnBuildingRemoved);
             GameEventBus.Subscribe<DailyTickEvent>(OnDailyTick);
             GameEventBus.Subscribe<TimeSpeedChangedEvent>(OnTimeSpeedChanged);
+            GameEventBus.Subscribe<PopulationChangedEvent>(OnPopulationChanged);
+            GameEventBus.Subscribe<DemandChangedEvent>(OnDemandChanged);
 
             RefreshAll();
         }
@@ -75,6 +82,8 @@ namespace CivilSim.UI
             GameEventBus.Unsubscribe<BuildingRemovedEvent>(OnBuildingRemoved);
             GameEventBus.Unsubscribe<DailyTickEvent>(OnDailyTick);
             GameEventBus.Unsubscribe<TimeSpeedChangedEvent>(OnTimeSpeedChanged);
+            GameEventBus.Unsubscribe<PopulationChangedEvent>(OnPopulationChanged);
+            GameEventBus.Unsubscribe<DemandChangedEvent>(OnDemandChanged);
         }
 
         private void OnMoneyChanged(MoneyChangedEvent e) => UpdateMoneyUI(e.NewAmount);
@@ -103,6 +112,15 @@ namespace CivilSim.UI
 
         private void OnTimeSpeedChanged(TimeSpeedChangedEvent e)
             => UpdateSpeedButtonColors(e.Speed);
+
+        private void OnPopulationChanged(PopulationChangedEvent e)
+        {
+            _population = e.NewPopulation;
+            UpdatePopulationUI();
+        }
+
+        private void OnDemandChanged(DemandChangedEvent e)
+            => UpdateDemandUI(e.ResidentialDemand, e.CommercialDemand, e.IndustrialDemand);
 
         private void UpdateMoneyUI(int amount)
         {
@@ -155,6 +173,7 @@ namespace CivilSim.UI
             UpdateDateUI();
             UpdateSpeedButtonColors(TimeSpeed.Normal);
             UpdateModeUI();
+            UpdateDemandUI(0, 0, 0);
         }
 
         private void RecalculatePopulation()
@@ -228,7 +247,24 @@ namespace CivilSim.UI
 
             if (_zoneTypeText == null)
                 _zoneTypeText = FindTextByName("ZoneTypeText");
+
+            if (_resDemandText == null)
+                _resDemandText = FindTextByName("ResDemandText");
+            if (_comDemandText == null)
+                _comDemandText = FindTextByName("ComDemandText");
+            if (_indDemandText == null)
+                _indDemandText = FindTextByName("IndDemandText");
         }
+
+        private void UpdateDemandUI(int res, int com, int ind)
+        {
+            if (_resDemandText != null) _resDemandText.text = $"R 수요: {FormatSigned(res)}";
+            if (_comDemandText != null) _comDemandText.text = $"C 수요: {FormatSigned(com)}";
+            if (_indDemandText != null) _indDemandText.text = $"I 수요: {FormatSigned(ind)}";
+        }
+
+        private static string FormatSigned(int value)
+            => value >= 0 ? $"+{value}" : value.ToString();
 
         private TextMeshProUGUI FindTextByName(string objectName)
         {

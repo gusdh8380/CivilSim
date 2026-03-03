@@ -66,6 +66,13 @@ namespace CivilSim.Core
         public float NewHappiness; // 0~100
     }
 
+    public struct DemandChangedEvent
+    {
+        public int ResidentialDemand; // -100 ~ 100
+        public int CommercialDemand;  // -100 ~ 100
+        public int IndustrialDemand;  // -100 ~ 100
+    }
+
     // ──────────────────────────────────────────
     // 건물
     // ──────────────────────────────────────────

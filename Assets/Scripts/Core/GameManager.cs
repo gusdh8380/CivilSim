@@ -3,6 +3,7 @@ using CivilSim.Grid;
 using CivilSim.Buildings;
 using CivilSim.Economy;
 using CivilSim.Infrastructure;
+using CivilSim.Population;
 using CivilSim.Zones;
 
 namespace CivilSim.Core
@@ -44,6 +45,9 @@ namespace CivilSim.Core
         [SerializeField] private ZoneManager _zoneManager;
         [SerializeField] private ZoneBuilder _zoneBuilder;
 
+        [Header("Population")]
+        [SerializeField] private CityDemandSystem _cityDemandSystem;
+
         // ── 공개 접근자 ──────────────────────────────────────
         public GameClock        Clock           => _gameClock;
         public TickSystem       Tick            => _tickSystem;
@@ -59,6 +63,7 @@ namespace CivilSim.Core
         public FoundationBuilder FoundationBuild => _foundationBuilder;
         public ZoneManager      Zone            => _zoneManager;
         public ZoneBuilder      ZoneBuild       => _zoneBuilder;
+        public CityDemandSystem Demand          => _cityDemandSystem;
 
         // ── Unity ───────────────────────────────────────────
 
@@ -97,6 +102,7 @@ namespace CivilSim.Core
             if (_foundationBuilder  == null) _foundationBuilder  = FindObjectOfType<FoundationBuilder>();
             if (_zoneManager        == null) _zoneManager        = FindObjectOfType<ZoneManager>();
             if (_zoneBuilder        == null) _zoneBuilder        = FindObjectOfType<ZoneBuilder>();
+            if (_cityDemandSystem   == null) _cityDemandSystem   = FindObjectOfType<CityDemandSystem>();
             // BuildingDatabase는 ScriptableObject라 FindObjectOfType 대상 아님 — Inspector 할당 필수
         }
 
@@ -126,6 +132,7 @@ namespace CivilSim.Core
             if (_foundationBuilder == null) Debug.LogWarning("[GameManager] FoundationBuilder가 할당되지 않았습니다.");
             if (_zoneManager       == null) Debug.LogWarning("[GameManager] ZoneManager가 할당되지 않았습니다.");
             if (_zoneBuilder       == null) Debug.LogWarning("[GameManager] ZoneBuilder가 할당되지 않았습니다.");
+            if (_cityDemandSystem  == null) Debug.LogWarning("[GameManager] CityDemandSystem이 할당되지 않았습니다.");
         }
 
         // ── 편의 메서드 ──────────────────────────────────────
