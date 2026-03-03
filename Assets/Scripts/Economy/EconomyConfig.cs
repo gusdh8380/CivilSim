@@ -19,6 +19,20 @@ namespace CivilSim.Economy
         [Tooltip("상업/공업 건물 고용자 1인당 월 세금")]
         public int TaxPerJobPerMonth = 80;
 
+        [Header("수요 반영")]
+        [Tooltip("수요 1포인트당 수입 배율 변화량. 예: 0.002 = 0.2%")]
+        public float IncomeMultiplierPerDemandPoint = 0.002f;
+        [Tooltip("수요 반영 후 월 수입 최소 배율")]
+        public float MinIncomeMultiplier = 0.7f;
+        [Tooltip("수요 반영 후 월 수입 최대 배율")]
+        public float MaxIncomeMultiplier = 1.3f;
+
+        [Header("운영 경고")]
+        [Tooltip("순손실이 연속 N개월이면 경고")]
+        public int DeficitAlertAfterMonths = 3;
+        [Tooltip("수요 절댓값이 이 값 이상이면 과열 경고")]
+        public int DemandOverheatThreshold = 70;
+
         [Header("파산")]
         [Tooltip("이 금액 미만이면 파산 처리")]
         public int BankruptcyThreshold = -50_000;

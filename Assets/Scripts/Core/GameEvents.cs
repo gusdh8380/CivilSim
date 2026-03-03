@@ -44,11 +44,13 @@ namespace CivilSim.Core
 
     public struct BudgetReportEvent
     {
+        public int BaseIncome;
         public int Income;
         public int Expenditure;
         public int Balance;
         public int Month;
         public int Year;
+        public float IncomeMultiplier;
     }
 
     // --

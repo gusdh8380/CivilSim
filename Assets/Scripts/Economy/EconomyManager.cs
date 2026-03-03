@@ -25,6 +25,10 @@ namespace CivilSim.Economy
 
         // -- 내부 참조 --
         private BuildingManager _buildings;
+        private int _resDemand;
+        private int _comDemand;
+        private int _indDemand;
+        private int _deficitStreakMonths;
 
         // -- Unity --
 
@@ -42,11 +46,13 @@ namespace CivilSim.Economy
             PublishMoneyChanged(0);
 
             GameEventBus.Subscribe<MonthlyTickEvent>(OnMonthlyTick);
+            GameEventBus.Subscribe<DemandChangedEvent>(OnDemandChanged);
         }
 
         private void OnDestroy()
         {
             GameEventBus.Unsubscribe<MonthlyTickEvent>(OnMonthlyTick);
+            GameEventBus.Unsubscribe<DemandChangedEvent>(OnDemandChanged);
         }
 
         // -- 공개 API --
@@ -78,7 +84,7 @@ namespace CivilSim.Economy
         {
             if (_config == null || _buildings == null) return;
 
-            int income      = 0;
+            int baseIncome  = 0;
             int expenditure = 0;
 
             foreach (var kv in _buildings.GetAll())
@@ -88,27 +94,38 @@ namespace CivilSim.Economy
                 var data = inst.Data;
 
                 // 수입: 거주자 세금 + 고용자 세금
-                income += data.ResidentCapacity * _config.TaxPerResidentPerMonth;
-                income += data.JobCapacity      * _config.TaxPerJobPerMonth;
+                baseIncome += data.ResidentCapacity * _config.TaxPerResidentPerMonth;
+                baseIncome += data.JobCapacity      * _config.TaxPerJobPerMonth;
 
                 // 지출: 유지비
                 expenditure += data.MaintenanceCostPerMonth;
             }
 
+            float demandScore = (_resDemand + _comDemand + _indDemand) / 3f;
+            float incomeMultiplier = 1f + demandScore * _config.IncomeMultiplierPerDemandPoint;
+            incomeMultiplier = Mathf.Clamp(
+                incomeMultiplier,
+                _config.MinIncomeMultiplier,
+                _config.MaxIncomeMultiplier);
+
+            int income = Mathf.RoundToInt(baseIncome * incomeMultiplier);
             int net = income - expenditure;
             Money  += net;
 
             // 예산 보고 이벤트
             GameEventBus.Publish(new BudgetReportEvent
             {
+                BaseIncome  = baseIncome,
                 Income      = income,
                 Expenditure = expenditure,
                 Balance     = Money,
                 Month       = e.Month,
                 Year        = e.Year,
+                IncomeMultiplier = incomeMultiplier,
             });
 
             PublishMoneyChanged(net);
+            HandleOperationalAlerts(net);
 
             // 파산 체크
             if (!IsBankrupt && _config != null && Money < _config.BankruptcyThreshold)
@@ -122,10 +139,17 @@ namespace CivilSim.Economy
                 Debug.LogWarning("[EconomyManager] 파산!");
             }
 
-            Debug.Log($"[Economy] {e.Year}/{e.Month} 수입:{income:N0} 지출:{expenditure:N0} 잔액:{Money:N0}");
+            Debug.Log($"[Economy] {e.Year}/{e.Month} 기본수입:{baseIncome:N0} 배율:{incomeMultiplier:F2} 수입:{income:N0} 지출:{expenditure:N0} 잔액:{Money:N0}");
         }
 
         // -- 내부 --
+
+        private void OnDemandChanged(DemandChangedEvent e)
+        {
+            _resDemand = e.ResidentialDemand;
+            _comDemand = e.CommercialDemand;
+            _indDemand = e.IndustrialDemand;
+        }
 
         private void PublishMoneyChanged(int delta)
         {
@@ -134,6 +158,36 @@ namespace CivilSim.Economy
                 NewAmount = Money,
                 Delta     = delta,
             });
+        }
+
+        private void HandleOperationalAlerts(int monthlyNet)
+        {
+            if (monthlyNet < 0) _deficitStreakMonths++;
+            else _deficitStreakMonths = 0;
+
+            if (_deficitStreakMonths >= Mathf.Max(1, _config.DeficitAlertAfterMonths))
+            {
+                GameEventBus.Publish(new NotificationEvent
+                {
+                    Message = $"재정 경고: 순손실 {_deficitStreakMonths}개월 연속",
+                    Type = NotificationType.Warning
+                });
+            }
+
+            int threshold = Mathf.Max(1, _config.DemandOverheatThreshold);
+            bool overheat =
+                Mathf.Abs(_resDemand) >= threshold ||
+                Mathf.Abs(_comDemand) >= threshold ||
+                Mathf.Abs(_indDemand) >= threshold;
+
+            if (overheat)
+            {
+                GameEventBus.Publish(new NotificationEvent
+                {
+                    Message = $"수요 과열 경고: R{_resDemand:+#;-#;0} C{_comDemand:+#;-#;0} I{_indDemand:+#;-#;0}",
+                    Type = NotificationType.Warning
+                });
+            }
         }
     }
 }
