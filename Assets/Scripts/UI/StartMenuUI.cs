@@ -16,6 +16,8 @@ namespace CivilSim.UI
     {
         [Header("씬 이름")]
         [SerializeField] private string _gamePlaySceneName = "Game Play";
+        [SerializeField] private bool _useLoadingScene = true;
+        [SerializeField] private string _loadingSceneName = "Loading";
 
         [Header("메인 버튼")]
         [SerializeField] private Button _newGameButton;
@@ -55,7 +57,7 @@ namespace CivilSim.UI
         private void OnClickNewGame()
         {
             GameStartContext.RequestNewGame();
-            SceneManager.LoadScene(_gamePlaySceneName);
+            BeginSceneTransition();
         }
 
         private void OnClickLoadMenu()
@@ -116,7 +118,33 @@ namespace CivilSim.UI
         private void OnClickLoadSlot(string slotName)
         {
             GameStartContext.RequestLoad(slotName);
+            BeginSceneTransition();
+        }
+
+        private void BeginSceneTransition()
+        {
+            if (_useLoadingScene && CanLoadScene(_loadingSceneName))
+            {
+                LoadingSceneContext.RequestTargetScene(_gamePlaySceneName);
+                SceneManager.LoadScene(_loadingSceneName);
+                return;
+            }
+
+            if (!CanLoadScene(_gamePlaySceneName))
+            {
+                string message = $"진입 실패: 씬을 찾을 수 없습니다 ({_gamePlaySceneName})";
+                UpdateStatus(message);
+                Debug.LogError($"[StartMenuUI] {message}");
+                return;
+            }
+
             SceneManager.LoadScene(_gamePlaySceneName);
+        }
+
+        private static bool CanLoadScene(string sceneName)
+        {
+            if (string.IsNullOrWhiteSpace(sceneName)) return false;
+            return Application.CanStreamedLevelBeLoaded(sceneName.Trim());
         }
 
         private Button CreateSaveItemButton()
