@@ -14,6 +14,15 @@ namespace CivilSim.UI
     /// </summary>
     public class PolicyPanelUI : MonoBehaviour
     {
+        [System.Serializable]
+        private struct PolicyPreset
+        {
+            public int ResidentTax;
+            public int JobTax;
+            public float CommercialDemandFactor;
+            public float IndustrialDemandFactor;
+        }
+
         [Header("패널 루트 (자식 오브젝트)")]
         [SerializeField] private GameObject _panel;
 
@@ -31,6 +40,12 @@ namespace CivilSim.UI
         [SerializeField] private Slider _industrialDemandFactorSlider;
         [SerializeField] private TextMeshProUGUI _industrialDemandFactorLabel;
 
+        [Header("정책 프리셋 버튼 (선택)")]
+        [SerializeField] private Button _balancedPresetButton;
+        [SerializeField] private Button _growthPresetButton;
+        [SerializeField] private Button _austerityPresetButton;
+        [SerializeField] private TextMeshProUGUI _presetStateLabel;
+
         [Header("정책 범위")]
         [SerializeField, Range(0, 500)] private int _minResidentTax = 0;
         [SerializeField, Range(50, 1000)] private int _maxResidentTax = 300;
@@ -39,6 +54,29 @@ namespace CivilSim.UI
         [SerializeField, Range(0.05f, 1.0f)] private float _minDemandFactor = 0.05f;
         [SerializeField, Range(0.05f, 1.0f)] private float _maxDemandFactor = 1.0f;
 
+        [Header("프리셋 값")]
+        [SerializeField] private PolicyPreset _balancedPreset = new PolicyPreset
+        {
+            ResidentTax = 100,
+            JobTax = 80,
+            CommercialDemandFactor = 0.25f,
+            IndustrialDemandFactor = 0.20f
+        };
+        [SerializeField] private PolicyPreset _growthPreset = new PolicyPreset
+        {
+            ResidentTax = 70,
+            JobTax = 60,
+            CommercialDemandFactor = 0.40f,
+            IndustrialDemandFactor = 0.30f
+        };
+        [SerializeField] private PolicyPreset _austerityPreset = new PolicyPreset
+        {
+            ResidentTax = 150,
+            JobTax = 120,
+            CommercialDemandFactor = 0.18f,
+            IndustrialDemandFactor = 0.12f
+        };
+
         private EconomyManager _economy;
         private CityDemandSystem _demand;
         private bool _isOpen;
@@ -46,7 +84,9 @@ namespace CivilSim.UI
         private void Awake()
         {
             AutoBindButtons();
+            AutoBindPresetButtons();
             BindButtonListeners();
+            BindPresetButtonListeners();
             SetVisible(false);
         }
 
@@ -79,6 +119,12 @@ namespace CivilSim.UI
                 _openButton.onClick.RemoveListener(Show);
             if (_closeButton != null)
                 _closeButton.onClick.RemoveListener(Hide);
+            if (_balancedPresetButton != null)
+                _balancedPresetButton.onClick.RemoveListener(ApplyBalancedPreset);
+            if (_growthPresetButton != null)
+                _growthPresetButton.onClick.RemoveListener(ApplyGrowthPreset);
+            if (_austerityPresetButton != null)
+                _austerityPresetButton.onClick.RemoveListener(ApplyAusterityPreset);
         }
 
         public void Toggle() => SetVisible(!_isOpen);
@@ -126,6 +172,8 @@ namespace CivilSim.UI
                 _industrialDemandFactorSlider.onValueChanged.AddListener(OnIndustrialDemandFactorChanged);
                 UpdateIndustrialDemandFactorLabel(_industrialDemandFactorSlider.value);
             }
+
+            UpdatePresetStateLabel("사용자 정의");
         }
 
         private void OnResidentTaxChanged(float value)
@@ -192,6 +240,50 @@ namespace CivilSim.UI
                 GameManager.Instance?.CancelAllModes();
         }
 
+        private void ApplyBalancedPreset()
+        {
+            ApplyPreset("균형", _balancedPreset);
+        }
+
+        private void ApplyGrowthPreset()
+        {
+            ApplyPreset("성장", _growthPreset);
+        }
+
+        private void ApplyAusterityPreset()
+        {
+            ApplyPreset("긴축", _austerityPreset);
+        }
+
+        private void ApplyPreset(string presetName, PolicyPreset preset)
+        {
+            int residentTax = Mathf.Clamp(preset.ResidentTax, _minResidentTax, _maxResidentTax);
+            int jobTax = Mathf.Clamp(preset.JobTax, _minJobTax, _maxJobTax);
+            float commercialFactor = Mathf.Clamp(preset.CommercialDemandFactor, _minDemandFactor, _maxDemandFactor);
+            float industrialFactor = Mathf.Clamp(preset.IndustrialDemandFactor, _minDemandFactor, _maxDemandFactor);
+
+            if (_residentTaxSlider != null)
+                _residentTaxSlider.SetValueWithoutNotify(residentTax);
+            if (_jobTaxSlider != null)
+                _jobTaxSlider.SetValueWithoutNotify(jobTax);
+            if (_commercialDemandFactorSlider != null)
+                _commercialDemandFactorSlider.SetValueWithoutNotify(commercialFactor);
+            if (_industrialDemandFactorSlider != null)
+                _industrialDemandFactorSlider.SetValueWithoutNotify(industrialFactor);
+
+            OnResidentTaxChanged(residentTax);
+            OnJobTaxChanged(jobTax);
+            OnCommercialDemandFactorChanged(commercialFactor);
+            OnIndustrialDemandFactorChanged(industrialFactor);
+
+            UpdatePresetStateLabel(presetName);
+            GameEventBus.Publish(new NotificationEvent
+            {
+                Message = $"정책 프리셋 적용: {presetName}",
+                Type = NotificationType.Info
+            });
+        }
+
         private void AutoBindButtons()
         {
             if (_openButton == null)
@@ -210,6 +302,32 @@ namespace CivilSim.UI
             }
         }
 
+        private void AutoBindPresetButtons()
+        {
+            if (_panel == null) return;
+
+            if (_balancedPresetButton == null)
+            {
+                _balancedPresetButton = FindButtonInChildrenByName(_panel.transform, "BalancedPresetButton")
+                    ?? FindButtonInChildrenByName(_panel.transform, "BalancedButton")
+                    ?? FindButtonInChildrenByContains(_panel.transform, "balanced");
+            }
+
+            if (_growthPresetButton == null)
+            {
+                _growthPresetButton = FindButtonInChildrenByName(_panel.transform, "GrowthPresetButton")
+                    ?? FindButtonInChildrenByName(_panel.transform, "GrowthButton")
+                    ?? FindButtonInChildrenByContains(_panel.transform, "growth");
+            }
+
+            if (_austerityPresetButton == null)
+            {
+                _austerityPresetButton = FindButtonInChildrenByName(_panel.transform, "AusterityPresetButton")
+                    ?? FindButtonInChildrenByName(_panel.transform, "AusterityButton")
+                    ?? FindButtonInChildrenByContains(_panel.transform, "austerity");
+            }
+        }
+
         private void BindButtonListeners()
         {
             if (_openButton != null)
@@ -223,6 +341,33 @@ namespace CivilSim.UI
                 _closeButton.onClick.RemoveListener(Hide);
                 _closeButton.onClick.AddListener(Hide);
             }
+        }
+
+        private void BindPresetButtonListeners()
+        {
+            if (_balancedPresetButton != null)
+            {
+                _balancedPresetButton.onClick.RemoveListener(ApplyBalancedPreset);
+                _balancedPresetButton.onClick.AddListener(ApplyBalancedPreset);
+            }
+
+            if (_growthPresetButton != null)
+            {
+                _growthPresetButton.onClick.RemoveListener(ApplyGrowthPreset);
+                _growthPresetButton.onClick.AddListener(ApplyGrowthPreset);
+            }
+
+            if (_austerityPresetButton != null)
+            {
+                _austerityPresetButton.onClick.RemoveListener(ApplyAusterityPreset);
+                _austerityPresetButton.onClick.AddListener(ApplyAusterityPreset);
+            }
+        }
+
+        private void UpdatePresetStateLabel(string presetName)
+        {
+            if (_presetStateLabel != null)
+                _presetStateLabel.text = $"프리셋 {presetName}";
         }
 
         private static Button FindButtonByName(string objName)
