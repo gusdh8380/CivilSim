@@ -18,13 +18,13 @@ MonoBehaviour:
     \uC2DC\uC124 04\uD638\uC785\uB2C8\uB2E4."
   SizeX: 1
   SizeZ: 1
-  BuildCost: 2800
-  MaintenanceCostPerMonth: 85
+  BuildCost: 3000
+  MaintenanceCostPerMonth: 90
   ResidentCapacity: 0
   JobCapacity: 5
   RequiresPower: 1
   RequiresWater: 1
-  PowerConsumption: 15
-  WaterConsumption: 5
+  PowerConsumption: 16
+  WaterConsumption: 7
   Prefab: {fileID: 8051985769325472309, guid: 22b01b1920e109543b7a1ef76356924e, type: 3}
   Icon: {fileID: -1818822957, guid: 47b23e81431d8e545af5586431857cc0, type: 3}
