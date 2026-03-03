@@ -48,7 +48,7 @@ namespace CivilSim.Buildings
         private Material _cellValidMat;
         private Material _cellInvalidMat;
         private Material _serviceRadiusMat;
-        private GameObject _serviceRadiusDisc;
+        private GameObject _serviceRadiusPreview;
 
         private Vector2Int _lastGridPos = new(-999, -999);
         private bool       _isValid;
@@ -402,7 +402,7 @@ namespace CivilSim.Buildings
             }
 
             EnsureServiceRadiusPreviewObject();
-            if (_serviceRadiusDisc == null || _grid == null) return;
+            if (_serviceRadiusPreview == null || _grid == null) return;
 
             float cs = _grid.CellSize;
             Vector3 worldPos = _grid.GridToWorld(origin);
@@ -411,43 +411,43 @@ namespace CivilSim.Buildings
                 _servicePreviewYOffset,
                 (sizeZ - 1) * cs * 0.5f);
 
-            float worldRadius = (radius + 0.5f) * cs;
-            float discHeight = Mathf.Max(0.01f, cs * 0.01f);
+            float worldSize = (radius * 2 + 1) * cs;
+            float previewHeight = Mathf.Max(0.01f, cs * 0.01f);
 
-            _serviceRadiusDisc.transform.position = center;
-            _serviceRadiusDisc.transform.rotation = Quaternion.identity;
-            _serviceRadiusDisc.transform.localScale = new Vector3(worldRadius * 2f, discHeight * 0.5f, worldRadius * 2f);
+            _serviceRadiusPreview.transform.position = center;
+            _serviceRadiusPreview.transform.rotation = Quaternion.identity;
+            _serviceRadiusPreview.transform.localScale = new Vector3(worldSize, previewHeight, worldSize);
 
-            var renderer = _serviceRadiusDisc.GetComponent<Renderer>();
+            var renderer = _serviceRadiusPreview.GetComponent<Renderer>();
             if (renderer != null && _serviceRadiusMat != null)
             {
                 _serviceRadiusMat.color = GetServicePreviewColor(_selectedData.ServiceKind);
                 renderer.material = _serviceRadiusMat;
             }
 
-            if (!_serviceRadiusDisc.activeSelf)
-                _serviceRadiusDisc.SetActive(true);
+            if (!_serviceRadiusPreview.activeSelf)
+                _serviceRadiusPreview.SetActive(true);
         }
 
         private void EnsureServiceRadiusPreviewObject()
         {
-            if (_serviceRadiusDisc != null) return;
+            if (_serviceRadiusPreview != null) return;
 
-            _serviceRadiusDisc = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-            _serviceRadiusDisc.name = "[ServiceRadiusPreview]";
+            _serviceRadiusPreview = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            _serviceRadiusPreview.name = "[ServiceRadiusPreview]";
 
-            var collider = _serviceRadiusDisc.GetComponent<Collider>();
+            var collider = _serviceRadiusPreview.GetComponent<Collider>();
             if (collider != null) DestroyImmediate(collider);
 
-            var renderer = _serviceRadiusDisc.GetComponent<Renderer>();
+            var renderer = _serviceRadiusPreview.GetComponent<Renderer>();
             if (renderer != null && _serviceRadiusMat != null)
                 renderer.material = _serviceRadiusMat;
         }
 
         private void HideServiceRadiusPreview()
         {
-            if (_serviceRadiusDisc != null)
-                _serviceRadiusDisc.SetActive(false);
+            if (_serviceRadiusPreview != null)
+                _serviceRadiusPreview.SetActive(false);
         }
 
         private Color GetServicePreviewColor(ServiceType type)
@@ -526,8 +526,8 @@ namespace CivilSim.Buildings
         private void OnDestroy()
         {
             ClearCellIndicators();
-            if (_serviceRadiusDisc != null)
-                Destroy(_serviceRadiusDisc);
+            if (_serviceRadiusPreview != null)
+                Destroy(_serviceRadiusPreview);
 
             void DestroyIfDynamic(Material m)
             {

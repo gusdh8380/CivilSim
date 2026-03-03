@@ -261,10 +261,12 @@ namespace CivilSim.Infrastructure
                 if (radius <= 0) continue;
 
                 Vector2 providerCenter = GetCenterCell(provider);
-                float distance = Vector2.Distance(providerCenter, targetCenter);
-                if (distance > radius) continue;
+                float dx = Mathf.Abs(providerCenter.x - targetCenter.x);
+                float dz = Mathf.Abs(providerCenter.y - targetCenter.y);
+                float squareDistance = Mathf.Max(dx, dz);
+                if (squareDistance > radius) continue;
 
-                float normalized = 1f - (distance / Mathf.Max(1f, radius));
+                float normalized = 1f - (squareDistance / Mathf.Max(1f, radius));
                 float falloff = Mathf.Lerp(_edgeCoverageFactor, 1f, Mathf.Clamp01(normalized));
                 totalValue += providerData.ServiceValue * falloff;
             }
