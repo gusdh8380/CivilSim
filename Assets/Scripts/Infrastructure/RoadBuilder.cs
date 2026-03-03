@@ -124,6 +124,8 @@ namespace CivilSim.Infrastructure
         public void StartRemoving()
         {
             Cancel();
+            // 다른 모드(건물·지반·구역) 취소 — 단축키/버튼 충돌 방지
+            GameManager.Instance?.CancelAllModes();
             Mode = RoadBuilderMode.Removing;
             Debug.Log("[RoadBuilder] 도로 철거 모드 시작");
         }

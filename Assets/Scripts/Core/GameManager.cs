@@ -3,6 +3,7 @@ using CivilSim.Grid;
 using CivilSim.Buildings;
 using CivilSim.Economy;
 using CivilSim.Infrastructure;
+using CivilSim.Zones;
 
 namespace CivilSim.Core
 {
@@ -39,6 +40,10 @@ namespace CivilSim.Core
         [SerializeField] private FoundationManager _foundationManager;
         [SerializeField] private FoundationBuilder _foundationBuilder;
 
+        [Header("Zones")]
+        [SerializeField] private ZoneManager _zoneManager;
+        [SerializeField] private ZoneBuilder _zoneBuilder;
+
         // ── 공개 접근자 ──────────────────────────────────────
         public GameClock        Clock           => _gameClock;
         public TickSystem       Tick            => _tickSystem;
@@ -52,6 +57,8 @@ namespace CivilSim.Core
         public RoadBuilder      RoadBuild       => _roadBuilder;
         public FoundationManager Foundation     => _foundationManager;
         public FoundationBuilder FoundationBuild => _foundationBuilder;
+        public ZoneManager      Zone            => _zoneManager;
+        public ZoneBuilder      ZoneBuild       => _zoneBuilder;
 
         // ── Unity ───────────────────────────────────────────
 
@@ -88,6 +95,8 @@ namespace CivilSim.Core
             if (_roadBuilder        == null) _roadBuilder        = FindObjectOfType<RoadBuilder>();
             if (_foundationManager  == null) _foundationManager  = FindObjectOfType<FoundationManager>();
             if (_foundationBuilder  == null) _foundationBuilder  = FindObjectOfType<FoundationBuilder>();
+            if (_zoneManager        == null) _zoneManager        = FindObjectOfType<ZoneManager>();
+            if (_zoneBuilder        == null) _zoneBuilder        = FindObjectOfType<ZoneBuilder>();
             // BuildingDatabase는 ScriptableObject라 FindObjectOfType 대상 아님 — Inspector 할당 필수
         }
 
@@ -115,6 +124,8 @@ namespace CivilSim.Core
             if (_roadBuilder       == null) Debug.LogWarning("[GameManager] RoadBuilder가 할당되지 않았습니다.");
             if (_foundationManager == null) Debug.LogWarning("[GameManager] FoundationManager가 할당되지 않았습니다.");
             if (_foundationBuilder == null) Debug.LogWarning("[GameManager] FoundationBuilder가 할당되지 않았습니다.");
+            if (_zoneManager       == null) Debug.LogWarning("[GameManager] ZoneManager가 할당되지 않았습니다.");
+            if (_zoneBuilder       == null) Debug.LogWarning("[GameManager] ZoneBuilder가 할당되지 않았습니다.");
         }
 
         // ── 편의 메서드 ──────────────────────────────────────
@@ -136,8 +147,12 @@ namespace CivilSim.Core
         public void StartFoundationBuilding() => _foundationBuilder?.Activate();
         public void StopFoundationBuilding()  => _foundationBuilder?.Deactivate();
 
+        // 구역 지정
+        public void StartZoning() => _zoneBuilder?.Activate();
+        public void StopZoning()  => _zoneBuilder?.Deactivate();
+
         /// <summary>
-        /// 현재 활성화된 모든 배치 모드(건물·도로·지반)를 동시에 취소한다.
+        /// 현재 활성화된 모든 배치 모드(건물·도로·지반·구역)를 동시에 취소한다.
         /// 다른 모드를 시작하기 전에 호출해 단축키 충돌을 방지한다.
         /// </summary>
         public void CancelAllModes()
@@ -145,6 +160,7 @@ namespace CivilSim.Core
             _buildingPlacer?.Cancel();
             _roadBuilder?.Cancel();
             _foundationBuilder?.Deactivate();
+            _zoneBuilder?.Deactivate();
         }
     }
 }
