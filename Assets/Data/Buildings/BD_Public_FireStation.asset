@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4fff32086e86456480948223adbf4d8, type: 3}
+  m_Name: BD_Public_FireStation
+  m_EditorClassIdentifier: Assembly-CSharp::CivilSim.Buildings.BuildingData
+  BuildingName: Fire Station
+  Category: 3
+  Description: Emergency response center for city safety
+  SizeX: 1
+  SizeZ: 1
+  BuildCost: 4600
+  MaintenanceCostPerMonth: 150
+  ResidentCapacity: 0
+  JobCapacity: 14
+  RequiresPower: 1
+  RequiresWater: 1
+  PowerConsumption: 20
+  WaterConsumption: 12
+  Prefab: {fileID: 8585650954766913903, guid: 5c06f3174e1062d44b9caa19b044b217, type: 3}
+  Icon: {fileID: 0}

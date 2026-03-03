@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4fff32086e86456480948223adbf4d8, type: 3}
+  m_Name: BD_Utility_WasteProcessing
+  m_EditorClassIdentifier: Assembly-CSharp::CivilSim.Buildings.BuildingData
+  BuildingName: Waste Processing Center
+  Category: 4
+  Description: Utility facility for waste sorting and processing
+  SizeX: 1
+  SizeZ: 1
+  BuildCost: 5600
+  MaintenanceCostPerMonth: 190
+  ResidentCapacity: 0
+  JobCapacity: 10
+  RequiresPower: 1
+  RequiresWater: 1
+  PowerConsumption: 35
+  WaterConsumption: 18
+  Prefab: {fileID: 366980482748411765, guid: faa2dda313fb030449c71cd8213b654e, type: 3}
+  Icon: {fileID: 0}

@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4fff32086e86456480948223adbf4d8, type: 3}
+  m_Name: BD_Utility_Substation
+  m_EditorClassIdentifier: Assembly-CSharp::CivilSim.Buildings.BuildingData
+  BuildingName: Power Substation
+  Category: 4
+  Description: Utility substation to stabilize district power service
+  SizeX: 1
+  SizeZ: 1
+  BuildCost: 5200
+  MaintenanceCostPerMonth: 180
+  ResidentCapacity: 0
+  JobCapacity: 8
+  RequiresPower: 0
+  RequiresWater: 0
+  PowerConsumption: 0
+  WaterConsumption: 0
+  Prefab: {fileID: 8664407419727344564, guid: d80f2a46cbb396249a31214f36357b86, type: 3}
+  Icon: {fileID: 0}
