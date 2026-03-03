@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using TMPro;
@@ -143,7 +143,7 @@ public class ReportPanelUI : MonoBehaviour
         _hasResult = true;
         if (_resultText != null)
         {
-            _resultText.text = $"승리 - {e.Year}년 {e.Month:D2}월\n{e.Reason}";
+            _resultText.text = $"승리 - {e.Year}년 {e.Month:D2}월 {e.Reason}";
             _resultText.color = _resultWinColor;
         }
     }
@@ -153,7 +153,7 @@ public class ReportPanelUI : MonoBehaviour
         _hasResult = true;
         if (_resultText != null)
         {
-            _resultText.text = $"패배 - {e.Year}년 {e.Month:D2}월\n{e.Reason}";
+            _resultText.text = $"패배 - {e.Year}년 {e.Month:D2}월 {e.Reason}";
             _resultText.color = _resultLoseColor;
         }
     }
@@ -177,7 +177,7 @@ public class ReportPanelUI : MonoBehaviour
         if (_budgetText == null) return;
         int net = e.Income - e.Expenditure;
         _budgetText.text =
-            $"{e.Year}년 {e.Month:D2}월 결산\n수입 {e.Income:N0}\n지출 {e.Expenditure:N0}\n순이익 {FormatSigned(net)}\n잔액 {e.Balance:N0}";
+            $"{e.Year}년 {e.Month:D2}월 결산 |수입 {e.Income:N0} | 지출 {e.Expenditure:N0} | 순이익 {FormatSigned(net)}| 잔액 {e.Balance:N0}";
     }
 
     private void UpdateGoalText(GoalProgressEvent e)
@@ -186,9 +186,9 @@ public class ReportPanelUI : MonoBehaviour
 
         string population = $"인구 {e.CurrentPopulation:N0}/{e.TargetPopulation:N0}";
         if (e.UseBalanceGoal)
-            _goalText.text = $"목표\n{population}\n자금 {e.CurrentBalance:N0}/{e.TargetBalance:N0}";
+            _goalText.text = $"목표 : {population}, 자금 {e.CurrentBalance:N0}/{e.TargetBalance:N0}";
         else
-            _goalText.text = $"목표\n{population}";
+            _goalText.text = $"목표 : {population}";
     }
 
     private void ApplyFallbackTexts()
@@ -196,14 +196,14 @@ public class ReportPanelUI : MonoBehaviour
         if (_budgetText != null && !_hasBudgetReport)
         {
             int currentMoney = GameManager.Instance?.Economy != null ? GameManager.Instance.Economy.Money : 0;
-            _budgetText.text = $"최근 결산 없음\n현재 잔액 {currentMoney:N0}";
+            _budgetText.text = $"최근 결산 없음 | 현재 잔액 {currentMoney:N0}";
         }
 
         if (_goalText != null && !_hasGoalProgress)
             _goalText.text = "목표 데이터 대기 중";
 
         if (_resultText != null && !_hasResult)
-            _resultText.text = "결과\n진행 중";
+            _resultText.text = "결과 : 진행 중";
 
         if (_notificationText != null && !_hasNotification)
             _notificationText.text = "알림 없음";
