@@ -222,6 +222,19 @@ namespace CivilSim.Grid
             cell.State = CellState.Empty;
         }
 
+        /// <summary>
+        /// 모든 셀 상태를 초기화한다.
+        /// 저장 데이터 로드 시 기존 월드 상태를 비우는 용도.
+        /// </summary>
+        public void ResetAllCells()
+        {
+            for (int col = 0; col < _width; col++)
+            {
+                for (int row = 0; row < _height; row++)
+                    _cells[col, row].Clear();
+            }
+        }
+
         // -- 이웃 셀 --
 
         private static readonly Vector2Int[] _neighbors4 =

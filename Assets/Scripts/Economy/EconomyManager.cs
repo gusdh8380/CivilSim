@@ -104,6 +104,18 @@ namespace CivilSim.Economy
             _jobTaxPerMonth = Mathf.Max(0, value);
         }
 
+        /// <summary>
+        /// 저장 데이터 로드용 자금 강제 설정.
+        /// </summary>
+        public void SetMoneyForLoad(int value)
+        {
+            int old = Money;
+            Money = value;
+            _deficitStreakMonths = 0;
+            IsBankrupt = _config != null && Money < _config.BankruptcyThreshold;
+            PublishMoneyChanged(Money - old);
+        }
+
         // -- 월별 정산 --
 
         private void OnMonthlyTick(MonthlyTickEvent e)

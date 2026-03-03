@@ -127,6 +127,30 @@ namespace CivilSim.Buildings
 
         public IReadOnlyDictionary<int, BuildingInstance> GetAll() => _buildings;
 
+        /// <summary>
+        /// 배치된 모든 건물을 제거한다.
+        /// </summary>
+        public void ClearAll()
+        {
+            if (_buildings.Count == 0)
+            {
+                _nextId = 0;
+                return;
+            }
+
+            var origins = new List<Vector2Int>(_buildings.Count);
+            foreach (var kv in _buildings)
+            {
+                if (kv.Value != null)
+                    origins.Add(kv.Value.GridOrigin);
+            }
+
+            foreach (var origin in origins)
+                TryRemove(origin);
+
+            _nextId = 0;
+        }
+
         // -- 내부 --
 
         private GameObject SpawnBuilding(BuildingData data, Vector3 center, int sizeX, int sizeZ, int rotation)

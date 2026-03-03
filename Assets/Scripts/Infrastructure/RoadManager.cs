@@ -40,6 +40,18 @@ namespace CivilSim.Infrastructure
         public int Count           => _roadObjects.Count;
         public int RoadCostPerTile => _roadCostPerTile;
 
+        public List<Vector2Int> GetAllRoadPositions()
+        {
+            return new List<Vector2Int>(_roadObjects.Keys);
+        }
+
+        public void ClearAllRoads()
+        {
+            var positions = new List<Vector2Int>(_roadObjects.Keys);
+            foreach (var pos in positions)
+                TryRemoveRoad(pos);
+        }
+
         // -- 비트마스크 조회 테이블 --
         // 인덱스 = 비트마스크 (0~15)
         // 값     = (typeIdx, extraYRot)

@@ -64,6 +64,28 @@ namespace CivilSim.Core
             SetSpeed(CurrentSpeed == TimeSpeed.Paused ? TimeSpeed.Normal : TimeSpeed.Paused);
         }
 
+        /// <summary>
+        /// 저장 데이터 로드용 날짜 강제 설정.
+        /// 필요 시 TickEvent 발행으로 외부 시스템 갱신을 트리거할 수 있다.
+        /// </summary>
+        public void SetDate(int year, int month, int day, bool publishTickEvent = false)
+        {
+            Year = Mathf.Max(1, year);
+            Month = Mathf.Clamp(month, 1, MonthsPerYear);
+            Day = Mathf.Clamp(day, 1, DaysPerMonth);
+            _timer = 0f;
+
+            if (publishTickEvent)
+            {
+                GameEventBus.Publish(new TickEvent
+                {
+                    Day = Day,
+                    Month = Month,
+                    Year = Year
+                });
+            }
+        }
+
         // -- 내부 --
 
         private void AdvanceDay()
