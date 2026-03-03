@@ -33,6 +33,7 @@ namespace CivilSim.Buildings
         [SerializeField] private bool _showServiceRadiusPreview = true;
         [SerializeField, Min(0)] private int _fallbackServiceRadius = 8;
         [SerializeField] private float _servicePreviewYOffset = 0.03f;
+        [SerializeField] private Material _serviceRadiusPreviewMaterial;
 
         // -- 내부 상태 --
         private GridSystem         _grid;
@@ -47,7 +48,7 @@ namespace CivilSim.Buildings
         private readonly List<GameObject> _cellIndicators = new();
         private Material _cellValidMat;
         private Material _cellInvalidMat;
-        private Material _serviceRadiusMat;
+        private Material _serviceRadiusRuntimeMat;
         private GameObject _serviceRadiusPreview;
 
         private Vector2Int _lastGridPos = new(-999, -999);
@@ -419,10 +420,10 @@ namespace CivilSim.Buildings
             _serviceRadiusPreview.transform.localScale = new Vector3(worldSize, previewHeight, worldSize);
 
             var renderer = _serviceRadiusPreview.GetComponent<Renderer>();
-            if (renderer != null && _serviceRadiusMat != null)
+            if (renderer != null && _serviceRadiusRuntimeMat != null)
             {
-                _serviceRadiusMat.color = GetServicePreviewColor(_selectedData.ServiceKind);
-                renderer.material = _serviceRadiusMat;
+                _serviceRadiusRuntimeMat.color = GetServicePreviewColor(_selectedData.ServiceKind);
+                renderer.material = _serviceRadiusRuntimeMat;
             }
 
             if (!_serviceRadiusPreview.activeSelf)
@@ -440,8 +441,8 @@ namespace CivilSim.Buildings
             if (collider != null) DestroyImmediate(collider);
 
             var renderer = _serviceRadiusPreview.GetComponent<Renderer>();
-            if (renderer != null && _serviceRadiusMat != null)
-                renderer.material = _serviceRadiusMat;
+            if (renderer != null && _serviceRadiusRuntimeMat != null)
+                renderer.material = _serviceRadiusRuntimeMat;
         }
 
         private void HideServiceRadiusPreview()
@@ -502,7 +503,10 @@ namespace CivilSim.Buildings
             // 셀 지시자용 (고스트보다 약간 진한 색)
             _cellValidMat   = CreateTransparentMaterial(new Color(0.1f, 0.9f, 0.1f, 0.6f));
             _cellInvalidMat = CreateTransparentMaterial(new Color(0.9f, 0.1f, 0.1f, 0.6f));
-            _serviceRadiusMat = CreateTransparentMaterial(new Color(0.55f, 0.75f, 1f, 0.17f));
+            if (_serviceRadiusPreviewMaterial != null)
+                _serviceRadiusRuntimeMat = new Material(_serviceRadiusPreviewMaterial) { hideFlags = HideFlags.HideAndDontSave };
+            else
+                _serviceRadiusRuntimeMat = CreateTransparentMaterial(new Color(0.55f, 0.75f, 1f, 0.17f));
         }
 
         private static Material CreateTransparentMaterial(Color color)
@@ -537,7 +541,7 @@ namespace CivilSim.Buildings
             DestroyIfDynamic(_invalidMaterial);
             DestroyIfDynamic(_cellValidMat);
             DestroyIfDynamic(_cellInvalidMat);
-            DestroyIfDynamic(_serviceRadiusMat);
+            DestroyIfDynamic(_serviceRadiusRuntimeMat);
         }
     }
 }
