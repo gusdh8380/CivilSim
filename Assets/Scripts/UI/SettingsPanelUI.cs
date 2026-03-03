@@ -1,7 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 using TMPro;
 using CivilSim.CameraSystem;
+using CivilSim.Core;
 
 namespace CivilSim.UI
 {
@@ -29,6 +31,10 @@ namespace CivilSim.UI
         [Header("패널 루트 (자식 오브젝트를 할당)")]
         [SerializeField] private GameObject _panel;
 
+        [Header("버튼 (미할당 시 자동 탐색)")]
+        [SerializeField] private Button _openButton;
+        [SerializeField] private Button _closeButton;
+
         [Header("카메라 이동 속도 슬라이더")]
         [SerializeField] private Slider          _cameraPanSlider;
         [SerializeField] private TextMeshProUGUI _cameraPanLabel;
@@ -48,6 +54,8 @@ namespace CivilSim.UI
         private void Awake()
         {
             _camCtrl = FindObjectOfType<RTSCameraController>();
+            AutoBindButtons();
+            BindButtonListeners();
             SetVisible(false);
         }
 
@@ -64,6 +72,27 @@ namespace CivilSim.UI
             }
 
             UpdateSpeedLabel(initSpeed);
+        }
+
+        private void Update()
+        {
+            var kb = Keyboard.current;
+            if (kb == null) return;
+
+            if (kb.escapeKey.wasPressedThisFrame && _isOpen)
+                Hide();
+        }
+
+        private void OnDestroy()
+        {
+            if (_cameraPanSlider != null)
+                _cameraPanSlider.onValueChanged.RemoveListener(OnCameraSpeedChanged);
+
+            if (_openButton != null)
+                _openButton.onClick.RemoveListener(Show);
+
+            if (_closeButton != null)
+                _closeButton.onClick.RemoveListener(Hide);
         }
 
         // ── 공개 API ──────────────────────────────────────────
@@ -95,6 +124,94 @@ namespace CivilSim.UI
             _isOpen = visible;
             if (_panel != null)
                 _panel.SetActive(visible);
+
+            // 설정창이 열리면 배치 모드/카메라 입력 잠금
+            if (visible)
+                GameManager.Instance?.CancelAllModes();
+
+            if (_camCtrl != null)
+                _camCtrl.InputLocked = visible;
+        }
+
+        private void AutoBindButtons()
+        {
+            if (_openButton == null)
+            {
+                _openButton = FindButtonByName("SettingBuuton")
+                    ?? FindButtonByName("SettingButton")
+                    ?? FindButtonByName("SettingsButton")
+                    ?? FindButtonByContains("setting");
+            }
+
+            if (_closeButton == null && _panel != null)
+            {
+                _closeButton = FindButtonInChildrenByName(_panel.transform, "Exit")
+                    ?? FindButtonInChildrenByName(_panel.transform, "Close")
+                    ?? FindButtonInChildrenByContains(_panel.transform, "exit")
+                    ?? FindButtonInChildrenByContains(_panel.transform, "close");
+            }
+        }
+
+        private void BindButtonListeners()
+        {
+            if (_openButton != null)
+            {
+                _openButton.onClick.RemoveListener(Show);
+                _openButton.onClick.AddListener(Show);
+            }
+
+            if (_closeButton != null)
+            {
+                _closeButton.onClick.RemoveListener(Hide);
+                _closeButton.onClick.AddListener(Hide);
+            }
+        }
+
+        private static Button FindButtonByName(string objName)
+        {
+            var go = GameObject.Find(objName);
+            return go != null ? go.GetComponent<Button>() : null;
+        }
+
+        private static Button FindButtonByContains(string textLower)
+        {
+            var buttons = FindObjectsOfType<Button>(true);
+            foreach (var button in buttons)
+            {
+                if (button == null || button.gameObject == null) continue;
+                string nameLower = button.gameObject.name.ToLowerInvariant();
+                if (nameLower.Contains(textLower))
+                    return button;
+            }
+            return null;
+        }
+
+        private static Button FindButtonInChildrenByName(Transform parent, string objName)
+        {
+            if (parent == null) return null;
+            var transforms = parent.GetComponentsInChildren<Transform>(true);
+            foreach (var tr in transforms)
+            {
+                if (tr == null) continue;
+                if (tr.name != objName) continue;
+                var btn = tr.GetComponent<Button>();
+                if (btn != null) return btn;
+            }
+            return null;
+        }
+
+        private static Button FindButtonInChildrenByContains(Transform parent, string textLower)
+        {
+            if (parent == null) return null;
+            var buttons = parent.GetComponentsInChildren<Button>(true);
+            foreach (var button in buttons)
+            {
+                if (button == null || button.gameObject == null) continue;
+                string nameLower = button.gameObject.name.ToLowerInvariant();
+                if (nameLower.Contains(textLower))
+                    return button;
+            }
+            return null;
         }
     }
 }

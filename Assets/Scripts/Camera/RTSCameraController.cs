@@ -58,6 +58,7 @@ namespace CivilSim.CameraSystem
 
         // ── 내부 상태 ────────────────────────────────────────
         private UnityEngine.Camera _cam;
+        private bool _inputLocked;
 
         // Pan + Height (targetPos.y = camera height)
         private Vector3 _targetPos;
@@ -105,6 +106,12 @@ namespace CivilSim.CameraSystem
 
         private void Update()
         {
+            if (_inputLocked)
+            {
+                ApplySmoothing();
+                return;
+            }
+
             HandleKeyboardPan();
             HandleEdgePan();
             HandleMiddleDrag();
@@ -266,6 +273,24 @@ namespace CivilSim.CameraSystem
         {
             _targetPos         = new Vector3(worldPos.x, _targetPos.y, worldPos.z);
             transform.position = _targetPos;
+        }
+
+        /// <summary>
+        /// true일 때 카메라 입력(Pan/Zoom/Orbit)을 잠근다.
+        /// 설정창/모달 UI가 열렸을 때 사용한다.
+        /// </summary>
+        public bool InputLocked
+        {
+            get => _inputLocked;
+            set
+            {
+                _inputLocked = value;
+                if (_inputLocked)
+                {
+                    _isMidDragging = false;
+                    _isOrbiting    = false;
+                }
+            }
         }
     }
 }
