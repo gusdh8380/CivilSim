@@ -45,6 +45,23 @@ namespace CivilSim.Core
             Changed?.Invoke();
         }
 
+        public static bool TrySetKey(GameHotkeyAction action, Key key, out GameHotkeyAction conflictAction)
+        {
+            conflictAction = default;
+            if (key == Key.None) return false;
+
+            foreach (GameHotkeyAction other in Enum.GetValues(typeof(GameHotkeyAction)))
+            {
+                if (other == action) continue;
+                if (GetKey(other) != key) continue;
+                conflictAction = other;
+                return false;
+            }
+
+            SetKey(action, key);
+            return true;
+        }
+
         public static void ResetToDefaults()
         {
             foreach (GameHotkeyAction action in Enum.GetValues(typeof(GameHotkeyAction)))
@@ -106,7 +123,7 @@ namespace CivilSim.Core
                 case GameHotkeyAction.ZoneCommercial: return Key.C;
                 case GameHotkeyAction.ZoneIndustrial: return Key.I;
                 case GameHotkeyAction.ZoneClear: return Key.X;
-                case GameHotkeyAction.RotateBuilding: return Key.R;
+                case GameHotkeyAction.RotateBuilding: return Key.T;
                 default: return Key.None;
             }
         }

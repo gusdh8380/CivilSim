@@ -331,12 +331,18 @@ namespace CivilSim.UI
                 return;
             }
 
-            GameHotkeySettings.SetKey(_rebindingAction, pressedKey);
-            _isRebinding = false;
+            if (!GameHotkeySettings.TrySetKey(_rebindingAction, pressedKey, out GameHotkeyAction conflictAction))
+            {
+                string conflictActionLabel = GetActionLabel(conflictAction);
+                string keyLabel = GameHotkeySettings.ToDisplayString(pressedKey);
+                SetHotkeyStatus($"[{keyLabel}]는 이미 [{conflictActionLabel}]에 사용 중");
+                return;
+            }
 
+            _isRebinding = false;
             string actionLabel = GetActionLabel(_rebindingAction);
-            string keyLabel = GameHotkeySettings.ToDisplayString(pressedKey);
-            SetHotkeyStatus($"{actionLabel} 키가 {keyLabel}(으)로 변경됨");
+            string successKeyLabel = GameHotkeySettings.ToDisplayString(pressedKey);
+            SetHotkeyStatus($"{actionLabel} 키가 {successKeyLabel}(으)로 변경됨");
         }
 
         private void StartRebinding(GameHotkeyAction action)
