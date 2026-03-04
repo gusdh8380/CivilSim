@@ -5373,10 +5373,12 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Button
+  m_text: 'Reset
+
+'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: c03b82dfa7756ee4fb0ff094bcde08f5, type: 2}
+  m_sharedMaterial: {fileID: -6936757425411607936, guid: c03b82dfa7756ee4fb0ff094bcde08f5, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -5453,6 +5455,91 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 606321136}
   m_CullTransparentMesh: 1
+--- !u!1 &612355764
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 612355765}
+  - component: {fileID: 612355766}
+  m_Layer: 5
+  m_Name: SettingRoot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &612355765
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 612355764}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1917035015}
+  m_Father: {fileID: 848249752}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &612355766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 612355764}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76dea14de1d0946a589de34cc3cdb370, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CivilSim.UI.SettingsPanelUI
+  _panel: {fileID: 1917035014}
+  _openButton: {fileID: 1694144101}
+  _closeButton: {fileID: 1077231557}
+  _saveGameButton: {fileID: 455302312}
+  _rootSettingsMenuRoot: {fileID: 0}
+  _gameSettingsContentRoot: {fileID: 663485049}
+  _hotkeySettingsPanelRoot: {fileID: 1268309996}
+  _openGameSettingsButton: {fileID: 1735030535}
+  _openHotkeySettingsButton: {fileID: 949205436}
+  _closeHotkeySettingsButton: {fileID: 1081238281}
+  _closeRootButton: {fileID: 2083012552}
+  _cameraPanSlider: {fileID: 100500687}
+  _cameraPanLabel: {fileID: 401507327}
+  _hotkeyStatusLabel: {fileID: 1175234988}
+  _resetHotkeysButton: {fileID: 1468072850}
+  _bindBuildingPanelKeyButton: {fileID: 1846009059}
+  _bindRoadModeKeyButton: {fileID: 1055504141}
+  _bindFoundationModeKeyButton: {fileID: 454429398}
+  _bindZoneModeKeyButton: {fileID: 669433929}
+  _bindZoneResidentialKeyButton: {fileID: 485836268}
+  _bindZoneCommercialKeyButton: {fileID: 1909262435}
+  _bindZoneIndustrialKeyButton: {fileID: 1785490047}
+  _bindZoneClearKeyButton: {fileID: 865278796}
+  _bindRotateBuildingKeyButton: {fileID: 1742782061}
+  _bindBuildingPanelKeyLabel: {fileID: 1873338634}
+  _bindRoadModeKeyLabel: {fileID: 535016421}
+  _bindFoundationModeKeyLabel: {fileID: 1531705838}
+  _bindZoneModeKeyLabel: {fileID: 1611215009}
+  _bindZoneResidentialKeyLabel: {fileID: 338465519}
+  _bindZoneCommercialKeyLabel: {fileID: 2009494861}
+  _bindZoneIndustrialKeyLabel: {fileID: 1159711952}
+  _bindZoneClearKeyLabel: {fileID: 442356120}
+  _bindRotateBuildingKeyLabel: {fileID: 596115504}
+  _minPanSpeed: 0.05
+  _maxPanSpeed: 2
+  _defaultPanSpeed: 0.4
 --- !u!1 &635900810
 GameObject:
   m_ObjectHideFlags: 0
@@ -7431,9 +7518,9 @@ RectTransform:
   - {fileID: 1385735335}
   - {fileID: 1192561621}
   - {fileID: 395526064}
-  - {fileID: 1917035015}
   - {fileID: 593811861}
   - {fileID: 1902335292}
+  - {fileID: 612355765}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -9661,7 +9748,6 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1175234987}
   - {fileID: 1873338633}
   - {fileID: 535016420}
   - {fileID: 1531705837}
@@ -9675,8 +9761,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 400, y: 0}
-  m_SizeDelta: {x: 400, y: 500}
+  m_AnchoredPosition: {x: 400, y: -27.6874}
+  m_SizeDelta: {x: 400, y: 444.6253}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &1116519456
 MonoBehaviour:
@@ -10343,7 +10429,7 @@ GameObject:
   - component: {fileID: 1175234989}
   - component: {fileID: 1175234988}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: Status
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10356,17 +10442,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1175234986}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1116519455}
+  m_Father: {fileID: 1268309997}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 200, y: 50}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: -103}
+  m_SizeDelta: {x: 400, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1175234988
 MonoBehaviour:
@@ -11281,6 +11367,8 @@ RectTransform:
   m_Children:
   - {fileID: 1761245857}
   - {fileID: 1081238280}
+  - {fileID: 1468072849}
+  - {fileID: 1175234987}
   - {fileID: 1116519455}
   - {fileID: 1941449325}
   m_Father: {fileID: 1917035015}
@@ -12353,7 +12441,7 @@ GameObject:
   - component: {fileID: 1468072851}
   - component: {fileID: 1468072850}
   m_Layer: 5
-  m_Name: Button
+  m_Name: Reset
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12366,17 +12454,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1468072848}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 606321137}
-  m_Father: {fileID: 1941449325}
+  m_Father: {fileID: 1268309997}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 640, y: -648}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1468072850
@@ -12443,8 +12531,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: 46ede435fa317c4478735b47e947bb95, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -17320,7 +17408,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1917035015}
-  - component: {fileID: 1917035016}
   - component: {fileID: 1917035018}
   - component: {fileID: 1917035017}
   m_Layer: 5
@@ -17337,7 +17424,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1917035014}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -17349,58 +17436,13 @@ RectTransform:
   - {fileID: 2083012551}
   - {fileID: 663485050}
   - {fileID: 1268309997}
-  m_Father: {fileID: 848249752}
+  m_Father: {fileID: 612355765}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 300, y: 700}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1917035016
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1917035014}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 76dea14de1d0946a589de34cc3cdb370, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CivilSim.UI.SettingsPanelUI
-  _panel: {fileID: 1917035014}
-  _openButton: {fileID: 1694144101}
-  _closeButton: {fileID: 1077231557}
-  _saveGameButton: {fileID: 455302312}
-  _gameSettingsContentRoot: {fileID: 663485049}
-  _hotkeySettingsPanelRoot: {fileID: 1268309996}
-  _openHotkeySettingsButton: {fileID: 0}
-  _closeHotkeySettingsButton: {fileID: 0}
-  _cameraPanSlider: {fileID: 100500687}
-  _cameraPanLabel: {fileID: 401507327}
-  _hotkeyStatusLabel: {fileID: 1175234988}
-  _resetHotkeysButton: {fileID: 1468072850}
-  _bindBuildingPanelKeyButton: {fileID: 1846009059}
-  _bindRoadModeKeyButton: {fileID: 1055504141}
-  _bindFoundationModeKeyButton: {fileID: 454429398}
-  _bindZoneModeKeyButton: {fileID: 669433929}
-  _bindZoneResidentialKeyButton: {fileID: 485836268}
-  _bindZoneCommercialKeyButton: {fileID: 1909262435}
-  _bindZoneIndustrialKeyButton: {fileID: 1785490047}
-  _bindZoneClearKeyButton: {fileID: 865278796}
-  _bindRotateBuildingKeyButton: {fileID: 1742782061}
-  _bindBuildingPanelKeyLabel: {fileID: 1873338634}
-  _bindRoadModeKeyLabel: {fileID: 535016421}
-  _bindFoundationModeKeyLabel: {fileID: 1531705838}
-  _bindZoneModeKeyLabel: {fileID: 1611215009}
-  _bindZoneResidentialKeyLabel: {fileID: 338465519}
-  _bindZoneCommercialKeyLabel: {fileID: 2009494861}
-  _bindZoneIndustrialKeyLabel: {fileID: 1159711952}
-  _bindZoneClearKeyLabel: {fileID: 442356120}
-  _bindRotateBuildingKeyLabel: {fileID: 596115504}
-  _minPanSpeed: 0.05
-  _maxPanSpeed: 2
-  _defaultPanSpeed: 0.4
 --- !u!114 &1917035017
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17468,7 +17510,6 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1468072849}
   - {fileID: 1846009058}
   - {fileID: 1055504140}
   - {fileID: 454429397}
@@ -17482,8 +17523,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -400, y: 0}
-  m_SizeDelta: {x: 400, y: 500}
+  m_AnchoredPosition: {x: -400, y: -27.6874}
+  m_SizeDelta: {x: 400, y: 444.6253}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &1941449326
 MonoBehaviour:
