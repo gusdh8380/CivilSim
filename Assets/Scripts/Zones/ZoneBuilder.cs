@@ -64,7 +64,7 @@ namespace CivilSim.Zones
             var kb = Keyboard.current;
             var mouse = Mouse.current;
 
-            if (kb != null && kb.zKey.wasPressedThisFrame)
+            if (kb != null && GameHotkeySettings.WasPressedThisFrame(kb, GameHotkeyAction.ToggleZoneMode))
             {
                 if (_isActive) Deactivate();
                 else Activate();
@@ -150,10 +150,10 @@ namespace CivilSim.Zones
             if (kb == null) return;
 
             ZoneType next = CurrentZoneType;
-            if (kb.rKey.wasPressedThisFrame) next = ZoneType.Residential;
-            else if (kb.cKey.wasPressedThisFrame) next = ZoneType.Commercial;
-            else if (kb.iKey.wasPressedThisFrame) next = ZoneType.Industrial;
-            else if (kb.xKey.wasPressedThisFrame) next = ZoneType.None;
+            if (GameHotkeySettings.WasPressedThisFrame(kb, GameHotkeyAction.ZoneResidential)) next = ZoneType.Residential;
+            else if (GameHotkeySettings.WasPressedThisFrame(kb, GameHotkeyAction.ZoneCommercial)) next = ZoneType.Commercial;
+            else if (GameHotkeySettings.WasPressedThisFrame(kb, GameHotkeyAction.ZoneIndustrial)) next = ZoneType.Industrial;
+            else if (GameHotkeySettings.WasPressedThisFrame(kb, GameHotkeyAction.ZoneClear)) next = ZoneType.None;
 
             if (next == CurrentZoneType) return;
             CurrentZoneType = next;

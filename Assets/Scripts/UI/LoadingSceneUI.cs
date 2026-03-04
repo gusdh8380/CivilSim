@@ -1,6 +1,7 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using CivilSim.Core;
@@ -21,8 +22,11 @@ namespace CivilSim.UI
         [SerializeField] private Image _progressFillImage;
         [SerializeField] private TextMeshProUGUI _progressText;
         [SerializeField] private TextMeshProUGUI _statusText;
+        [SerializeField] private TextMeshProUGUI _controlsGuideText;
+        [SerializeField] private TextMeshProUGUI _continueText;
         [SerializeField] private string _loadingMessage = "Loading...";
         [SerializeField] private string _readyMessage = "Ready";
+        [SerializeField] private string _pressAnyKeyMessage = "아무 키나 눌러 시작";
 
         private bool _isStarted;
 
@@ -31,6 +35,8 @@ namespace CivilSim.UI
             AutoBindControls();
             SetProgress(0f);
             SetStatus(_loadingMessage);
+            SetControlsGuide();
+            SetContinuePrompt(false);
         }
 
         private void Start()
@@ -63,6 +69,7 @@ namespace CivilSim.UI
             float minimumDuration = Mathf.Max(1f, _minimumLoadingSeconds);
             float elapsed = 0f;
             float visualProgress = 0f;
+            bool waitingForInput = false;
             while (!loadOp.isDone)
             {
                 elapsed += Time.unscaledDeltaTime;
@@ -73,10 +80,17 @@ namespace CivilSim.UI
                 visualProgress = Mathf.MoveTowards(visualProgress, targetProgress, Time.unscaledDeltaTime * 2.5f);
                 SetProgress(visualProgress);
 
-                if (loadOp.progress >= 0.9f && elapsed >= minimumDuration)
+                if (!waitingForInput && loadOp.progress >= 0.9f && elapsed >= minimumDuration)
                 {
                     SetProgress(1f);
                     SetStatus(_readyMessage);
+                    SetContinuePrompt(true);
+                    waitingForInput = true;
+                }
+
+                if (waitingForInput && IsAnyContinueInputPressed())
+                {
+                    SetContinuePrompt(false);
                     loadOp.allowSceneActivation = true;
                 }
 
@@ -120,6 +134,58 @@ namespace CivilSim.UI
                 _statusText.text = message ?? string.Empty;
         }
 
+        private void SetContinuePrompt(bool visible)
+        {
+            if (_continueText == null) return;
+            _continueText.gameObject.SetActive(visible);
+            _continueText.text = _pressAnyKeyMessage;
+        }
+
+        private void SetControlsGuide()
+        {
+            if (_controlsGuideText == null) return;
+
+            string b = KeyToLabel(GameHotkeyAction.ToggleBuildingPanel);
+            string f = KeyToLabel(GameHotkeyAction.ToggleRoadMode);
+            string g = KeyToLabel(GameHotkeyAction.ToggleFoundationMode);
+            string z = KeyToLabel(GameHotkeyAction.ToggleZoneMode);
+            string r = KeyToLabel(GameHotkeyAction.ZoneResidential);
+            string c = KeyToLabel(GameHotkeyAction.ZoneCommercial);
+            string i = KeyToLabel(GameHotkeyAction.ZoneIndustrial);
+            string x = KeyToLabel(GameHotkeyAction.ZoneClear);
+            string rot = KeyToLabel(GameHotkeyAction.RotateBuilding);
+
+            _controlsGuideText.text =
+                $"조작 안내\n" +
+                $"{b}: 건물 패널  {f}: 도로  {g}: 지반  {z}: 구역\n" +
+                $"{r}/{c}/{i}/{x}: 구역 타입 전환  {rot}: 건물 회전\n" +
+                $"ESC/RMB: 모드 취소";
+        }
+
+        private static string KeyToLabel(GameHotkeyAction action)
+        {
+            return GameHotkeySettings.ToDisplayString(GameHotkeySettings.GetKey(action));
+        }
+
+        private static bool IsAnyContinueInputPressed()
+        {
+            var kb = Keyboard.current;
+            if (kb != null && kb.anyKey.wasPressedThisFrame) return true;
+
+            var mouse = Mouse.current;
+            if (mouse != null)
+            {
+                if (mouse.leftButton.wasPressedThisFrame) return true;
+                if (mouse.rightButton.wasPressedThisFrame) return true;
+                if (mouse.middleButton.wasPressedThisFrame) return true;
+                if (mouse.forwardButton.wasPressedThisFrame) return true;
+                if (mouse.backButton.wasPressedThisFrame) return true;
+                if (Mathf.Abs(mouse.scroll.ReadValue().y) > 0.01f) return true;
+            }
+
+            return false;
+        }
+
         private void AutoBindControls()
         {
             if (_progressBar == null)
@@ -148,6 +214,22 @@ namespace CivilSim.UI
                 _statusText = FindText("StatusText")
                     ?? FindText("LoadingStatusText")
                     ?? FindTextContains("status");
+            }
+
+            if (_controlsGuideText == null)
+            {
+                _controlsGuideText = FindText("ControlsGuideText")
+                    ?? FindText("LoadingGuideText")
+                    ?? FindTextContains("guide")
+                    ?? FindTextContains("control");
+            }
+
+            if (_continueText == null)
+            {
+                _continueText = FindText("ContinueText")
+                    ?? FindText("AnyKeyText")
+                    ?? FindTextContains("continue")
+                    ?? FindTextContains("anykey");
             }
         }
 

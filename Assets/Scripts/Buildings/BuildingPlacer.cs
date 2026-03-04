@@ -91,7 +91,9 @@ namespace CivilSim.Buildings
             }
 
             // -- 회전 (Placing 모드에서만) --
-            if (Mode == PlacerMode.Placing && kb != null && kb.rKey.wasPressedThisFrame)
+            if (Mode == PlacerMode.Placing &&
+                kb != null &&
+                GameHotkeySettings.WasPressedThisFrame(kb, GameHotkeyAction.RotateBuilding))
                 Rotate();
 
             // -- 고스트 위치 갱신 --

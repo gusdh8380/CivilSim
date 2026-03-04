@@ -67,8 +67,8 @@ namespace CivilSim.Infrastructure
             var kb    = Keyboard.current;
             var mouse = Mouse.current;
 
-            // -- G키: 모드 토글 --
-            if (kb != null && kb.gKey.wasPressedThisFrame)
+            // -- 단축키: 모드 토글 --
+            if (kb != null && GameHotkeySettings.WasPressedThisFrame(kb, GameHotkeyAction.ToggleFoundationMode))
             {
                 if (_isActive) Deactivate();
                 else           Activate();

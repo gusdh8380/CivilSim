@@ -89,8 +89,9 @@ namespace CivilSim.UI
 
         private void Update()
         {
-            // B키 토글 — CanvasGroup 방식이라 이 Update()는 항상 실행됨
-            if (Keyboard.current != null && Keyboard.current.bKey.wasPressedThisFrame)
+            // 단축키 토글 — CanvasGroup 방식이라 이 Update()는 항상 실행됨
+            if (Keyboard.current != null &&
+                GameHotkeySettings.WasPressedThisFrame(Keyboard.current, GameHotkeyAction.ToggleBuildingPanel))
                 Toggle();
         }
 

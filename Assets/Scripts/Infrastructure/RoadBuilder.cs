@@ -65,8 +65,8 @@ namespace CivilSim.Infrastructure
             var kb    = Keyboard.current;
             var mouse = Mouse.current;
 
-            // F키: 도로 배치 모드 토글
-            if (kb != null && kb.fKey.wasPressedThisFrame)
+            // 단축키: 도로 배치 모드 토글
+            if (kb != null && GameHotkeySettings.WasPressedThisFrame(kb, GameHotkeyAction.ToggleRoadMode))
             {
                 if (Mode == RoadBuilderMode.Building) Cancel();
                 else StartBuilding();
