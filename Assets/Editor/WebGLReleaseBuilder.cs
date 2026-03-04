@@ -71,9 +71,56 @@ namespace CivilSim.Editor
             if (summary.result != BuildResult.Succeeded)
                 throw new Exception($"WebGL build failed: {summary.result}");
 
+            ApplyResponsiveDesktopCanvasPatch(outputDir);
             WriteStaticHostingHeaders(outputDir);
             Debug.Log($"[WebGLReleaseBuilder] Build succeeded: {summary.outputPath} ({summary.totalSize / (1024f * 1024f):F2} MB)");
             EditorUtility.RevealInFinder(summary.outputPath);
+        }
+
+        private static void ApplyResponsiveDesktopCanvasPatch(string outputDir)
+        {
+            string indexPath = Path.Combine(outputDir, "index.html");
+            if (!File.Exists(indexPath))
+                return;
+
+            string html = File.ReadAllText(indexPath);
+            const string oldBlock =
+@"      } else {
+        // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
+        canvas.style.width = ""1920px"";
+        canvas.style.height = ""1080px"";
+      }";
+            const string newBlock =
+@"      } else {
+        // Desktop style: keep 16:9 and fit into browser viewport.
+        const container = document.querySelector(""#unity-container"");
+        const targetAspect = 16 / 9;
+        function resizeDesktopCanvas() {
+          const w = window.innerWidth;
+          const h = window.innerHeight;
+          let cw = w;
+          let ch = Math.round(cw / targetAspect);
+          if (ch > h) {
+            ch = h;
+            cw = Math.round(ch * targetAspect);
+          }
+          container.style.position = ""fixed"";
+          container.style.left = ""50%"";
+          container.style.top = ""50%"";
+          container.style.transform = ""translate(-50%, -50%)"";
+          canvas.style.width = cw + ""px"";
+          canvas.style.height = ch + ""px"";
+        }
+        window.addEventListener(""resize"", resizeDesktopCanvas);
+        resizeDesktopCanvas();
+      }";
+
+            if (html.Contains(oldBlock))
+            {
+                html = html.Replace(oldBlock, newBlock);
+                File.WriteAllText(indexPath, html);
+                Debug.Log("[WebGLReleaseBuilder] Applied responsive desktop canvas patch");
+            }
         }
 
         private static void WriteStaticHostingHeaders(string outputDir)
