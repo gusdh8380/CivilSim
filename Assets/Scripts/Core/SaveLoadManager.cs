@@ -318,6 +318,7 @@ namespace CivilSim.Core
 
             systems.Buildings.ClearAll();
             systems.Roads.ClearAllRoads();
+            systems.Foundation?.ClearAll();
             systems.Grid.ResetAllCells();
 
             // 지반 복원
@@ -326,7 +327,11 @@ namespace CivilSim.Core
                 foreach (var f in data.Foundations)
                 {
                     var pos = new Vector2Int(f.X, f.Y);
-                    if (systems.Grid.IsValid(pos))
+                    if (!systems.Grid.IsValid(pos)) continue;
+
+                    if (systems.Foundation != null)
+                        systems.Foundation.TryPlace(pos);
+                    else
                         systems.Grid.PlaceFoundation(pos);
                 }
             }
@@ -421,6 +426,7 @@ namespace CivilSim.Core
             var grid = _gameManager.Grid;
             var buildings = _gameManager.Buildings;
             var roads = _gameManager.Roads;
+            var foundation = _gameManager.Foundation;
             var buildingDb = _gameManager.BuildingDB;
 
             bool invalid =
@@ -445,6 +451,7 @@ namespace CivilSim.Core
                 Grid = grid,
                 Buildings = buildings,
                 Roads = roads,
+                Foundation = foundation,
                 BuildingDB = buildingDb
             };
             return true;
@@ -557,6 +564,7 @@ namespace CivilSim.Core
             public GridSystem Grid;
             public BuildingManager Buildings;
             public RoadManager Roads;
+            public FoundationManager Foundation;
             public BuildingDatabase BuildingDB;
         }
     }

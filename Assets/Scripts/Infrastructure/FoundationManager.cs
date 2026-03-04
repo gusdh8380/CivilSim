@@ -39,8 +39,7 @@ namespace CivilSim.Infrastructure
 
         private void Start()
         {
-            _grid = GameManager.Instance.Grid;
-            if (_grid == null) _grid = FindFirstObjectByType<GridSystem>();
+            EnsureGrid();
         }
 
         // -- 공개 API --
@@ -48,6 +47,7 @@ namespace CivilSim.Infrastructure
         /// <summary>단일 셀에 지반을 설치한다. 성공 시 true 반환.</summary>
         public bool TryPlace(Vector2Int pos)
         {
+            if (!EnsureGrid()) return false;
             var cell = _grid?.GetCell(pos);
             if (cell == null || !cell.CanPlaceFoundation) return false;
             if (_placed.ContainsKey(pos)) return false;   // 이미 지반 있음
@@ -68,6 +68,7 @@ namespace CivilSim.Infrastructure
         /// <summary>단일 셀의 지반을 철거한다. 성공 시 true 반환.</summary>
         public bool TryRemove(Vector2Int pos)
         {
+            if (!EnsureGrid()) return false;
             var cell = _grid?.GetCell(pos);
             if (cell == null || cell.State != CellState.Foundation) return false;
 
@@ -86,6 +87,7 @@ namespace CivilSim.Infrastructure
         /// <summary>start ↔ end 직사각형 영역을 한 번에 지반으로 채운다.</summary>
         public void PlaceRect(Vector2Int start, Vector2Int end)
         {
+            if (!EnsureGrid()) return;
             int minX = Mathf.Min(start.x, end.x);
             int maxX = Mathf.Max(start.x, end.x);
             int minZ = Mathf.Min(start.y, end.y);
@@ -131,7 +133,33 @@ namespace CivilSim.Infrastructure
 
         public int Count => _placed.Count;
 
+        /// <summary>
+        /// 지반 비주얼 캐시를 비우고, 루트 하위 지반 오브젝트를 모두 제거한다.
+        /// 그리드 셀 상태는 변경하지 않는다.
+        /// </summary>
+        public void ClearAll()
+        {
+            if (_foundationRoot != null)
+            {
+                for (int i = _foundationRoot.childCount - 1; i >= 0; i--)
+                {
+                    var child = _foundationRoot.GetChild(i);
+                    if (child != null) Destroy(child.gameObject);
+                }
+            }
+
+            _placed.Clear();
+        }
+
         // -- 내부 --
+
+        private bool EnsureGrid()
+        {
+            if (_grid != null) return true;
+            _grid = GameManager.Instance != null ? GameManager.Instance.Grid : null;
+            if (_grid == null) _grid = FindFirstObjectByType<GridSystem>();
+            return _grid != null;
+        }
 
         private GameObject SpawnFoundation(Vector3 worldPos)
         {
