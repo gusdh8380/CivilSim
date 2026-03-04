@@ -71,3 +71,6 @@ desktop.ini
 
 # WebGL build output (separate from project)
 /WebGL-Build/
+
+# Netlify local state
+.netlify/
