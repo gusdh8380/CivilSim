@@ -66,6 +66,16 @@ Build Settings에는 위 3개 씬이 등록되어 있어야 한다.
 2. `File -> Build Profiles`에서 WebGL 프로파일을 선택한다.
 3. `Assets/Scenes/Entry.unity`를 열고 Play한다.
 
+## WebGL 릴리즈 빌드
+
+- 메뉴:
+  - `Tools/CivilSim/WebGL/Apply Release Settings (1920x1080)`
+  - `Tools/CivilSim/WebGL/Build Release (1920x1080)`
+- 출력 경로:
+  - `Builds/WebGL`
+- 상세 배포 가이드:
+  - `WEBGL_RELEASE_GUIDE.md`
+
 ## 개발 원칙
 
 - 자동 개발(구역 기반 자동 건설) 금지
