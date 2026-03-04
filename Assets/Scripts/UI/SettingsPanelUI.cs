@@ -400,16 +400,21 @@ namespace CivilSim.UI
             if (_openHotkeySettingsButton == null && _panel != null)
             {
                 _openHotkeySettingsButton = FindButtonInChildrenByName(_panel.transform, "OpenHotkeySettingsButton")
+                    ?? FindButtonInChildrenByName(_panel.transform, "HotkeySettingButton")
                     ?? FindButtonInChildrenByName(_panel.transform, "HotkeySettingsButton")
                     ?? FindButtonInChildrenByName(_panel.transform, "HotkeyButton")
+                    ?? FindButtonInChildrenByContains(_panel.transform, "hotkeysetting")
+                    ?? FindButtonInChildrenByContains(_panel.transform, "keysetting")
                     ?? FindButtonInChildrenByContains(_panel.transform, "openhotkey");
             }
 
             if (_closeHotkeySettingsButton == null && _panel != null)
             {
                 _closeHotkeySettingsButton = FindButtonInChildrenByName(_panel.transform, "CloseHotkeySettingsButton")
+                    ?? FindButtonInChildrenByName(_panel.transform, "GameSettingsPanel")
                     ?? FindButtonInChildrenByName(_panel.transform, "BackFromHotkeyButton")
                     ?? FindButtonInChildrenByName(_panel.transform, "HotkeyBackButton")
+                    ?? FindButtonInChildrenByContains(_panel.transform, "gamesetting")
                     ?? FindButtonInChildrenByContains(_panel.transform, "hotkeyback")
                     ?? FindButtonInChildrenByContains(_panel.transform, "closehotkey");
             }
