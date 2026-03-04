@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9870806c1fc9847f1a88a17d60a63eb1, type: 3}
   m_Name: EconomyConfig
   m_EditorClassIdentifier: Assembly-CSharp::CivilSim.Economy.EconomyConfig
-  InitialBudget: 80000
+  InitialBudget: 120000
   TaxPerResidentPerMonth: 35
   TaxPerJobPerMonth: 30
   BankruptcyThreshold: -20000

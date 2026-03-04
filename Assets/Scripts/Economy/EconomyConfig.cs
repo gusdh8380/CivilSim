@@ -11,7 +11,7 @@ namespace CivilSim.Economy
     {
         [Header("초기 예산")]
         [Tooltip("게임 시작 시 보유 자금")]
-        public int InitialBudget = 80_000;
+        public int InitialBudget = 120_000;
 
         [Header("세율 (월별 1인당 수입)")]
         [Tooltip("주거 건물 거주자 1인당 월 세금")]
