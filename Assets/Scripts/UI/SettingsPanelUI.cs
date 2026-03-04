@@ -76,15 +76,20 @@ namespace CivilSim.UI
             HotkeySettings
         }
 
+        private const string PrefLastViewKey = "CivilSim.SettingsPanel.LastView";
+        private const string PrefCameraPanSpeedKey = "CivilSim.SettingsPanel.CameraPanSpeed";
+
         private RTSCameraController _camCtrl;
         private readonly List<GameObject> _autoRootMenuObjects = new();
         private bool _isOpen;
         private SettingsView _currentView = SettingsView.RootMenu;
+        private SettingsView _preferredOpenView = SettingsView.RootMenu;
         private bool _isRebinding;
         private GameHotkeyAction _rebindingAction;
 
         private void Awake()
         {
+            LoadPreferences();
             _camCtrl = FindFirstObjectByType<RTSCameraController>();
             AutoBindButtons();
             AutoBindHotkeyControls();
@@ -96,6 +101,12 @@ namespace CivilSim.UI
         private void Start()
         {
             float initSpeed = (_camCtrl != null) ? _camCtrl.KeyPanSpeed : _defaultPanSpeed;
+            if (PlayerPrefs.HasKey(PrefCameraPanSpeedKey))
+                initSpeed = PlayerPrefs.GetFloat(PrefCameraPanSpeedKey, initSpeed);
+            initSpeed = Mathf.Clamp(initSpeed, _minPanSpeed, _maxPanSpeed);
+
+            if (_camCtrl != null)
+                _camCtrl.KeyPanSpeed = initSpeed;
 
             if (_cameraPanSlider != null)
             {
@@ -169,6 +180,7 @@ namespace CivilSim.UI
                 _closeRootButton.onClick.RemoveListener(Hide);
 
             UnbindHotkeyListeners();
+            PlayerPrefs.Save();
         }
 
         public void Toggle() => SetVisible(!_isOpen);
@@ -181,6 +193,7 @@ namespace CivilSim.UI
             if (_camCtrl != null)
                 _camCtrl.KeyPanSpeed = value;
             UpdateSpeedLabel(value);
+            PlayerPrefs.SetFloat(PrefCameraPanSpeedKey, value);
         }
 
         private void UpdateSpeedLabel(float value)
@@ -199,7 +212,8 @@ namespace CivilSim.UI
             if (_isRebinding && !visible)
                 _isRebinding = false;
 
-            SetView(SettingsView.RootMenu);
+            if (visible)
+                SetView(_preferredOpenView, false);
 
             if (visible && changed)
                 PanelOpenCoordinator.NotifyOpened(this);
@@ -209,6 +223,9 @@ namespace CivilSim.UI
 
             if (_camCtrl != null)
                 _camCtrl.InputLocked = visible;
+
+            if (!visible)
+                PlayerPrefs.Save();
         }
 
         private void ShowGameSettingsPanel()
@@ -230,9 +247,14 @@ namespace CivilSim.UI
             SetView(SettingsView.RootMenu);
         }
 
-        private void SetView(SettingsView view)
+        private void SetView(SettingsView view, bool persist = true)
         {
             _currentView = view;
+            if (persist)
+            {
+                _preferredOpenView = view;
+                PlayerPrefs.SetInt(PrefLastViewKey, (int)view);
+            }
 
             SetRootMenuVisible(view == SettingsView.RootMenu);
 
@@ -241,6 +263,14 @@ namespace CivilSim.UI
 
             if (_hotkeySettingsPanelRoot != null)
                 _hotkeySettingsPanelRoot.SetActive(view == SettingsView.HotkeySettings);
+        }
+
+        private void LoadPreferences()
+        {
+            int savedView = PlayerPrefs.GetInt(PrefLastViewKey, (int)SettingsView.RootMenu);
+            if (savedView < (int)SettingsView.RootMenu || savedView > (int)SettingsView.HotkeySettings)
+                savedView = (int)SettingsView.RootMenu;
+            _preferredOpenView = (SettingsView)savedView;
         }
 
         private void SetRootMenuVisible(bool visible)
