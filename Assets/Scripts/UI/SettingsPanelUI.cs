@@ -23,6 +23,14 @@ namespace CivilSim.UI
         [Header("저장 버튼 (선택)")]
         [SerializeField] private Button _saveGameButton;
 
+        [Header("서브 패널 (선택)")]
+        [SerializeField] private GameObject _gameSettingsContentRoot;
+        [SerializeField] private GameObject _hotkeySettingsPanelRoot;
+
+        [Header("단축키 패널 전환 버튼 (선택)")]
+        [SerializeField] private Button _openHotkeySettingsButton;
+        [SerializeField] private Button _closeHotkeySettingsButton;
+
         [Header("카메라 이동 속도")]
         [SerializeField] private Slider _cameraPanSlider;
         [SerializeField] private TextMeshProUGUI _cameraPanLabel;
@@ -57,6 +65,7 @@ namespace CivilSim.UI
 
         private RTSCameraController _camCtrl;
         private bool _isOpen;
+        private bool _isHotkeyPanelOpen;
         private bool _isRebinding;
         private GameHotkeyAction _rebindingAction;
 
@@ -111,7 +120,12 @@ namespace CivilSim.UI
             }
 
             if (kb.escapeKey.wasPressedThisFrame && _isOpen)
-                Hide();
+            {
+                if (_isHotkeyPanelOpen)
+                    HideHotkeyPanel();
+                else
+                    Hide();
+            }
         }
 
         private void OnDestroy()
@@ -127,6 +141,12 @@ namespace CivilSim.UI
 
             if (_saveGameButton != null)
                 _saveGameButton.onClick.RemoveListener(OnClickSaveGame);
+
+            if (_openHotkeySettingsButton != null)
+                _openHotkeySettingsButton.onClick.RemoveListener(ShowHotkeyPanel);
+
+            if (_closeHotkeySettingsButton != null)
+                _closeHotkeySettingsButton.onClick.RemoveListener(HideHotkeyPanel);
 
             UnbindHotkeyListeners();
         }
@@ -156,8 +176,14 @@ namespace CivilSim.UI
             if (_panel != null)
                 _panel.SetActive(visible);
 
-            if (!visible && _isRebinding)
-                _isRebinding = false;
+            if (visible)
+                SetHotkeyPanelVisible(false);
+            else
+            {
+                if (_isRebinding)
+                    _isRebinding = false;
+                SetHotkeyPanelVisible(false);
+            }
 
             if (visible && changed)
                 PanelOpenCoordinator.NotifyOpened(this);
@@ -167,6 +193,34 @@ namespace CivilSim.UI
 
             if (_camCtrl != null)
                 _camCtrl.InputLocked = visible;
+        }
+
+        private void ShowHotkeyPanel()
+        {
+            SetHotkeyPanelVisible(true);
+            SetHotkeyStatus(string.Empty);
+        }
+
+        private void HideHotkeyPanel()
+        {
+            if (_isRebinding)
+                CancelRebinding("단축키 변경 취소");
+
+            SetHotkeyPanelVisible(false);
+        }
+
+        private void SetHotkeyPanelVisible(bool visible)
+        {
+            bool canSwitch = _hotkeySettingsPanelRoot != null || _gameSettingsContentRoot != null;
+            _isHotkeyPanelOpen = canSwitch && visible;
+
+            if (!canSwitch) return;
+
+            if (_hotkeySettingsPanelRoot != null)
+                _hotkeySettingsPanelRoot.SetActive(visible);
+
+            if (_gameSettingsContentRoot != null)
+                _gameSettingsContentRoot.SetActive(!visible);
         }
 
         private void OnClickSaveGame()
@@ -313,7 +367,9 @@ namespace CivilSim.UI
 
             if (_closeButton == null && _panel != null)
             {
-                _closeButton = FindButtonInChildrenByName(_panel.transform, "Exit")
+                _closeButton = FindButtonInChildrenByName(_panel.transform, "SettingsCloseButton")
+                    ?? FindButtonInChildrenByName(_panel.transform, "SettingCloseButton")
+                    ?? FindButtonInChildrenByName(_panel.transform, "Exit")
                     ?? FindButtonInChildrenByName(_panel.transform, "Close")
                     ?? FindButtonInChildrenByContains(_panel.transform, "exit")
                     ?? FindButtonInChildrenByContains(_panel.transform, "close");
@@ -326,13 +382,44 @@ namespace CivilSim.UI
                     ?? FindButtonInChildrenByName(_panel.transform, "QuickSaveButton")
                     ?? FindButtonInChildrenByContains(_panel.transform, "save");
             }
+
+            if (_gameSettingsContentRoot == null && _panel != null)
+            {
+                _gameSettingsContentRoot = FindGameObjectInChildrenByName(_panel.transform, "GameSettingsContent")
+                    ?? FindGameObjectInChildrenByName(_panel.transform, "GameSettingsPanel")
+                    ?? FindGameObjectInChildrenByName(_panel.transform, "SettingsContent");
+            }
+
+            if (_hotkeySettingsPanelRoot == null && _panel != null)
+            {
+                _hotkeySettingsPanelRoot = FindGameObjectInChildrenByName(_panel.transform, "HotkeySettingsPanel")
+                    ?? FindGameObjectInChildrenByName(_panel.transform, "HotkeyPanel")
+                    ?? FindGameObjectInChildrenByName(_panel.transform, "KeybindPanel");
+            }
+
+            if (_openHotkeySettingsButton == null && _panel != null)
+            {
+                _openHotkeySettingsButton = FindButtonInChildrenByName(_panel.transform, "OpenHotkeySettingsButton")
+                    ?? FindButtonInChildrenByName(_panel.transform, "HotkeySettingsButton")
+                    ?? FindButtonInChildrenByName(_panel.transform, "HotkeyButton")
+                    ?? FindButtonInChildrenByContains(_panel.transform, "openhotkey");
+            }
+
+            if (_closeHotkeySettingsButton == null && _panel != null)
+            {
+                _closeHotkeySettingsButton = FindButtonInChildrenByName(_panel.transform, "CloseHotkeySettingsButton")
+                    ?? FindButtonInChildrenByName(_panel.transform, "BackFromHotkeyButton")
+                    ?? FindButtonInChildrenByName(_panel.transform, "HotkeyBackButton")
+                    ?? FindButtonInChildrenByContains(_panel.transform, "hotkeyback")
+                    ?? FindButtonInChildrenByContains(_panel.transform, "closehotkey");
+            }
         }
 
         private void AutoBindHotkeyControls()
         {
             if (_panel == null) return;
 
-            Transform root = _panel.transform;
+            Transform root = _hotkeySettingsPanelRoot != null ? _hotkeySettingsPanelRoot.transform : _panel.transform;
 
             if (_resetHotkeysButton == null)
                 _resetHotkeysButton = FindButtonInChildrenByName(root, "ResetHotkeysButton")
@@ -383,6 +470,18 @@ namespace CivilSim.UI
             {
                 _saveGameButton.onClick.RemoveListener(OnClickSaveGame);
                 _saveGameButton.onClick.AddListener(OnClickSaveGame);
+            }
+
+            if (_openHotkeySettingsButton != null)
+            {
+                _openHotkeySettingsButton.onClick.RemoveListener(ShowHotkeyPanel);
+                _openHotkeySettingsButton.onClick.AddListener(ShowHotkeyPanel);
+            }
+
+            if (_closeHotkeySettingsButton != null)
+            {
+                _closeHotkeySettingsButton.onClick.RemoveListener(HideHotkeyPanel);
+                _closeHotkeySettingsButton.onClick.AddListener(HideHotkeyPanel);
             }
         }
 
@@ -483,6 +582,18 @@ namespace CivilSim.UI
                 string nameLower = text.gameObject.name.ToLowerInvariant();
                 if (nameLower.Contains(textLower))
                     return text;
+            }
+            return null;
+        }
+
+        private static GameObject FindGameObjectInChildrenByName(Transform parent, string objName)
+        {
+            if (parent == null) return null;
+            var transforms = parent.GetComponentsInChildren<Transform>(true);
+            foreach (var tr in transforms)
+            {
+                if (tr == null) continue;
+                if (tr.name == objName) return tr.gameObject;
             }
             return null;
         }
