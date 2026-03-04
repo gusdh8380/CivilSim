@@ -75,6 +75,8 @@ Build Settings에는 위 3개 씬이 등록되어 있어야 한다.
   - `Builds/WebGL`
 - 상세 배포 가이드:
   - `WEBGL_RELEASE_GUIDE.md`
+- Netlify 설정:
+  - `netlify.toml` (publish: `Builds/WebGL`)
 
 ## 개발 원칙
 

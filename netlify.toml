@@ -1,0 +1,32 @@
+[build]
+publish = "Builds/WebGL"
+command = "echo \"Unity WebGL prebuilt output\""
+
+[build.environment]
+NODE_VERSION = "20"
+
+[[headers]]
+for = "/index.html"
+[headers.values]
+Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+for = "/Build/*.wasm.br"
+[headers.values]
+Content-Type = "application/wasm"
+Content-Encoding = "br"
+Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+for = "/Build/*.js.br"
+[headers.values]
+Content-Type = "application/javascript"
+Content-Encoding = "br"
+Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+for = "/Build/*.data.br"
+[headers.values]
+Content-Type = "application/octet-stream"
+Content-Encoding = "br"
+Cache-Control = "public, max-age=31536000, immutable"

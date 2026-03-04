@@ -65,6 +65,26 @@ If your host cannot set these headers, set `decompressionFallback = On` and rebu
   - Static hosting works, but custom compression headers are limited.
   - Prefer Netlify or Cloudflare Pages for Brotli `.br` serving.
 
+### Netlify CLI deploy (token auth)
+
+1. Create a personal access token in Netlify.
+2. Export environment variables:
+
+```bash
+export NETLIFY_AUTH_TOKEN="<your-token>"
+export NETLIFY_SITE_ID="<your-site-id>"
+```
+
+3. Deploy:
+
+```bash
+npx --yes netlify-cli deploy \
+  --dir=Builds/WebGL \
+  --prod \
+  --site="$NETLIFY_SITE_ID" \
+  --auth="$NETLIFY_AUTH_TOKEN"
+```
+
 ## 7) CLI build (optional)
 
 ```bash
