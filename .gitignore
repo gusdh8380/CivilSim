@@ -74,3 +74,7 @@ desktop.ini
 
 # Netlify local state
 .netlify/
+
+# Unity license activation files (sensitive, never commit)
+*.alf
+*.ulf
