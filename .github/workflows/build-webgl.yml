@@ -15,32 +15,37 @@ concurrency:
 jobs:
   build:
     name: Build WebGL and Deploy to Netlify
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           lfs: true
 
-      - name: Cache Library
-        uses: actions/cache@v4
-        with:
-          path: Library
-          key: Library-WebGL-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
-          restore-keys: |
-            Library-WebGL-
-            Library-
-
       - name: Build WebGL (custom HTML shell)
-        uses: game-ci/unity-builder@v4
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-        with:
-          targetPlatform: WebGL
-          unityVersion: 6000.3.10f1
-          buildMethod: CivilSim.Editor.WebGLReleaseBuilder.BuildReleaseCI
+        run: |
+          UNITY="/Applications/Unity/Hub/Editor/6000.3.10f1/Unity.app/Contents/MacOS/Unity"
+          LOG="${{ github.workspace }}/unity-build.log"
+
+          "$UNITY" \
+            -quit -batchmode \
+            -projectPath "${{ github.workspace }}" \
+            -buildTarget WebGL \
+            -executeMethod CivilSim.Editor.WebGLReleaseBuilder.BuildReleaseCI \
+            -logFile "$LOG"
+
+          EXIT_CODE=$?
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo "=== Unity Build Log ==="
+            cat "$LOG"
+            exit $EXIT_CODE
+          fi
+
+          if [ ! -d "${{ github.workspace }}/Builds/WebGL" ]; then
+            echo "=== Build output not found. Unity Build Log ==="
+            cat "$LOG"
+            exit 1
+          fi
 
       - name: Deploy to Netlify
         run: npx --yes netlify-cli deploy --dir=Builds/WebGL --prod
