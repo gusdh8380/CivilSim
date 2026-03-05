@@ -60,12 +60,8 @@ namespace CivilSim.Population
 
         private void Recalculate()
         {
-            float serviceHappiness   = Mathf.Clamp(_serviceScore,        0f, 100f);
-            float operationHappiness = Mathf.Clamp(_operationRate * 100f, 0f, 100f);
-
-            float newHappiness = _serviceWeight * serviceHappiness
-                               + _operationWeight * operationHappiness;
-            newHappiness = Mathf.Clamp(newHappiness, 0f, 100f);
+            float newHappiness = HappinessFormula.Calculate(
+                _serviceScore, _operationRate, _serviceWeight, _operationWeight);
 
             // 실질적으로 변하지 않으면 이벤트 생략
             if (Mathf.Approximately(newHappiness, Happiness)) return;

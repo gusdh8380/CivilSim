@@ -147,9 +147,9 @@ namespace CivilSim.Economy
             int baseIncome = residentBaseIncome + jobBaseIncome;
 
             float demandScore = (_resDemand + _comDemand + _indDemand) / 3f;
-            float incomeMultiplier = 1f + demandScore * _config.IncomeMultiplierPerDemandPoint;
-            incomeMultiplier = Mathf.Clamp(
-                incomeMultiplier,
+            float incomeMultiplier = EconomyFormula.CalcIncomeMultiplier(
+                demandScore,
+                _config.IncomeMultiplierPerDemandPoint,
                 _config.MinIncomeMultiplier,
                 _config.MaxIncomeMultiplier);
 
@@ -165,11 +165,11 @@ namespace CivilSim.Economy
             float waterRate = _utility != null ? _utility.WaterRate : 1f;
             float operationRate = _utility != null ? _utility.OperationRate : 1f;
 
-            int residentIncome = Mathf.RoundToInt(residentBaseIncome * incomeMultiplier * residentMultiplier * operationRate);
-            int jobIncome = Mathf.RoundToInt(jobBaseIncome * incomeMultiplier * jobMultiplier * operationRate);
+            int residentIncome = EconomyFormula.CalcResidentIncome(residentBaseIncome, incomeMultiplier, residentMultiplier, operationRate);
+            int jobIncome      = EconomyFormula.CalcJobIncome(jobBaseIncome, incomeMultiplier, jobMultiplier, operationRate);
             int income = residentIncome + jobIncome;
-            int expenditure = Mathf.RoundToInt(baseExpenditure * maintenanceMultiplier);
-            int net = income - expenditure;
+            int expenditure = EconomyFormula.CalcExpenditure(baseExpenditure, maintenanceMultiplier);
+            int net = EconomyFormula.CalcNet(income, expenditure);
             Money  += net;
 
             // 예산 보고 이벤트
