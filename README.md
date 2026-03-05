@@ -193,6 +193,16 @@ npx --yes netlify-cli deploy --dir=Builds/WebGL --prod
 
 ---
 
+## Credits
+
+| Asset | Author | License |
+|-------|--------|---------|
+| [Pandazole City Town Pack](https://assetstore.unity.com/packages/3d/environments/urban/city-town-pack-272604) | Pandazole | Unity Asset Store EULA |
+| [Noto Sans KR](https://fonts.google.com/noto/specimen/Noto+Sans+KR) | Google Fonts | OFL 1.1 |
+| [Yuqhues Free Ground Materials](https://assetstore.unity.com/packages/2d/textures-materials/floors/yughues-free-ground-materials-13001) | Yughues | CC0 |
+
+---
+
 ## 라이선스
 
 MIT

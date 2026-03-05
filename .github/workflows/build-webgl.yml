@@ -1,4 +1,4 @@
-name: Build WebGL
+name: Build and Deploy WebGL
 
 on:
   push:
@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   build:
-    name: Build for WebGL
+    name: Build WebGL and Deploy to Netlify
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -31,7 +31,7 @@ jobs:
             Library-WebGL-
             Library-
 
-      - name: Build WebGL
+      - name: Build WebGL (custom HTML shell)
         uses: game-ci/unity-builder@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
@@ -39,11 +39,18 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           targetPlatform: WebGL
-          unityVersion: 6000.0.44f1
+          unityVersion: 6000.3.10f1
+          buildMethod: CivilSim.Editor.WebGLReleaseBuilder.BuildReleaseCI
+
+      - name: Deploy to Netlify
+        run: npx --yes netlify-cli deploy --dir=Builds/WebGL --prod
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: CivilSim-WebGL-${{ github.sha }}
-          path: build/WebGL
+          path: Builds/WebGL
           retention-days: 14

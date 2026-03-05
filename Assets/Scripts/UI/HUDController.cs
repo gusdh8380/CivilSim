@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -6,6 +7,7 @@ using CivilSim.Core;
 using CivilSim.Economy;
 using CivilSim.Grid;
 using CivilSim.Infrastructure;
+using CivilSim.Population;
 using CivilSim.Zones;
 
 namespace CivilSim.UI
@@ -46,6 +48,13 @@ namespace CivilSim.UI
         [SerializeField] private Color _warningColor = new Color(1.0f, 0.85f, 0.3f);
         [SerializeField] private Color _alertColor = new Color(1.0f, 0.45f, 0.45f);
 
+        [Header("행복도 (선택)")]
+        [SerializeField] private TextMeshProUGUI _happinessText;
+
+        [Header("알림 설정")]
+        [Tooltip("각 알림 메시지를 화면에 유지하는 시간(초)")]
+        [SerializeField] private float _notificationDisplayDuration = 3f;
+
         [Header("시간 배속 버튼")]
         [SerializeField] private Button _pauseButton;
         [SerializeField] private Button _speed1Button;
@@ -65,6 +74,14 @@ namespace CivilSim.UI
         private int _currentBalance;
         private bool _useBalanceGoal;
 
+        // 알림 큐 — 여러 알림이 동시에 들어와도 순서대로 표시
+        private readonly Queue<(string message, NotificationType type)> _notificationQueue = new();
+        private bool _isShowingNotification;
+
+        // 모드 UI 캐싱 — 변경 시에만 UI 갱신 (매 프레임 string 생성 방지)
+        private string _lastModeLabel = "";
+        private string _lastZoneLabel = "";
+
         private void Start()
         {
             AutoBindOptionalTexts();
@@ -75,8 +92,6 @@ namespace CivilSim.UI
             _speed4Button?.onClick.AddListener(() => SetSpeed(TimeSpeed.VeryFast));
 
             GameEventBus.Subscribe<MoneyChangedEvent>(OnMoneyChanged);
-            GameEventBus.Subscribe<BuildingPlacedEvent>(OnBuildingPlaced);
-            GameEventBus.Subscribe<BuildingRemovedEvent>(OnBuildingRemoved);
             GameEventBus.Subscribe<DailyTickEvent>(OnDailyTick);
             GameEventBus.Subscribe<TimeSpeedChangedEvent>(OnTimeSpeedChanged);
             GameEventBus.Subscribe<PopulationChangedEvent>(OnPopulationChanged);
@@ -86,6 +101,7 @@ namespace CivilSim.UI
             GameEventBus.Subscribe<GameWonEvent>(OnGameWon);
             GameEventBus.Subscribe<GameLostEvent>(OnGameLost);
             GameEventBus.Subscribe<NotificationEvent>(OnNotification);
+            GameEventBus.Subscribe<HappinessChangedEvent>(OnHappinessChanged);
 
             RefreshAll();
         }
@@ -98,8 +114,6 @@ namespace CivilSim.UI
         private void OnDestroy()
         {
             GameEventBus.Unsubscribe<MoneyChangedEvent>(OnMoneyChanged);
-            GameEventBus.Unsubscribe<BuildingPlacedEvent>(OnBuildingPlaced);
-            GameEventBus.Unsubscribe<BuildingRemovedEvent>(OnBuildingRemoved);
             GameEventBus.Unsubscribe<DailyTickEvent>(OnDailyTick);
             GameEventBus.Unsubscribe<TimeSpeedChangedEvent>(OnTimeSpeedChanged);
             GameEventBus.Unsubscribe<PopulationChangedEvent>(OnPopulationChanged);
@@ -109,6 +123,7 @@ namespace CivilSim.UI
             GameEventBus.Unsubscribe<GameWonEvent>(OnGameWon);
             GameEventBus.Unsubscribe<GameLostEvent>(OnGameLost);
             GameEventBus.Unsubscribe<NotificationEvent>(OnNotification);
+            GameEventBus.Unsubscribe<HappinessChangedEvent>(OnHappinessChanged);
         }
 
         private void OnMoneyChanged(MoneyChangedEvent e) => UpdateMoneyUI(e.NewAmount);
@@ -121,18 +136,10 @@ namespace CivilSim.UI
             UpdateDateUI();
         }
 
-        private void OnBuildingPlaced(BuildingPlacedEvent e)
+        private void OnHappinessChanged(HappinessChangedEvent e)
         {
-            var inst = GameManager.Instance.Buildings.GetBuilding(e.BuildingDataId);
-            if (inst?.Data != null)
-                _population += inst.Data.ResidentCapacity;
-            UpdatePopulationUI();
-        }
-
-        private void OnBuildingRemoved(BuildingRemovedEvent e)
-        {
-            RecalculatePopulation();
-            UpdatePopulationUI();
+            if (_happinessText == null) return;
+            _happinessText.text = $"행복도: {Mathf.RoundToInt(e.NewHappiness)}";
         }
 
         private void OnTimeSpeedChanged(TimeSpeedChangedEvent e)
@@ -171,7 +178,11 @@ namespace CivilSim.UI
             => UpdateResultUI($"패배 - {e.Year}년 {e.Month}월 - {e.Reason}", _moneyNegativeColor);
 
         private void OnNotification(NotificationEvent e)
-            => UpdateNotificationUI(e.Message, e.Type);
+        {
+            _notificationQueue.Enqueue((e.Message, e.Type));
+            if (!_isShowingNotification)
+                StartCoroutine(ProcessNotificationQueue());
+        }
 
         private void UpdateMoneyUI(int amount)
         {
@@ -241,8 +252,17 @@ namespace CivilSim.UI
 
         private void RecalculatePopulation()
         {
+            // CityDemandSystem이 OperationRate를 반영한 인구를 갖고 있으면 그것을 우선 사용
+            var demand = GameManager.Instance?.Demand;
+            if (demand != null)
+            {
+                _population = demand.Residents;
+                return;
+            }
+
+            // fallback: OperationRate 미반영 원시 합산
             _population = 0;
-            var all = GameManager.Instance.Buildings?.GetAll();
+            var all = GameManager.Instance?.Buildings?.GetAll();
             if (all == null) return;
             foreach (var kv in all)
                 if (kv.Value?.Data != null)
@@ -287,6 +307,11 @@ namespace CivilSim.UI
                     }
                 }
             }
+
+            // 이전 값과 동일하면 UI 갱신 생략 — 매 프레임 string 할당 및 UI 재계산 방지
+            if (modeLabel == _lastModeLabel && zoneLabel == _lastZoneLabel) return;
+            _lastModeLabel = modeLabel;
+            _lastZoneLabel = zoneLabel;
 
             if (_modeText != null) _modeText.text = $"모드: {modeLabel}";
             if (_zoneTypeText != null) _zoneTypeText.text = $"구역: {zoneLabel}";
@@ -370,17 +395,30 @@ namespace CivilSim.UI
             _resultText.color = color;
         }
 
-        private void UpdateNotificationUI(string text, NotificationType type)
+        /// <summary>
+        /// 알림 큐를 순서대로 표시하고 각 메시지를 <see cref="_notificationDisplayDuration"/>초 동안 유지한다.
+        /// 이전 메시지가 표시되는 동안 새 알림이 들어오면 큐에 쌓였다가 순차적으로 출력된다.
+        /// </summary>
+        private System.Collections.IEnumerator ProcessNotificationQueue()
         {
-            if (_notificationText == null) return;
-
-            _notificationText.text = text;
-            _notificationText.color = type switch
+            _isShowingNotification = true;
+            while (_notificationQueue.Count > 0)
             {
-                NotificationType.Info => _infoColor,
-                NotificationType.Warning => _warningColor,
-                _ => _alertColor
-            };
+                var (msg, type) = _notificationQueue.Dequeue();
+                if (_notificationText != null)
+                {
+                    _notificationText.text = msg;
+                    _notificationText.color = type switch
+                    {
+                        NotificationType.Info    => _infoColor,
+                        NotificationType.Warning => _warningColor,
+                        _                        => _alertColor
+                    };
+                }
+                yield return new WaitForSecondsRealtime(_notificationDisplayDuration);
+            }
+            if (_notificationText != null) _notificationText.text = "";
+            _isShowingNotification = false;
         }
 
         private TextMeshProUGUI FindTextByName(string objectName)

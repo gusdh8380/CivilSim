@@ -224,7 +224,9 @@ namespace CivilSim.Economy
                 Debug.LogWarning("[EconomyManager] 파산!");
             }
 
+#if UNITY_EDITOR
             Debug.Log($"[Economy] {e.Year}/{e.Month} 기본수입:{baseIncome:N0}(주민:{residentBaseIncome:N0}/고용:{jobBaseIncome:N0}) 수요배율:{incomeMultiplier:F2} 주민배율:{residentMultiplier:F2} 고용배율:{jobMultiplier:F2} 유지비배율:{maintenanceMultiplier:F2} 운영률:{operationRate:F2} 수입:{income:N0} 지출:{expenditure:N0} 잔액:{Money:N0}");
+#endif
         }
 
         // -- 내부 --

@@ -16,8 +16,9 @@ namespace CivilSim.Population
         [SerializeField, Range(0.05f, 1.0f)] private float _industrialDemandFactor = 0.20f;
         [SerializeField, Range(1, 50)] private int _normalizationDivisor = 5;
 
-        [Header("디버그/확인용")]
-        [SerializeField] private bool _notifyMonthlyDemandUpdate = true;
+        [Header("수요 변동 알림")]
+        [Tooltip("이 값 이상 수요가 바뀔 때만 플레이어에게 알림을 보냄 (매달 스팸 방지)")]
+        [SerializeField, Min(1)] private int _demandNotifyThreshold = 20;
 
         public int Residents { get; private set; }
         public int JobsTotal { get; private set; }
@@ -32,6 +33,11 @@ namespace CivilSim.Population
         private int _lastPopulation;
         private float _commercialDemandFactorRuntime;
         private float _industrialDemandFactorRuntime;
+
+        // 마지막 알림 시 수요값 — 변동 감지에 사용
+        private int _lastNotifiedResDemand;
+        private int _lastNotifiedComDemand;
+        private int _lastNotifiedIndDemand;
 
         private void Awake()
         {
@@ -66,13 +72,22 @@ namespace CivilSim.Population
         {
             RecalculateAndPublish();
 
-            if (_notifyMonthlyDemandUpdate)
+            // 임계값 이상 변동 시에만 알림 (매달 스팸 방지)
+            bool significantChange =
+                Mathf.Abs(ResidentialDemand - _lastNotifiedResDemand) >= _demandNotifyThreshold ||
+                Mathf.Abs(CommercialDemand  - _lastNotifiedComDemand)  >= _demandNotifyThreshold ||
+                Mathf.Abs(IndustrialDemand  - _lastNotifiedIndDemand)  >= _demandNotifyThreshold;
+
+            if (significantChange)
             {
                 GameEventBus.Publish(new NotificationEvent
                 {
-                    Message = $"[{e.Year}/{e.Month:D2}] 수요 갱신 R:{ResidentialDemand:+#;-#;0} C:{CommercialDemand:+#;-#;0} I:{IndustrialDemand:+#;-#;0}",
+                    Message = $"수요 변동 R:{ResidentialDemand:+#;-#;0} C:{CommercialDemand:+#;-#;0} I:{IndustrialDemand:+#;-#;0}",
                     Type = NotificationType.Info
                 });
+                _lastNotifiedResDemand = ResidentialDemand;
+                _lastNotifiedComDemand = CommercialDemand;
+                _lastNotifiedIndDemand = IndustrialDemand;
             }
         }
 

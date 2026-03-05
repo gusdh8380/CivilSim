@@ -47,7 +47,8 @@ namespace CivilSim.Core
         [SerializeField] private ZoneBuilder _zoneBuilder;
 
         [Header("Population")]
-        [SerializeField] private CityDemandSystem _cityDemandSystem;
+        [SerializeField] private CityDemandSystem  _cityDemandSystem;
+        [SerializeField] private HappinessManager  _happinessManager;
 
         [Header("Progression")]
         [SerializeField] private CityProgressionManager _cityProgressionManager;
@@ -71,7 +72,8 @@ namespace CivilSim.Core
         public UtilityManager   Utility         => _utilityManager;
         public ZoneManager      Zone            => _zoneManager;
         public ZoneBuilder      ZoneBuild       => _zoneBuilder;
-        public CityDemandSystem Demand          => _cityDemandSystem;
+        public CityDemandSystem       Demand      => _cityDemandSystem;
+        public HappinessManager       Happiness   => _happinessManager;
         public CityProgressionManager Progression => _cityProgressionManager;
         public SaveLoadManager SaveLoad => _saveLoadManager;
 
@@ -114,6 +116,7 @@ namespace CivilSim.Core
             if (_zoneManager        == null) _zoneManager        = FindFirstObjectByType<ZoneManager>();
             if (_zoneBuilder        == null) _zoneBuilder        = FindFirstObjectByType<ZoneBuilder>();
             if (_cityDemandSystem   == null) _cityDemandSystem   = FindFirstObjectByType<CityDemandSystem>();
+            if (_happinessManager   == null) _happinessManager   = FindFirstObjectByType<HappinessManager>();
             if (_cityProgressionManager == null) _cityProgressionManager = FindFirstObjectByType<CityProgressionManager>();
             if (_saveLoadManager       == null) _saveLoadManager       = FindFirstObjectByType<SaveLoadManager>();
             if (_cityProgressionManager == null)
@@ -122,6 +125,8 @@ namespace CivilSim.Core
                 _saveLoadManager = gameObject.AddComponent<SaveLoadManager>();
             if (_utilityManager == null)
                 _utilityManager = gameObject.AddComponent<UtilityManager>();
+            if (_happinessManager == null)
+                _happinessManager = gameObject.AddComponent<HappinessManager>();
             // BuildingDatabase는 ScriptableObject라 FindObjectOfType 대상 아님 — Inspector 할당 필수
         }
 
@@ -153,6 +158,7 @@ namespace CivilSim.Core
             if (_zoneManager       == null) Debug.LogWarning("[GameManager] ZoneManager가 할당되지 않았습니다.");
             if (_zoneBuilder       == null) Debug.LogWarning("[GameManager] ZoneBuilder가 할당되지 않았습니다.");
             if (_cityDemandSystem  == null) Debug.LogWarning("[GameManager] CityDemandSystem이 할당되지 않았습니다.");
+            if (_happinessManager  == null) Debug.LogWarning("[GameManager] HappinessManager가 할당되지 않았습니다.");
             if (_cityProgressionManager == null) Debug.LogWarning("[GameManager] CityProgressionManager가 할당되지 않았습니다.");
             if (_saveLoadManager == null) Debug.LogWarning("[GameManager] SaveLoadManager가 할당되지 않았습니다.");
         }
