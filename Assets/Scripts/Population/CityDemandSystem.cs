@@ -56,6 +56,7 @@ namespace CivilSim.Population
         {
             GameEventBus.Subscribe<BuildingPlacedEvent>(OnBuildingChanged);
             GameEventBus.Subscribe<BuildingRemovedEvent>(OnBuildingChanged);
+            GameEventBus.Subscribe<RoadRemovedEvent>(OnRoadRemoved);
             GameEventBus.Subscribe<MonthlyTickEvent>(OnMonthlyTick);
         }
 
@@ -63,11 +64,13 @@ namespace CivilSim.Population
         {
             GameEventBus.Unsubscribe<BuildingPlacedEvent>(OnBuildingChanged);
             GameEventBus.Unsubscribe<BuildingRemovedEvent>(OnBuildingChanged);
+            GameEventBus.Unsubscribe<RoadRemovedEvent>(OnRoadRemoved);
             GameEventBus.Unsubscribe<MonthlyTickEvent>(OnMonthlyTick);
         }
 
         private void OnBuildingChanged(BuildingPlacedEvent e) => RecalculateAndPublish();
         private void OnBuildingChanged(BuildingRemovedEvent e) => RecalculateAndPublish();
+        private void OnRoadRemoved(RoadRemovedEvent e) => RecalculateAndPublish();
         private void OnMonthlyTick(MonthlyTickEvent e)
         {
             RecalculateAndPublish();

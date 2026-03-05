@@ -102,6 +102,7 @@ namespace CivilSim.UI
             GameEventBus.Subscribe<GameLostEvent>(OnGameLost);
             GameEventBus.Subscribe<NotificationEvent>(OnNotification);
             GameEventBus.Subscribe<HappinessChangedEvent>(OnHappinessChanged);
+            GameEventBus.Subscribe<GameStartedEvent>(OnGameStarted);
 
             RefreshAll();
         }
@@ -124,6 +125,7 @@ namespace CivilSim.UI
             GameEventBus.Unsubscribe<GameLostEvent>(OnGameLost);
             GameEventBus.Unsubscribe<NotificationEvent>(OnNotification);
             GameEventBus.Unsubscribe<HappinessChangedEvent>(OnHappinessChanged);
+            GameEventBus.Unsubscribe<GameStartedEvent>(OnGameStarted);
         }
 
         private void OnMoneyChanged(MoneyChangedEvent e) => UpdateMoneyUI(e.NewAmount);
@@ -176,6 +178,13 @@ namespace CivilSim.UI
 
         private void OnGameLost(GameLostEvent e)
             => UpdateResultUI($"패배 - {e.Year}년 {e.Month}월 - {e.Reason}", _moneyNegativeColor);
+
+        private void OnGameStarted(GameStartedEvent e)
+        {
+            _notificationQueue.Enqueue(("도시 건설을 시작합니다!", NotificationType.Info));
+            if (!_isShowingNotification)
+                StartCoroutine(ProcessNotificationQueue());
+        }
 
         private void OnNotification(NotificationEvent e)
         {

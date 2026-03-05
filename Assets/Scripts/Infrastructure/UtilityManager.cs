@@ -349,6 +349,8 @@ namespace CivilSim.Infrastructure
                     inst.IsWatered = IsSuppliedByRate(inst.InstanceId, waterRate, WaterSupplyHashSalt);
                 else
                     inst.IsWatered = true;
+
+                inst.RefreshVisual();
             }
         }
 

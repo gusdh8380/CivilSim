@@ -24,6 +24,20 @@ namespace CivilSim.Buildings
             (!Data.RequiresPower || IsPowered) &&
             (!Data.RequiresWater || IsWatered);
 
+        // -- 비주얼 --
+        private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
+        private static readonly Color OperationalTint   = Color.white;
+        private static readonly Color UnoperationalTint = new Color(0.45f, 0.45f, 0.45f, 1f);
+
+        private MeshRenderer[] _renderers;
+        private MaterialPropertyBlock _propBlock;
+
+        private void Awake()
+        {
+            _renderers = GetComponentsInChildren<MeshRenderer>(includeInactive: true);
+            _propBlock = new MaterialPropertyBlock();
+        }
+
         // -- 초기화 --
 
         public void Initialize(int id, BuildingData data, UnityEngine.Vector2Int gridOrigin, int rotation = 0)
@@ -33,6 +47,7 @@ namespace CivilSim.Buildings
             GridOrigin = gridOrigin;
             Rotation   = rotation;
             name       = $"[Building] {data.BuildingName} ({gridOrigin.x},{gridOrigin.y}) R{rotation * 90}°";
+            RefreshVisual();
         }
 
         /// 회전을 반영한 실제 점유 셀 크기
@@ -42,10 +57,19 @@ namespace CivilSim.Buildings
 
         // -- 공개 API --
 
-        /// 운영 상태 변경 시 비주얼 업데이트 트리거 (추후 구현)
+        /// 전기/수도 상태에 따라 건물 색상을 갱신한다.
+        /// UtilityManager가 IsPowered/IsWatered 갱신 후 호출.
         public void RefreshVisual()
         {
-            // TODO: 전기/수도 미연결 시 어둡게 처리
+            if (_renderers == null) return;
+            Color tint = IsOperational ? OperationalTint : UnoperationalTint;
+            foreach (var r in _renderers)
+            {
+                if (r == null) continue;
+                r.GetPropertyBlock(_propBlock);
+                _propBlock.SetColor(BaseColorId, tint);
+                r.SetPropertyBlock(_propBlock);
+            }
         }
 
         public override string ToString()

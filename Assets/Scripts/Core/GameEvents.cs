@@ -194,7 +194,6 @@ namespace CivilSim.Core
     // --
 
     public struct GameStartedEvent { }
-    public struct GamePausedEvent { }
     public struct GameSavedEvent { public string SlotName; }
     public struct GameLoadedEvent { public string SlotName; }
 
